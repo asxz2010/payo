@@ -20,6 +20,13 @@ import { Cascader, Radio } from 'element-ui'
 Vue.use(Cascader)
 Vue.use(Radio)
 
+import { DropdownMenu, DropdownItem, ImagePreview, Overlay, Button  } from 'vant'
+Vue.use(DropdownMenu)
+Vue.use(DropdownItem)
+Vue.use(ImagePreview)
+Vue.use(Overlay)
+Vue.use(Button)
+
 // import iView from 'iview'
 // import 'iview/dist/styles/iview.css'
 // Vue.use(iView)

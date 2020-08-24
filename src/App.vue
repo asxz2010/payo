@@ -109,6 +109,7 @@
   body {
     margin: 0;
     background-color: #f4f4f4 !important;
+    overflow: hidden;
   }
 
   ul{
@@ -156,8 +157,6 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: #2c3e50;
-    padding: 1px 0;
-    min-height: 100vh;
 
     .header {
       width: 100%;

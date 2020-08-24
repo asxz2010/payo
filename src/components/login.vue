@@ -1,5 +1,5 @@
 <template>
-  <div class="login-container">
+  <div class="login-container" :style="{height: html_height+'px'}">
     <div class="wrap">
       <img src="http://qiniu.tecclub.cn/payo/payou@5x@2x.png" alt="啪友社交">
       <ul>
@@ -48,6 +48,7 @@
     name: 'app',
     data() {
       return {
+        html_height: 0,
         radio: '1',
         options2: [{
             label: '江苏',
@@ -213,7 +214,8 @@
       };
     },
     created() {
-
+      this.html_height = window.innerHeight
+      console.log(this.html_height)
     },
     methods: {
       getRadio() {
@@ -238,7 +240,7 @@
 <style scoped lang="scss">
   .login-container {
     width: 100%;
-    height: 100vh;
+    // height: 100%;
     background: url(http://qiniu.tecclub.cn/payo/BG-login@2x.png) no-repeat;
     background-size: cover;
     display: flex;
@@ -252,7 +254,9 @@
       letter-spacing: .2rem;
 
       img {
-        width: 15rem;
+        width: 70vw;
+        margin: auto;
+        display: block;
       }
 
       ul {
@@ -264,6 +268,7 @@
           justify-content: space-between;
           align-items: center;
           // padding: 1rem 0;
+          padding: 5vw 0;
           border-bottom: 1px solid #999;
 
           .iconfont {
@@ -275,7 +280,6 @@
             background: transparent;
             border: none;
             color: white;
-            height: 3rem;
             padding-left: 1rem;
             outline: none;
             font-size: 1.2rem;
@@ -304,7 +308,7 @@
         .l-radio {
           justify-content: flex-start;
           padding-left: 1rem;
-          height: 3rem;
+          // height: 3rem;
           font-size: 1.2rem;
           // padding: 1rem 0 1rem 1rem;
         }
@@ -362,7 +366,7 @@
     width: 100%;
   }
 
-  /deep/ .el-radio{
+  /deep/ .el-radio {
     color: white;
   }
 

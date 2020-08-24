@@ -10,6 +10,11 @@
     {
       "libraryName": "element-ui",
       "styleLibraryName": "theme-chalk"
+    },
+    {
+      "libraryName": "vant",
+      "libraryDirectory": "es",
+      "style": false
     }
   ]]]
 }

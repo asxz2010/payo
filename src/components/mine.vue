@@ -32,19 +32,15 @@
           <div class="iconfont iconxiangyou"></div>
         </li>
         <li>
-          <span>会员权益</span>
+          <span>会员升级</span>
           <div class="iconfont iconxiangyou"></div>
         </li>
         <li>
-          <span>客服咨询</span>
+          <span>被翻记录</span>
           <div class="iconfont iconxiangyou"></div>
         </li>
         <li>
-          <span>被撩记录</span>
-          <div class="iconfont iconxiangyou"></div>
-        </li>
-        <li>
-          <span>历史匹配</span>
+          <span>我的报名</span>
           <div class="iconfont iconxiangyou"></div>
         </li>
       </ul>

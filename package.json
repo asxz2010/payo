@@ -21,7 +21,7 @@
     "node-sass": "^4.14.1",
     "qrcodejs2": "0.0.2",
     "qs": "^6.9.4",
-    "vant": "^2.8.6",
+    "vant": "^2.10.2",
     "view-design": "^4.3.2",
     "vue": "^2.5.2",
     "vue-canvas-poster": "^1.1.1",
