@@ -3,12 +3,13 @@
     <div class="address">
       <div>
         <div class="iconfont icondizhi"></div>
-        <!-- <p>南京市-江苏省</p> -->
-        <el-cascader :options="options2" @active-item-change="handleItemChange" v-model="address"></el-cascader>
+        <!-- <el-cascader :options="options2" @active-item-change="handleItemChange" v-model="address"></el-cascader> -->
+        <p @click="showPopup">地址</p>
+        <van-popup v-model="address_show" position="top" :style="{ height: '30%' }">
+          <van-area title="标题" :area-list="areaList" @confirm="getAddress" @change="addressChange" />
+        </van-popup>
       </div>
       <div>
-        <!-- <div class="iconfont iconshuaxinzhongjieban"></div>
-        <p>等级</p> -->
         <van-dropdown-menu>
           <van-dropdown-item v-model="value1" :options="option" />
         </van-dropdown-menu>
@@ -24,6 +25,7 @@
         <div class="wrap" v-for="g in myGirls" :key="g.id">
           <div class="content">
             <img :src="g.imgsrc" alt="" @click="sweetgirl">
+            <img src="http://qiniu.tecclub.cn/payo/biaoqian_s@2x.png" alt="">
           </div>
           <div class="liao_btn">
             <div>
@@ -44,17 +46,17 @@
           </div>
         </div>
       </scroller>
-
     </div>
     <van-overlay :show="show" @click="getMeiMei">
       <div class="wrapper">
         <div class="block" @click.stop>
           <div class="d-4">
             <div class="d-1">
-              <div>
+              <div class="tx">
                 <img src="http://51pyyy.cn/uploads/wxpayo/girl/logo-payo.png" alt="">
-                <div>永</div>
+                <div class="forever">永</div>
               </div>
+              <div class="leftchance">本月剩余: 3次</div>
             </div>
             <div class="d-2">
               <p>10548</p>
@@ -69,12 +71,16 @@
           </div>
 
           <div class="d-5">
-            <img src="http://qiniu.tecclub.cn/payo/btn_baoming@2x.png" alt="">
+            <img src="http://qiniu.tecclub.cn/payo/btn_baoming@2x.png" alt="" @click="getGirl">
             <p>点击报名将扣除1次报名机会（至尊、私人不限）有其他问题请咨询客服</p>
           </div>
         </div>
       </div>
     </van-overlay>
+    <van-dialog v-model="flag" :show-confirm-button="false">
+      <p class="diag">{{ koulin }}</p>
+      <van-button color="#FFB929" class="btn" @mouseenter.native="copy" ref="copyBtn" :data-clipboard-text="koulin">点击复制口令</van-button>
+    </van-dialog>
     <div class="footer"></div>
   </div>
 </template>
@@ -86,9 +92,35 @@
   export default {
     data() {
       return {
+        koulin: '七夕七夕',
         show: false,
+        flag: false,
+        address_show: false,
         value1: 0,
         value2: 'a',
+        areaList: {
+          province_list: {
+            110000: '北京市',
+            120000: '天津市'
+          },
+          city_list: {
+            110100: '北京市',
+            110200: '县',
+            120100: '天津市',
+            120200: '县'
+          },
+          county_list: {
+            110101: '东城区',
+            110102: '西城区',
+            110105: '朝阳区',
+            110106: '丰台区',
+            120101: '和平区',
+            120102: '河东区',
+            120103: '河西区',
+            120104: '南开区',
+            120105: '河北区',
+          }
+        },
         option: [{
             text: '等级排序',
             value: 0
@@ -160,13 +192,18 @@
           label: '浙江',
           children: []
         }],
-        // props: {
-        //   value: 'label',
-        //   children: 'cities'
-        // }
       }
     },
     methods: {
+      addressChange(picker){
+        console.log(picker)
+      },
+      getAddress(aaa){
+        console.log(aaa)
+      },
+      showPopup() {
+        this.address_show = true
+      },
       infinite() {
         let that = this
         setTimeout(() => {
@@ -177,12 +214,38 @@
         console.log('active item:', val);
       },
       sweetgirl() {
-        console.log(111111)
         ImagePreview(['http://qiniu.tecclub.cn/2020/08/11/15971360865f325cd61389a.jpg'])
       },
       getMeiMei() {
         this.show = !this.show
-      }
+      },
+      getGirl() {
+        this.getMeiMei()
+        this.flag = !this.flag
+      },
+      copy() {
+        const clipboard = new this.$clipboard(this.$refs.copyBtn)
+        clipboard.on('success', () => {
+          this.$notify({
+            message: '复制成功',
+            background: '#07C160',
+            color: 'white',
+            duration: 1500
+          })
+          this.flag = false
+          clipboard.destroy()
+        })
+        clipboard.on('error', () => {
+          this.$notify({
+            message: '复制失败',
+            background: '#FF976A',
+            color: 'white',
+            duration: 1500
+          })
+          this.flag = false
+          clipboard.destroy()
+        })
+      },
     }
   }
 </script>
@@ -281,12 +344,19 @@
           overflow: hidden;
           position: relative;
 
-          &>img {
+          &>img:nth-child(1) {
             width: 100%;
             height: auto;
             position: absolute;
             top: -39vw;
           }
+
+          &>img:nth-child(2) {
+            position: absolute;
+            width: 5rem;
+          }
+
+
         }
 
         .liao_btn {
@@ -354,7 +424,22 @@
     }
   }
 
+  .diag {
+    padding: 2rem 1rem;
+    letter-spacing: 1px;
+    text-align: center;
+    font-size: .9rem;
+  }
 
+  .btn {
+    margin: auto;
+    display: block;
+    width: 100%;
+  }
+
+  /deep/ .van-button__content {
+    justify-content: center;
+  }
 
   /deep/ ._v-container {
     position: relative;
@@ -453,11 +538,6 @@
     padding: 0 1rem !important;
   }
 
-  // /deep/.van-image{
-  //   display: flex !important;
-  //   justify-content: center !important;
-  // }
-
   .wrapper {
     display: flex;
     align-items: center;
@@ -475,14 +555,13 @@
       .d-4 {
         background: url(http://qiniu.tecclub.cn/payo/bg_modals@2x.png) no-repeat;
         background-size: cover;
-        margin-top: 3vw;
         font-size: .9rem;
         letter-spacing: 1px;
 
         .d-1 {
           position: relative;
 
-          &>div {
+          .tx {
             width: 14vw;
             height: 16vw;
             position: absolute;
@@ -494,9 +573,11 @@
               width: 100%;
               display: block;
               border-radius: 50%;
+              padding: 2px;
+              background: white;
             }
 
-            div {
+            .forever {
               position: absolute;
               bottom: 0;
               right: 0;
@@ -508,6 +589,18 @@
               height: 1.3rem;
               text-align: center;
             }
+          }
+
+          .leftchance {
+            position: absolute;
+            top: 3vw;
+            right: -1vw;
+            background: #222;
+            color: #ccc;
+            padding: 1vw 2vw;
+            font-size: 0.8rem;
+            border-top-left-radius: 30vw;
+            border-bottom-left-radius: 30vw;
           }
         }
 

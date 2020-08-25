@@ -95,7 +95,7 @@
         }
       },
       '$route.path': function(newVal) {
-        this.$route.path === '/login' ? this.flag = false : this.flag = true
+        this.$route.path === '/index' || this.$route.path === '/mine' ? this.flag = true : this.flag = false
       }
     }
   }
@@ -106,13 +106,14 @@
     box-sizing: border-box;
   }
 
+
   body {
     margin: 0;
     background-color: #f4f4f4 !important;
-    overflow: hidden;
+    // overflow: hidden;
   }
 
-  ul{
+  ul {
     margin: 0;
     padding: 0;
   }

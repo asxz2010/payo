@@ -214,8 +214,7 @@
       };
     },
     created() {
-      this.html_height = window.innerHeight
-      console.log(this.html_height)
+      this.html_height = this.$global.html_height
     },
     methods: {
       getRadio() {

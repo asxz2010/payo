@@ -4,6 +4,9 @@ import router from './router'
 
 Vue.config.productionTip = false
 
+import clipboard from 'clipboard'
+Vue.prototype.$clipboard = clipboard
+
 import common from '@/lib/common.vue'
 Vue.prototype.$global = common
 
@@ -12,20 +15,39 @@ import '@/assets/css/iconfont.css'
 import VueScroller from 'vue-scroller'
 Vue.use(VueScroller)
 
-import { Tabbar, TabItem } from 'mint-ui'
+import {
+  Tabbar,
+  TabItem
+} from 'mint-ui'
 Vue.component(Tabbar.name, Tabbar)
 Vue.component(TabItem.name, TabItem)
 
-import { Cascader, Radio } from 'element-ui'
+import {
+  Cascader,
+  Radio
+} from 'element-ui'
 Vue.use(Cascader)
-Vue.use(Radio)
 
-import { DropdownMenu, DropdownItem, ImagePreview, Overlay, Button  } from 'vant'
+import {
+  DropdownMenu,
+  DropdownItem,
+  ImagePreview,
+  Overlay,
+  Button,
+  Dialog,
+  Notify,
+  Area,
+  Popup
+} from 'vant'
 Vue.use(DropdownMenu)
 Vue.use(DropdownItem)
 Vue.use(ImagePreview)
 Vue.use(Overlay)
 Vue.use(Button)
+Vue.use(Dialog)
+Vue.use(Notify)
+Vue.use(Area)
+Vue.use(Popup)
 
 // import iView from 'iview'
 // import 'iview/dist/styles/iview.css'
