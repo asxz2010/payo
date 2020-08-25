@@ -44,6 +44,7 @@
               <p>点我看详情</p>
             </div>
           </div>
+          <!-- <div style="{width:100%;height:10rem;background: red; margin: 1rem 0;}"></div> -->
         </div>
       </scroller>
     </div>
@@ -171,6 +172,38 @@
             height: 160,
             address: '浙江省-杭州市'
           },
+          {
+            id: 1338,
+            imgsrc: 'http://qiniu.tecclub.cn/2020/08/11/15971360865f325cd61389a.jpg',
+            age: 28,
+            weight: 150,
+            height: 160,
+            address: '浙江省-杭州市'
+          },
+          {
+            id: 1339,
+            imgsrc: 'http://qiniu.tecclub.cn/2020/08/11/15971360865f325cd61389a.jpg',
+            age: 28,
+            weight: 150,
+            height: 160,
+            address: '浙江省-杭州市'
+          },
+          {
+            id: 1340,
+            imgsrc: 'http://qiniu.tecclub.cn/2020/08/11/15971360865f325cd61389a.jpg',
+            age: 28,
+            weight: 150,
+            height: 160,
+            address: '浙江省-杭州市'
+          },
+          {
+            id: 1341,
+            imgsrc: 'http://qiniu.tecclub.cn/2020/08/11/15971360865f325cd61389a.jpg',
+            age: 28,
+            weight: 150,
+            height: 160,
+            address: '浙江省-杭州市'
+          }
         ],
         options2: [{
           value: '江苏',
@@ -195,10 +228,10 @@
       }
     },
     methods: {
-      addressChange(picker){
+      addressChange(picker) {
         console.log(picker)
       },
-      getAddress(aaa){
+      getAddress(aaa) {
         console.log(aaa)
       },
       showPopup() {
@@ -328,9 +361,13 @@
     }
 
     .middle {
+      position: relative;
+      height: 80vh;
+      margin-top: 2vw;
+
       .wrap {
         width: 94%;
-        margin: 2vw auto 4vw;
+        margin: 0 auto 4vw;
         background: white;
         padding: 2vw 2vw 0;
         height: 108vw;
@@ -441,8 +478,8 @@
     justify-content: center;
   }
 
-  /deep/ ._v-container {
-    position: relative;
+  /deep/ ._v-content{
+    padding-bottom: 15vh;
   }
 
   /deep/ .el-radio__label {
