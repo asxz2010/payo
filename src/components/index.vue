@@ -574,34 +574,34 @@
   }
 
 
-  /deep/ .van-dropdown-menu:focus {
-    border: red !important;
-  }
+  // /deep/ .van-dropdown-menu:focus {
+  //   border: red !important;
+  // }
 
-  /deep/ .van-dropdown-menu__bar:focus {
-    border: red !important;
-  }
+  // /deep/ .van-dropdown-menu__bar:focus {
+  //   border: red !important;
+  // }
 
-  /deep/ .van-dropdown-menu__item:focus {
-    border: red !important;
-  }
+  // /deep/ .van-dropdown-menu__item:focus {
+  //   border: red !important;
+  // }
 
-  /deep/ .van-dropdown-menu__bar {
-    background-color: transparent !important;
-    box-shadow: none;
-  }
+  // /deep/ .van-dropdown-menu__bar {
+  //   background-color: transparent !important;
+  //   box-shadow: none;
+  // }
 
-  /deep/ .van-dropdown-menu__title--active {
-    color: #FFB929;
-  }
+  // /deep/ .van-dropdown-menu__title--active {
+  //   color: #FFB929;
+  // }
 
-  /deep/ .van-dropdown-item__option--active {
-    color: #FFB929;
-  }
+  // /deep/ .van-dropdown-item__option--active {
+  //   color: #FFB929;
+  // }
 
-  /deep/ .van-dropdown-item__icon {
-    color: #FFB929;
-  }
+  // /deep/ .van-dropdown-item__icon {
+  //   color: #FFB929;
+  // }
 
   /deep/ .van-button--plain {
     background-color: transparent;
