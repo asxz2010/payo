@@ -6,6 +6,7 @@ import mine from '@/components/mine'  // 我的
 import info from '@/components/info'  // 我的档案
 import marry from '@/components/marry'  // 被翻记录
 import rise_vip from '@/components/rise_vip'  // 会员升级
+import error from '@/components/error'  // 错误
 
 Vue.use(Router)
 
@@ -43,11 +44,15 @@ export default new Router({
       name: 'marry',
       component: marry
     },
-    ,
     {
       path: '/rise_vip',
       name: 'rise_vip',
       component: rise_vip
+    },
+    {
+      path: '/error',
+      name: 'error',
+      component: error
     }
   ]
 })

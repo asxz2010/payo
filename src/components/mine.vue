@@ -61,7 +61,7 @@
             <div class="iconfont iconxiangyou"></div>
           </div>
         </li>
-        <li @click="toPages('/marry')">
+        <li @click="toPages('/error')">
           <div>
             <div class="iconfont iconqiangzhipeidui"></div>
             <span>我的报名</span>

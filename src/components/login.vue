@@ -4,15 +4,8 @@
       <img src="http://qiniu.tecclub.cn/payo/payou@5x@2x.png" alt="啪友社交">
       <ul>
         <li>
-          <!-- <input type="text" placeholder="所在地区"> -->
-          <el-cascader :options="options2" @active-item-change="handleItemChange" :props="props"></el-cascader>
-          </el-cascader>
-          <!-- <div class="iconfont iconxiangxiajiantou"></div> -->
+          <p @click="showPopup">{{ address }}</p>
         </li>
-        <!-- <li>
-          <input type="text" placeholder="所在城市">
-          <div class="iconfont iconxiangxiajiantou"></div>
-        </li> -->
         <li>
           <input type="text" placeholder="个人编号">
         </li>
@@ -40,183 +33,47 @@
         <div></div>
       </div>
     </div>
+    <van-popup v-model="address_show" position="bottom">
+      <van-area title="省份/直辖市" :columns-placeholder="['请选择']" :area-list="areaList" @confirm="getAddress" @cancel="cancelAddress"
+        columns-num="1" visible-item-count="5" />
+    </van-popup>
   </div>
 </template>
 
 <script>
+  import area from '@/assets/js/area.js'
   export default {
     name: 'app',
     data() {
       return {
+        areaList: area,
+        address: '请选择',
+        address_show: false,
         html_height: 0,
         radio: '1',
-        options2: [{
-            label: '江苏',
-            cities: [{
-                label: '南京'
-              },
-              {
-                label: '扬州'
-              }
-            ]
-          }, {
-            label: '浙江',
-            cities: []
-          },
-          {
-            label: '江苏',
-            cities: [{
-                label: '南京'
-              },
-              {
-                label: '扬州'
-              }
-            ]
-          }, {
-            label: '浙江',
-            cities: []
-          },
-          {
-            label: '江苏',
-            cities: [{
-                label: '南京'
-              },
-              {
-                label: '扬州'
-              }
-            ]
-          }, {
-            label: '浙江',
-            cities: []
-          },
-          {
-            label: '江苏',
-            cities: [{
-                label: '南京'
-              },
-              {
-                label: '扬州'
-              }
-            ]
-          }, {
-            label: '浙江',
-            cities: []
-          },
-          {
-            label: '江苏',
-            cities: [{
-                label: '南京'
-              },
-              {
-                label: '扬州'
-              }
-            ]
-          }, {
-            label: '浙江',
-            cities: []
-          },
-          {
-            label: '江苏',
-            cities: [{
-                label: '南京'
-              },
-              {
-                label: '扬州'
-              }
-            ]
-          }, {
-            label: '浙江',
-            cities: []
-          },
-          {
-            label: '江苏',
-            cities: [{
-                label: '南京'
-              },
-              {
-                label: '扬州'
-              }
-            ]
-          }, {
-            label: '浙江',
-            cities: []
-          },
-          {
-            label: '江苏',
-            cities: [{
-                label: '南京'
-              },
-              {
-                label: '扬州'
-              }
-            ]
-          }, {
-            label: '浙江',
-            cities: []
-          },
-          {
-            label: '江苏',
-            cities: [{
-                label: '南京'
-              },
-              {
-                label: '扬州'
-              }
-            ]
-          }, {
-            label: '浙江',
-            cities: []
-          },
-          {
-            label: '江苏',
-            cities: [{
-                label: '南京'
-              },
-              {
-                label: '扬州'
-              }
-            ]
-          }, {
-            label: '浙江',
-            cities: []
-          },
-          {
-            label: '江苏',
-            cities: [{
-                label: '南京'
-              },
-              {
-                label: '扬州'
-              }
-            ]
-          }, {
-            label: '浙江',
-            cities: []
-          },
-          {
-            label: '江苏',
-            cities: [{
-                label: '南京'
-              },
-              {
-                label: '扬州'
-              }
-            ]
-          }, {
-            label: '浙江',
-            cities: []
-          },
-        ],
-        props: {
-          value: 'label',
-          children: 'cities'
-        }
       };
     },
     created() {
       this.html_height = this.$global.html_height
     },
     methods: {
+      getAddress(addressArr) {
+        if (addressArr.length > 0) {
+          var address = ''
+          for (let addr of addressArr) {
+            address += addr.name
+          }
+          address == '' ? address = '请选择' : ''
+          this.address = address
+        }
+        this.showPopup()
+      },
+      cancelAddress() {
+        this.showPopup()
+      },
+      showPopup() {
+        this.address_show = !this.address_show
+      },
       getRadio() {
         if (this.radio == 1) {
           console.log('男')
@@ -239,16 +96,13 @@
 <style scoped lang="scss">
   .login-container {
     width: 100%;
-    // height: 100%;
     background: url(http://qiniu.tecclub.cn/payo/BG-login@2x.png) no-repeat;
     background-size: cover;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    overflow: hidden;
 
     .wrap {
       width: 80%;
-      margin: auto;
+      margin: 20vw auto 0;
       font-size: 1rem;
       letter-spacing: .2rem;
 
@@ -266,9 +120,14 @@
           display: flex;
           justify-content: space-between;
           align-items: center;
-          // padding: 1rem 0;
-          padding: 5vw 0;
+          height: 16vw;
           border-bottom: 1px solid #999;
+
+          p {
+            color: white;
+            padding-left: 1rem;
+            width: 100%;
+          }
 
           .iconfont {
             color: white;
@@ -282,7 +141,6 @@
             padding-left: 1rem;
             outline: none;
             font-size: 1.2rem;
-            // padding: 1rem 0 1rem 1rem;
           }
 
           input::-webkit-input-placeholder {
@@ -397,5 +255,10 @@
     letter-spacing: .1rem;
     color: white;
     font-size: 1rem;
+  }
+
+  /deep/ .van-picker__toolbar button {
+    border: none;
+    background: white;
   }
 </style>

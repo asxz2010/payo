@@ -3,11 +3,7 @@
     <div class="address">
       <div>
         <div class="iconfont icondizhi"></div>
-        <!-- <el-cascader :options="options2" @active-item-change="handleItemChange" v-model="address"></el-cascader> -->
-        <p @click="showPopup">地址</p>
-        <van-popup v-model="address_show" position="top" :style="{ height: '30%' }">
-          <van-area title="标题" :area-list="areaList" @confirm="getAddress" @change="addressChange" />
-        </van-popup>
+        <p @click="showPopup">{{ address }}</p>
       </div>
       <div>
         <van-dropdown-menu>
@@ -24,12 +20,13 @@
       <scroller :on-infinite="infinite" ref="indexscroller">
         <div class="wrap" v-for="g in myGirls" :key="g.id">
           <div class="content">
-            <img :src="g.imgsrc" alt="" @click="sweetgirl">
+            <img :src="g.imgsrc" alt="" :id="'img'+g.id" @mouseenter="sweetgirl('img'+g.id)">
             <img src="http://qiniu.tecclub.cn/payo/biaoqian_s@2x.png" alt="">
           </div>
           <div class="liao_btn">
             <div>
-              <img src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="" @click="getMeiMei">
+              <!-- <img src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="" @click="getMeiMei" > -->
+              <img src="http://qiniu.tecclub.cn/payo/btn_signed@2x.png" alt="" >
             </div>
           </div>
           <div class="info">
@@ -44,7 +41,6 @@
               <p>点我看详情</p>
             </div>
           </div>
-          <!-- <div style="{width:100%;height:10rem;background: red; margin: 1rem 0;}"></div> -->
         </div>
       </scroller>
     </div>
@@ -65,7 +61,7 @@
             </div>
             <div class="d-3">
               <van-button icon="http://qiniu.tecclub.cn/payo/jewel_icon@2x.png" color="#FFB929" size="small" round
-                plain>
+                plain @click="toVip">
                 升级
               </van-button>
             </div>
@@ -82,46 +78,34 @@
       <p class="diag">{{ koulin }}</p>
       <van-button color="#FFB929" class="btn" @mouseenter.native="copy" ref="copyBtn" :data-clipboard-text="koulin">点击复制口令</van-button>
     </van-dialog>
+    <van-popup v-model="address_show" position="bottom">
+      <van-area title="省份/直辖市" :columns-placeholder="['请选择']" :area-list="areaList" @confirm="getAddress" @cancel="cancelAddress"
+        columns-num="1" visible-item-count="5" />
+    </van-popup>
     <div class="footer"></div>
   </div>
 </template>
 
 <script>
+  import Viewer from 'viewerjs'
+  import 'viewerjs/dist/viewer.css'
+  import area from '@/assets/js/area.js'
   import {
     ImagePreview
   } from 'vant';
   export default {
     data() {
       return {
+        address: '请选择',
         koulin: '七夕七夕',
         show: false,
         flag: false,
         address_show: false,
+        imgpreview_show: false,
         value1: 0,
         value2: 'a',
-        areaList: {
-          province_list: {
-            110000: '北京市',
-            120000: '天津市'
-          },
-          city_list: {
-            110100: '北京市',
-            110200: '县',
-            120100: '天津市',
-            120200: '县'
-          },
-          county_list: {
-            110101: '东城区',
-            110102: '西城区',
-            110105: '朝阳区',
-            110106: '丰台区',
-            120101: '和平区',
-            120102: '河东区',
-            120103: '河西区',
-            120104: '南开区',
-            120105: '河北区',
-          }
-        },
+        areaList: area,
+        myid: 1340,
         option: [{
             text: '等级排序',
             value: 0
@@ -131,7 +115,6 @@
             value: 1
           }
         ],
-        address: ['江苏', '连云港'],
         myGirls: [{
             id: 1337,
             imgsrc: 'http://qiniu.tecclub.cn/2020/08/11/15971360865f325cd61389a.jpg',
@@ -142,7 +125,7 @@
           },
           {
             id: 1338,
-            imgsrc: 'http://qiniu.tecclub.cn/2020/08/11/15971360865f325cd61389a.jpg',
+            imgsrc: 'http://qiniu.tecclub.cn/2020/07/14/15946974895f0d271183e43.jpg',
             age: 28,
             weight: 150,
             height: 160,
@@ -150,104 +133,66 @@
           },
           {
             id: 1339,
-            imgsrc: 'http://qiniu.tecclub.cn/2020/08/11/15971360865f325cd61389a.jpg',
-            age: 28,
-            weight: 150,
-            height: 160,
-            address: '浙江省-杭州市'
-          },
-          {
-            id: 1340,
-            imgsrc: 'http://qiniu.tecclub.cn/2020/08/11/15971360865f325cd61389a.jpg',
-            age: 28,
-            weight: 150,
-            height: 160,
-            address: '浙江省-杭州市'
-          },
-          {
-            id: 1341,
-            imgsrc: 'http://qiniu.tecclub.cn/2020/08/11/15971360865f325cd61389a.jpg',
-            age: 28,
-            weight: 150,
-            height: 160,
-            address: '浙江省-杭州市'
-          },
-          {
-            id: 1338,
-            imgsrc: 'http://qiniu.tecclub.cn/2020/08/11/15971360865f325cd61389a.jpg',
-            age: 28,
-            weight: 150,
-            height: 160,
-            address: '浙江省-杭州市'
-          },
-          {
-            id: 1339,
-            imgsrc: 'http://qiniu.tecclub.cn/2020/08/11/15971360865f325cd61389a.jpg',
-            age: 28,
-            weight: 150,
-            height: 160,
-            address: '浙江省-杭州市'
-          },
-          {
-            id: 1340,
-            imgsrc: 'http://qiniu.tecclub.cn/2020/08/11/15971360865f325cd61389a.jpg',
-            age: 28,
-            weight: 150,
-            height: 160,
-            address: '浙江省-杭州市'
-          },
-          {
-            id: 1341,
             imgsrc: 'http://qiniu.tecclub.cn/2020/08/11/15971360865f325cd61389a.jpg',
             age: 28,
             weight: 150,
             height: 160,
             address: '浙江省-杭州市'
           }
-        ],
-        options2: [{
-          value: '江苏',
-          label: '江苏',
-          children: [{
-              value: '南京',
-              label: '南京'
-            },
-            {
-              value: '扬州',
-              label: '扬州'
-            },
-            {
-              value: '连云港',
-              label: '连云港'
-            }
-          ]
-        }, {
-          label: '浙江',
-          children: []
-        }],
+        ]
       }
     },
     methods: {
-      addressChange(picker) {
-        console.log(picker)
+      toVip() {
+        this.$router.push({
+          path: '/rise_vip'
+        })
       },
-      getAddress(aaa) {
-        console.log(aaa)
+      getAddress(addressArr) {
+        if (addressArr.length > 0) {
+          var address = ''
+          for (let addr of addressArr) {
+            address += addr.name
+          }
+          address == ''? address='请选择':''
+          this.address = address
+        }
+        this.showPopup()
+      },
+      cancelAddress(){
+        this.showPopup()
       },
       showPopup() {
-        this.address_show = true
+        this.address_show = !this.address_show
       },
       infinite() {
-        let that = this
-        setTimeout(() => {
-          that.$refs.indexscroller.finishInfinite(true);
-        }, 1000)
+        new Promise((resolve, reject) => {
+          if (this.myid < 1344) {
+            this.myid++
+            this.myGirls.push({
+              id: this.myid,
+              imgsrc: 'http://qiniu.tecclub.cn/2020/08/11/15971360865f325cd61389a.jpg',
+              age: 28,
+              weight: 150,
+              height: 160,
+              address: '浙江省-杭州市' + this.myid
+            })
+          }
+          resolve('success')
+        }).then(res => {
+          this.$refs.indexscroller.finishInfinite(true)
+        })
       },
       handleItemChange(val) {
         console.log('active item:', val);
       },
-      sweetgirl() {
-        ImagePreview(['http://qiniu.tecclub.cn/2020/08/11/15971360865f325cd61389a.jpg'])
+      sweetgirl(id) {
+        const viewer = new Viewer(document.getElementById(id), {
+          navbar: false,
+          toolbar: false,
+          button: false,
+          title: false
+        })
       },
       getMeiMei() {
         this.show = !this.show
@@ -279,6 +224,9 @@
           clipboard.destroy()
         })
       },
+    },
+    mounted(){
+
     }
   }
 </script>
@@ -292,7 +240,7 @@
       width: 92%;
       margin: auto;
       font-size: .8rem;
-      padding: .5rem 0;
+      padding: 1rem 0 0.5rem;
       letter-spacing: .1rem;
 
       &>div {
@@ -301,12 +249,13 @@
         align-items: center;
 
         div:focus {
-
           outline-color: red !important;
         }
 
         .iconfont {
           margin-right: .3rem;
+          color: #FFB929;
+          font-weight: bold;
         }
 
         .iconshuaxinzhongjieban {
@@ -316,7 +265,7 @@
     }
 
     .top {
-      height: 3rem;
+      height: 6vh;
       width: 92%;
       margin: auto;
       display: flex;
@@ -371,6 +320,7 @@
         background: white;
         padding: 2vw 2vw 0;
         height: 108vw;
+        border-radius: 0.5rem;
 
         &:last-of-type {
           margin-bottom: 6rem !important;
@@ -459,120 +409,6 @@
       width: 100%;
       height: 3rem;
     }
-  }
-
-  .diag {
-    padding: 2rem 1rem;
-    letter-spacing: 1px;
-    text-align: center;
-    font-size: .9rem;
-  }
-
-  .btn {
-    margin: auto;
-    display: block;
-    width: 100%;
-  }
-
-  /deep/ .van-button__content {
-    justify-content: center;
-  }
-
-  /deep/ ._v-content{
-    padding-bottom: 15vh;
-  }
-
-  /deep/ .el-radio__label {
-    font-size: 1rem;
-  }
-
-  .el-cascader {
-    width: 10rem;
-  }
-
-  /deep/ .el-input {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  /deep/ .el-input__inner {
-    background: transparent;
-    border: 0;
-    padding: 0;
-    color: black;
-  }
-
-  /deep/ .el-input__inner::-webkit-input-placeholder {
-    letter-spacing: .1rem;
-    color: black;
-    font-size: .8rem;
-  }
-
-  /deep/ .el-input__inner::-moz-input-placeholder {
-    letter-spacing: .1rem;
-    color: black;
-    font-size: .8rem;
-  }
-
-  /deep/ .el-input__inner::-ms-input-placeholder {
-    letter-spacing: .1rem;
-    color: black;
-    font-size: .8rem;
-  }
-
-
-  /deep/ .van-dropdown-menu:focus {
-    border: red !important;
-  }
-
-  /deep/ .van-dropdown-menu__bar:focus {
-    border: red !important;
-  }
-
-  /deep/ .van-dropdown-menu__item:focus {
-    border: red !important;
-  }
-
-  /deep/ .van-dropdown-menu__bar {
-    background-color: transparent !important;
-    box-shadow: none;
-  }
-
-  /deep/ .van-dropdown-menu__title--active {
-    color: #FFB929;
-  }
-
-  /deep/ .van-dropdown-item__option--active {
-    color: #FFB929;
-  }
-
-  /deep/ .van-dropdown-item__icon {
-    color: #FFB929;
-  }
-
-
-
-  /deep/ .van-image-preview__index {
-    color: red !important;
-  }
-
-  /deep/ .van-button--plain {
-    background-color: transparent;
-  }
-
-  /deep/ .van-button__content {
-    display: flex;
-    align-items: center;
-  }
-
-  /deep/ .van-icon__image {
-    width: 1rem;
-    margin-right: 0.3rem;
-  }
-
-  /deep/ .van-button {
-    padding: 0 1rem !important;
   }
 
   .wrapper {
@@ -675,4 +511,125 @@
 
     }
   }
+
+
+  .diag {
+    padding: 2rem 1rem;
+    letter-spacing: 1px;
+    text-align: center;
+    font-size: .9rem;
+  }
+
+  .btn {
+    margin: auto;
+    display: block;
+    width: 100%;
+  }
+
+  /deep/ .van-button__content {
+    justify-content: center;
+  }
+
+  /deep/ ._v-content {
+    padding-bottom: 15vh;
+  }
+
+  /deep/ .el-radio__label {
+    font-size: 1rem;
+  }
+
+  /deep/ .el-cascader {
+    width: 10rem;
+  }
+
+  /deep/ .el-input {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /deep/ .el-input__inner {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: black;
+  }
+
+  /deep/ .el-input__inner::-webkit-input-placeholder {
+    letter-spacing: .1rem;
+    color: black;
+    font-size: .8rem;
+  }
+
+  /deep/ .el-input__inner::-moz-input-placeholder {
+    letter-spacing: .1rem;
+    color: black;
+    font-size: .8rem;
+  }
+
+  /deep/ .el-input__inner::-ms-input-placeholder {
+    letter-spacing: .1rem;
+    color: black;
+    font-size: .8rem;
+  }
+
+
+  /deep/ .van-dropdown-menu:focus {
+    border: red !important;
+  }
+
+  /deep/ .van-dropdown-menu__bar:focus {
+    border: red !important;
+  }
+
+  /deep/ .van-dropdown-menu__item:focus {
+    border: red !important;
+  }
+
+  /deep/ .van-dropdown-menu__bar {
+    background-color: transparent !important;
+    box-shadow: none;
+  }
+
+  /deep/ .van-dropdown-menu__title--active {
+    color: #FFB929;
+  }
+
+  /deep/ .van-dropdown-item__option--active {
+    color: #FFB929;
+  }
+
+  /deep/ .van-dropdown-item__icon {
+    color: #FFB929;
+  }
+
+  /deep/ .van-button--plain {
+    background-color: transparent;
+  }
+
+  /deep/ .van-button__content {
+    display: flex;
+    align-items: center;
+  }
+
+  /deep/ .van-icon__image {
+    width: 1rem;
+    margin-right: 0.3rem;
+  }
+
+  /deep/ .van-button {
+    padding: 0 1rem !important;
+  }
+
+  /deep/ .van-picker__toolbar button {
+    border: none;
+    background: white;
+  }
+
+  /deep/ .van-image__img {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+  }
+
 </style>
