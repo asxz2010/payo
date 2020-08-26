@@ -3,21 +3,10 @@
     <!-- <div class="header">
 111
     </div> -->
-    <transition mode="out-in" :name="transitionName">
-      <router-view />
+    <transition :name="transitionName">
+      <router-view class="page"/>
     </transition>
-    <!-- <mt-tabbar v-model="selected" v-show="flag">
-      <mt-tab-item id="撩妹" @click.native="toTabbar('index')">
-        <img slot="icon" src="@/assets/images/team.png">
-        <img slot="icon" src="@/assets/images/teamAct.png">
-        撩妹
-      </mt-tab-item>
-      <mt-tab-item id="我的" @click.native="toTabbar('mine')">
-        <img slot="icon" src="@/assets/images/mine.png">
-        <img slot="icon" src="@/assets/images/mineAct.png">
-        我的
-      </mt-tab-item>
-    </mt-tabbar> -->
+
     <div class="tabbar" v-show="flag">
       <div @click="chooseTab(0)">
         <div v-show="!tabFlag">
@@ -46,7 +35,11 @@
 <script>
   const route_LEV = {
     '/index': 0,
-    '/mine': 1
+    '/mine': 1,
+    '/info': 2,
+    '/marry': 2,
+    '/rise_vip': 2,
+    '/error': 2,
   }
   export default {
     name: 'App',
@@ -88,6 +81,8 @@
         let LEVEL = this.LEVEL
         let toDepth = LEVEL[to.path]
         let fromDepth = LEVEL[from.path]
+        console.log(toDepth)
+        console.log(fromDepth)
         if ((toDepth === -1 || fromDepth === -1) || toDepth === fromDepth) {
           this.transitionName = ''
         } else {
@@ -102,6 +97,11 @@
 </script>
 
 <style lang="scss">
+  .page{
+    position: absolute;
+    width: 100%;
+    transition: all .5s linear;
+  }
   * {
     box-sizing: border-box;
   }
@@ -110,7 +110,6 @@
   body {
     margin: 0;
     background-color: #f4f4f4 !important;
-    // overflow: hidden;
   }
 
   ul {
@@ -131,26 +130,28 @@
     height: 400px;
   }
 
-  .fade-left-enter-active,
-  .fade-right-enter-active {
-    transition: all .08 ease
-  }
-
+.fade-left-enter-active,
+  .fade-right-enter-active,
   .fade-left-leave-active,
   .fade-right-leave-active {
-    transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0)
+    // transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0)
+    transition: all 0.5s ease;
   }
 
   .fade-left-leave-to,
   .fade-right-enter {
-    transform: translate3d(-100%, 0, 0);
-    opacity: 0
+    // transform: translate3d(-100%, 0, 0);
+    // opacity: 0
+    opacity: 0;
+    transform: translateX(-100%);
   }
 
   .fade-left-enter,
   .fade-right-leave-to {
-    transform: translate3d(50%, 0, 0);
-    opacity: 0
+    // transform: translate3d(50%, 0, 0);
+    // opacity: 0
+    opacity: 0;
+    transform: translateX(100%);
   }
 
   #app {
@@ -158,6 +159,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: #2c3e50;
+    overflow-x: hidden;
 
     .header {
       width: 100%;

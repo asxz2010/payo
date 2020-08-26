@@ -25,8 +25,8 @@
           </div>
           <div class="liao_btn">
             <div>
-              <!-- <img src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="" @click="getMeiMei" > -->
-              <img src="http://qiniu.tecclub.cn/payo/btn_signed@2x.png" alt="" >
+              <img src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="" @click="getMeiMei" >
+              <!-- <img src="http://qiniu.tecclub.cn/payo/btn_signed@2x.png" alt="" > -->
             </div>
           </div>
           <div class="info">
@@ -90,9 +90,6 @@
   import Viewer from 'viewerjs'
   import 'viewerjs/dist/viewer.css'
   import area from '@/assets/js/area.js'
-  import {
-    ImagePreview
-  } from 'vant';
   export default {
     data() {
       return {
@@ -574,34 +571,34 @@
   }
 
 
-  // /deep/ .van-dropdown-menu:focus {
-  //   border: red !important;
-  // }
+  /deep/ .van-dropdown-menu:focus {
+    border: red !important;
+  }
 
-  // /deep/ .van-dropdown-menu__bar:focus {
-  //   border: red !important;
-  // }
+  /deep/ .van-dropdown-menu__bar:focus {
+    border: red !important;
+  }
 
-  // /deep/ .van-dropdown-menu__item:focus {
-  //   border: red !important;
-  // }
+  /deep/ .van-dropdown-menu__item:focus {
+    border: red !important;
+  }
 
-  // /deep/ .van-dropdown-menu__bar {
-  //   background-color: transparent !important;
-  //   box-shadow: none;
-  // }
+  /deep/ .van-dropdown-menu__bar {
+    background-color: transparent !important;
+    box-shadow: none;
+  }
 
-  // /deep/ .van-dropdown-menu__title--active {
-  //   color: #FFB929;
-  // }
+  /deep/ .van-dropdown-menu__title--active {
+    color: #FFB929;
+  }
 
-  // /deep/ .van-dropdown-item__option--active {
-  //   color: #FFB929;
-  // }
+  /deep/ .van-dropdown-item__option--active {
+    color: #FFB929;
+  }
 
-  // /deep/ .van-dropdown-item__icon {
-  //   color: #FFB929;
-  // }
+  /deep/ .van-dropdown-item__icon {
+    color: #FFB929;
+  }
 
   /deep/ .van-button--plain {
     background-color: transparent;

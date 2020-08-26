@@ -31,7 +31,6 @@ Vue.use(Cascader).use(Radio)
 import {
   DropdownMenu,
   DropdownItem,
-  ImagePreview,
   Overlay,
   Button,
   Dialog,
@@ -39,7 +38,7 @@ import {
   Area,
   Popup
 } from 'vant'
-Vue.use(DropdownMenu).use(DropdownItem).use(ImagePreview).use(Overlay).use(Button).use(Dialog).use(Notify).use(Area).use(Popup)
+Vue.use(DropdownMenu).use(DropdownItem).use(Overlay).use(Button).use(Dialog).use(Notify).use(Area).use(Popup)
 
 // import iView from 'iview'
 // import 'iview/dist/styles/iview.css'
