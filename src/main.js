@@ -4,29 +4,16 @@ import router from './router'
 
 Vue.config.productionTip = false
 
+import '@/assets/css/iconfont.css'
+
 import clipboard from 'clipboard'
 Vue.prototype.$clipboard = clipboard
 
 import common from '@/lib/common.vue'
 Vue.prototype.$global = common
 
-import '@/assets/css/iconfont.css'
-
 import VueScroller from 'vue-scroller'
 Vue.use(VueScroller)
-
-import {
-  Tabbar,
-  TabItem
-} from 'mint-ui'
-Vue.component(Tabbar.name, Tabbar)
-Vue.component(TabItem.name, TabItem)
-
-import {
-  Cascader,
-  Radio
-} from 'element-ui'
-Vue.use(Cascader).use(Radio)
 
 import {
   DropdownMenu,
@@ -36,9 +23,32 @@ import {
   Dialog,
   Notify,
   Area,
-  Popup
+  Popup,
+  Toast
 } from 'vant'
-Vue.use(DropdownMenu).use(DropdownItem).use(Overlay).use(Button).use(Dialog).use(Notify).use(Area).use(Popup)
+Vue.use(DropdownMenu).use(DropdownItem).use(Overlay).use(Button).use(Dialog).use(Notify).use(Area).use(Popup).use(Toast)
+
+import {
+  Cascader,
+  Radio
+} from 'element-ui'
+Vue.use(Cascader).use(Radio)
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.title) {
+    document.title = to.meta.title
+  }
+  if (to.meta.auth) {
+    if (common.getCookie('username')) {
+      next()
+    } else {
+      document.title = from.meta.title
+      next('/login')
+    }
+  } else {
+    next()
+  }
+})
 
 // import iView from 'iview'
 // import 'iview/dist/styles/iview.css'
@@ -65,21 +75,6 @@ Vue.use(DropdownMenu).use(DropdownItem).use(Overlay).use(Button).use(Dialog).use
 // import axios from 'axios'
 // Vue.prototype.$axios = axios
 
-// router.beforeEach((to, from, next) => {
-//   if (to.meta.title) {
-//     document.title = to.meta.title
-//   }
-//   if (to.meta.requiresAuth) {
-//     if (localStorage.getItem('user')) {
-//       next()
-//     } else {
-//       document.title = from.meta.title
-//       next('/login')
-//     }
-//   } else {
-//     next()
-//   }
-// })
 
 new Vue({
   el: '#app',

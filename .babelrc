@@ -4,17 +4,12 @@
   ],
   "plugins": [["component", [
     {
-      "libraryName": "mint-ui",
-      "style": true
-    },
-    {
       "libraryName": "element-ui",
       "styleLibraryName": "theme-chalk"
-    },
-    {
+    }
+  ]],["import", {
       "libraryName": "vant",
       "libraryDirectory": "es",
-      "style": false
-    }
-  ]]]
+      "style": true
+    }]]
 }

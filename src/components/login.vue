@@ -7,17 +7,17 @@
           <p @click="showPopup">{{ address }}</p>
         </li>
         <li>
-          <input type="text" placeholder="个人编号">
+          <input type="text" v-model="id" placeholder="个人编号">
         </li>
         <li class="l-radio">
-          <el-radio v-model="radio" label="1" @change="getRadio">男</el-radio>
-          <el-radio v-model="radio" label="2" @change="getRadio">女</el-radio>
+          <el-radio v-model="sex" label="1">男</el-radio>
+          <el-radio v-model="sex" label="2">女</el-radio>
         </li>
         <li>
-          <input type="text" placeholder="邮箱 (请认真填写,方便找回)">
+          <input type="email" v-model="email" placeholder="邮箱 (请认真填写,方便找回)">
         </li>
       </ul>
-      <div class="btn" @click="toIndex">
+      <div class="btn" @click="login">
         <img src="http://qiniu.tecclub.cn/payo/btn_yuehui@2x.png" alt="开始约会">
       </div>
       <div class="contact">
@@ -42,15 +42,20 @@
 
 <script>
   import area from '@/assets/js/area.js'
+  import {
+    Toast
+  } from 'vant'
   export default {
     name: 'app',
     data() {
       return {
+        address: '所在地区', // 地址
+        id: '', // 个人编号
+        sex: '1', // 男1 女2
+        email: '', // 邮箱
         areaList: area,
-        address: '请选择',
         address_show: false,
         html_height: 0,
-        radio: '1',
       };
     },
     created() {
@@ -74,20 +79,47 @@
       showPopup() {
         this.address_show = !this.address_show
       },
-      getRadio() {
-        if (this.radio == 1) {
-          console.log('男')
-        } else if (this.radio == 2) {
-          console.log('女')
+      login() {
+        var message
+        if (this.address === '所在地区' || this.address === '') {
+          message = '请选择地区'
+        } else if (this.id.split(" ").join('').length === 0 || this.address === '') {
+          message = '请填写个人编号'
+        } else if (!this.$global.check_email.test(this.email)) {
+          message = '邮箱格式有误或为空'
+        } else {
+          Toast.loading({
+            message: '登录中...',
+            forbidClick: true,
+            duration: 1000
+          })
+          setTimeout(() => {
+            var username = {
+              id: 1,
+              name: '小三',
+              age: 1,
+            }
+            var username = JSON.stringify(username)
+            this.$global.setCookie('username', username, 60 * 1)
+            Toast.success({
+              message: '登录成功',
+              duration: 1000
+            })
+            setTimeout(() => {
+              this.$router.push({
+                path: '/index'
+              })
+            }, 1000)
+          }, 1000)
+
+          return
         }
-      },
-      toIndex() {
-        this.$router.push({
-          path: '/index'
+        this.$notify({
+          message,
+          background: '#FF976A',
+          color: 'white',
+          duration: 1500
         })
-      },
-      handleItemChange(val) {
-        console.log('active item:', val);
       }
     }
   }

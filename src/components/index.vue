@@ -13,7 +13,7 @@
     </div>
     <div class="top">
       <div class="inp">
-        <input type="number" name="" placeholder="输入妹子号码">
+        <input type="number" placeholder="输入妹子编号" @keyup.13="findMeiMei">
       </div>
     </div>
     <div class="middle">
@@ -25,7 +25,7 @@
           </div>
           <div class="liao_btn">
             <div>
-              <img src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="" @click="getMeiMei" >
+              <img src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="" @click="getMeiMei">
               <!-- <img src="http://qiniu.tecclub.cn/payo/btn_signed@2x.png" alt="" > -->
             </div>
           </div>
@@ -93,7 +93,7 @@
   export default {
     data() {
       return {
-        address: '请选择',
+        address: '请选择地区',
         koulin: '七夕七夕',
         show: false,
         flag: false,
@@ -140,6 +140,10 @@
       }
     },
     methods: {
+      findMeiMei(){
+        console.log('找到了一个妹妹')
+        alert('找到了一个妹妹')
+      },
       toVip() {
         this.$router.push({
           path: '/rise_vip'
@@ -151,12 +155,12 @@
           for (let addr of addressArr) {
             address += addr.name
           }
-          address == ''? address='请选择':''
+          address == '' ? address = '请选择' : ''
           this.address = address
         }
         this.showPopup()
       },
-      cancelAddress(){
+      cancelAddress() {
         this.showPopup()
       },
       showPopup() {
@@ -222,7 +226,7 @@
         })
       },
     },
-    mounted(){
+    mounted() {
 
     }
   }
@@ -236,8 +240,8 @@
       align-items: center;
       width: 92%;
       margin: auto;
-      font-size: .8rem;
-      padding: 1rem 0 0.5rem;
+      font-size: 1rem;
+      padding: 0.5rem 0 0;
       letter-spacing: .1rem;
 
       &>div {
@@ -274,6 +278,7 @@
         input {
           width: 100%;
           padding: .6rem 1rem;
+          text-align: center;
           background: white;
           border-radius: 4rem;
           border: 0;
@@ -285,7 +290,7 @@
           text-align: center;
           color: #ccc;
           font-weight: bold;
-          font-size: 1rem;
+          font-size: .9rem;
         }
 
         input::-moz-input-placeholder {
@@ -293,7 +298,7 @@
           text-align: center;
           color: #ccc;
           font-weight: bold;
-          font-size: 1rem;
+          font-size: .9rem;
         }
 
         input::-ms-input-placeholder {
@@ -301,7 +306,7 @@
           text-align: center;
           color: #ccc;
           font-weight: bold;
-          font-size: 1rem;
+          font-size: .9rem;
         }
       }
     }
@@ -600,6 +605,10 @@
     color: #FFB929;
   }
 
+  /deep/ .van-popup--top {
+    // left: 50%;
+  }
+
   /deep/ .van-button--plain {
     background-color: transparent;
   }
@@ -628,5 +637,4 @@
     height: 100vh;
     position: fixed;
   }
-
 </style>

@@ -4,7 +4,7 @@
 111
     </div> -->
     <transition :name="transitionName">
-      <router-view class="page"/>
+      <router-view class="page" />
     </transition>
 
     <div class="tabbar" v-show="flag">
@@ -34,12 +34,13 @@
 
 <script>
   const route_LEV = {
-    '/index': 0,
-    '/mine': 1,
-    '/info': 2,
-    '/marry': 2,
-    '/rise_vip': 2,
-    '/error': 2,
+    '/login': 0,
+    '/index': 1,
+    '/mine': 2,
+    '/info': 3,
+    '/marry': 3,
+    '/rise_vip': 3,
+    '/error': 3,
   }
   export default {
     name: 'App',
@@ -81,8 +82,6 @@
         let LEVEL = this.LEVEL
         let toDepth = LEVEL[to.path]
         let fromDepth = LEVEL[from.path]
-        console.log(toDepth)
-        console.log(fromDepth)
         if ((toDepth === -1 || fromDepth === -1) || toDepth === fromDepth) {
           this.transitionName = ''
         } else {
@@ -90,18 +89,26 @@
         }
       },
       '$route.path': function(newVal) {
-        this.$route.path === '/index' || this.$route.path === '/mine' ? this.flag = true : this.flag = false
+        if (newVal === '/index') {
+          this.tabFlag = this.flag = true
+        } else if (newVal === '/mine') {
+          this.tabFlag = false
+          this.flag = true
+        }else{
+          this.flag = false
+        }
       }
     }
   }
 </script>
 
 <style lang="scss">
-  .page{
+  .page {
     position: absolute;
     width: 100%;
     transition: all .5s linear;
   }
+
   * {
     box-sizing: border-box;
   }
@@ -130,7 +137,7 @@
     height: 400px;
   }
 
-.fade-left-enter-active,
+  .fade-left-enter-active,
   .fade-right-enter-active,
   .fade-left-leave-active,
   .fade-right-leave-active {

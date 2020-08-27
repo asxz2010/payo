@@ -162,7 +162,7 @@
 
         .date {
           letter-spacing: 2px;
-          font-size: 3.2vw;
+          font-size: 4vw;
         }
 
       }
@@ -198,14 +198,14 @@
     .middle {
       ul {
         width: 95%;
-        margin: auto;
+        margin: 1rem auto;
 
         li {
           background: white;
           display: flex;
           justify-content: space-between;
           padding: .7rem 1rem;
-          font-size: 0.9rem;
+          font-size: 4vw;
           letter-spacing: .1rem;
           margin: .5rem 0;
           border-radius: .2rem;
