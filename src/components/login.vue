@@ -100,15 +100,13 @@
               age: 1,
             }
             var username = JSON.stringify(username)
-            this.$global.setCookie('username', username, 60 * 1)
+            this.$global.setCookie('username', username, 60 * 60)
             Toast.success({
               message: '登录成功',
               duration: 1000
             })
             setTimeout(() => {
-              this.$router.push({
-                path: '/index'
-              })
+              this.$router.push('/index')
             }, 1000)
           }, 1000)
 

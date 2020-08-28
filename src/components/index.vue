@@ -20,13 +20,13 @@
       <scroller :on-infinite="infinite" ref="indexscroller">
         <div class="wrap" v-for="g in myGirls" :key="g.id">
           <div class="content">
-            <img :src="g.imgsrc" alt="" :id="'img'+g.id" @mouseenter="sweetgirl('img'+g.id)">
-            <img src="http://qiniu.tecclub.cn/payo/biaoqian_s@2x.png" alt="">
+            <img :src="g.imgsrc" alt="PAYO社交" :id="'img'+g.id" @mouseenter="sweetgirl('img'+g.id)">
+            <img src="http://qiniu.tecclub.cn/payo/biaoqian_s@2x.png" alt="PAYO社交">
           </div>
           <div class="liao_btn">
             <div>
-              <img src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="" @click="getMeiMei">
-              <!-- <img src="http://qiniu.tecclub.cn/payo/btn_signed@2x.png" alt="" > -->
+              <img src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="PAYO社交" @click="getMeiMei">
+              <!-- <img src="http://qiniu.tecclub.cn/payo/btn_signed@2x.png" alt="PAYO社交" > -->
             </div>
           </div>
           <div class="info">
@@ -50,7 +50,7 @@
           <div class="d-4">
             <div class="d-1">
               <div class="tx">
-                <img src="http://51pyyy.cn/uploads/wxpayo/girl/logo-payo.png" alt="">
+                <img src="http://51pyyy.cn/uploads/wxpayo/girl/logo-payo.png" alt="PAYO社交">
                 <div class="forever">永</div>
               </div>
               <div class="leftchance">本月剩余: 3次</div>
@@ -68,13 +68,13 @@
           </div>
 
           <div class="d-5">
-            <img src="http://qiniu.tecclub.cn/payo/btn_baoming@2x.png" alt="" @click="getGirl">
+            <img src="http://qiniu.tecclub.cn/payo/btn_baoming@2x.png" alt="PAYO社交" @click="getGirl">
             <p>点击报名将扣除1次报名机会（至尊、私人不限）有其他问题请咨询客服</p>
           </div>
         </div>
       </div>
     </van-overlay>
-    <van-dialog v-model="flag" :show-confirm-button="false">
+    <van-dialog v-model="flag" :show-confirm-button="false" close-on-click-overlay>
       <p class="diag">{{ koulin }}</p>
       <van-button color="#FFB929" class="btn" @mouseenter.native="copy" ref="copyBtn" :data-clipboard-text="koulin">点击复制口令</van-button>
     </van-dialog>
@@ -140,15 +140,38 @@
       }
     },
     methods: {
-      findMeiMei(){
-        console.log('找到了一个妹妹')
+      /**
+       * 搜索妹妹
+       */
+      findMeiMei() {
         alert('找到了一个妹妹')
       },
+
+      /**
+       * 去升级
+       */
       toVip() {
-        this.$router.push({
-          path: '/rise_vip'
-        })
+        this.getMeiMei()
+        this.$dialog.confirm({
+            title: '升级',
+            message: '是否去升级?',
+            confirmButtonText: '去升级',
+            cancelButtonText: '暂不'
+          })
+          .then(() => {
+            this.$router.push({
+              path: '/rise_vip'
+            })
+          })
+          .catch(() => {
+
+          })
       },
+
+      /**
+       * 获取地区
+       * @param {Array} addressArr (地址)
+       */
       getAddress(addressArr) {
         if (addressArr.length > 0) {
           var address = ''
@@ -160,12 +183,24 @@
         }
         this.showPopup()
       },
+
+      /**
+       * 取消选择地区
+       */
       cancelAddress() {
         this.showPopup()
       },
+
+      /**
+       * 显示/隐藏地区
+       */
       showPopup() {
         this.address_show = !this.address_show
       },
+
+      /**
+       * 上拉加载
+       */
       infinite() {
         new Promise((resolve, reject) => {
           if (this.myid < 1344) {
@@ -184,9 +219,11 @@
           this.$refs.indexscroller.finishInfinite(true)
         })
       },
-      handleItemChange(val) {
-        console.log('active item:', val);
-      },
+
+      /**
+       * 图片预览
+       * @param {number} id (图片id)
+       */
       sweetgirl(id) {
         const viewer = new Viewer(document.getElementById(id), {
           navbar: false,
@@ -195,13 +232,25 @@
           title: false
         })
       },
+
+      /**
+       * 显示/隐藏撩一下弹框
+       */
       getMeiMei() {
         this.show = !this.show
       },
+      
+      /**
+       * 显示/隐藏复制口令弹框
+       */
       getGirl() {
         this.getMeiMei()
         this.flag = !this.flag
       },
+
+      /**
+       * 点击复制口令
+       */
       copy() {
         const clipboard = new this.$clipboard(this.$refs.copyBtn)
         clipboard.on('success', () => {
@@ -224,9 +273,7 @@
           this.flag = false
           clipboard.destroy()
         })
-      },
-    },
-    mounted() {
+      }
 
     }
   }

@@ -3,68 +3,68 @@
     <div class="wrap">
       <p>被翻日期: <span>2020年08月18日</span></p>
       <div>
-        <img src="http://qiniu.tecclub.cn/payo/img_chenggong_nv @2x.png" alt="">
+        <img src="http://qiniu.tecclub.cn/payo/img_chenggong_nv @2x.png" alt="PAYO社交">
         <div class="info">
           <p>编号: <span>M7332</span></p>
           <p>地址: <span>江苏-南京</span></p>
         </div>
       </div>
-      <img src="http://qiniu.tecclub.cn/payo/icon_liaomeichengg_g@2x.png" alt="">
+      <img src="http://qiniu.tecclub.cn/payo/icon_liaomeichengg_g@2x.png" alt="PAYO社交">
     </div>
     <div class="wrap">
       <p>被翻日期: <span>2020年08月18日</span></p>
       <div>
-        <img src="http://qiniu.tecclub.cn/payo/img_chenggong_nv @2x.png" alt="">
+        <img src="http://qiniu.tecclub.cn/payo/img_chenggong_nv @2x.png" alt="PAYO社交">
         <div class="info">
           <p>编号: <span>M7332</span></p>
           <p>地址: <span>江苏-南京</span></p>
         </div>
       </div>
-      <img src="http://qiniu.tecclub.cn/payo/icon_liaomeichengg_g@2x.png" alt="">
+      <img src="http://qiniu.tecclub.cn/payo/icon_liaomeichengg_g@2x.png" alt="PAYO社交">
     </div>
     <div class="wrap">
       <p>被翻日期: <span>2020年08月18日</span></p>
       <div>
-        <img src="http://qiniu.tecclub.cn/payo/img_chenggong_nv @2x.png" alt="">
+        <img src="http://qiniu.tecclub.cn/payo/img_chenggong_nv @2x.png" alt="PAYO社交">
         <div class="info">
           <p>编号: <span>M7332</span></p>
           <p>地址: <span>江苏-南京</span></p>
         </div>
       </div>
-      <img src="http://qiniu.tecclub.cn/payo/icon_liaomeichengg_g@2x.png" alt="">
+      <img src="http://qiniu.tecclub.cn/payo/icon_liaomeichengg_g@2x.png" alt="PAYO社交">
     </div>
     <div class="wrap">
       <p>被翻日期: <span>2020年08月18日</span></p>
       <div>
-        <img src="http://qiniu.tecclub.cn/payo/img_chenggong_nv @2x.png" alt="">
+        <img src="http://qiniu.tecclub.cn/payo/img_chenggong_nv @2x.png" alt="PAYO社交">
         <div class="info">
           <p>编号: <span>M7332</span></p>
           <p>地址: <span>江苏-南京</span></p>
         </div>
       </div>
-      <img src="http://qiniu.tecclub.cn/payo/icon_liaomeichengg_g@2x.png" alt="">
+      <img src="http://qiniu.tecclub.cn/payo/icon_liaomeichengg_g@2x.png" alt="PAYO社交">
     </div>
     <div class="wrap">
       <p>被翻日期: <span>2020年08月18日</span></p>
       <div>
-        <img src="http://qiniu.tecclub.cn/payo/img_chenggong_nv @2x.png" alt="">
+        <img src="http://qiniu.tecclub.cn/payo/img_chenggong_nv @2x.png" alt="PAYO社交">
         <div class="info">
           <p>编号: <span>M7332</span></p>
           <p>地址: <span>江苏-南京</span></p>
         </div>
       </div>
-      <img src="http://qiniu.tecclub.cn/payo/icon_liaomeichengg_g@2x.png" alt="">
+      <img src="http://qiniu.tecclub.cn/payo/icon_liaomeichengg_g@2x.png" alt="PAYO社交">
     </div>
     <div class="wrap">
       <p>被翻日期: <span>2020年08月18日</span></p>
       <div>
-        <img src="http://qiniu.tecclub.cn/payo/img_chenggong_nv @2x.png" alt="">
+        <img src="http://qiniu.tecclub.cn/payo/img_chenggong_nv @2x.png" alt="PAYO社交">
         <div class="info">
           <p>编号: <span>M7332</span></p>
           <p>地址: <span>江苏-南京</span></p>
         </div>
       </div>
-      <img src="http://qiniu.tecclub.cn/payo/icon_liaomeichengg_g@2x.png" alt="">
+      <img src="http://qiniu.tecclub.cn/payo/icon_liaomeichengg_g@2x.png" alt="PAYO社交">
     </div>
   </div>
 </template>

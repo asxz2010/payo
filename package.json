@@ -27,7 +27,7 @@
     "viewerjs": "^1.6.1",
     "vue": "^2.5.2",
     "vue-canvas-poster": "^1.1.1",
-    "vue-router": "^3.0.1",
+    "vue-router": "^3.4.3",
     "vuex": "^3.5.1"
   },
   "devDependencies": {

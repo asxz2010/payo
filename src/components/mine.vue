@@ -84,12 +84,6 @@
     },
     methods: {
       toPages(str){
-        // if(str === 'rise_vip'){
-        //   window.location.replace(str)
-        // }
-        // else{
-        //   this.$router.push({path:str})
-        // }
         str? this.$router.push({path:str}):''
       }
     }
@@ -132,7 +126,6 @@
 
       .wrap {
         width: 74vw;
-        /* height: 53%; */
         letter-spacing: 1px;
         position: absolute;
         left: 50%;

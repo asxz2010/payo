@@ -1,6 +1,6 @@
 <template>
   <div class="info-container">
-    <img src="http://py.tecclub.cn/boy-archives/archives/20200106145404323750.png" alt="" :style="{height:html_height+'px'}">
+    <img src="http://py.tecclub.cn/boy-archives/archives/20200106145404323750.png" alt="PAYO社交" :style="{height:html_height+'px'}">
   </div>
 </template>
 

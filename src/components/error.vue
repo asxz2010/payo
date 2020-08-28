@@ -1,7 +1,7 @@
 <template>
   <div class="err-container" :style="{height:html_height+'px'}">
     <div>
-      <img src="@/assets/images/err.png" alt="">
+      <img src="@/assets/images/err.png" alt="PAYO社交">
       <p>很抱歉，您的会员信息有误，请联系微信客服!</p>
     </div>
     <p>客服微信号: <span>1236547</span></p>

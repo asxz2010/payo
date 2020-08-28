@@ -1,7 +1,7 @@
 <template>
   <div class="rise-container" :style="{height: html_height+'px'}">
     <div>
-      <img src="http://qiniu.tecclub.cn/2019/09/26/12_d63b0777bcbb0713e01e1bbb670f1d11.jpg" alt="">
+      <img src="http://qiniu.tecclub.cn/2019/09/26/12_d63b0777bcbb0713e01e1bbb670f1d11.jpg" alt="PAYO社交">
       <p>添加 PAYO社交 客服微信详情咨询{{html_height}}</p>
     </div>
   </div>

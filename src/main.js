@@ -40,6 +40,7 @@ router.beforeEach((to, from, next) => {
   }
   if (to.meta.auth) {
     if (common.getCookie('username')) {
+      // if (true) {
       next()
     } else {
       document.title = from.meta.title
