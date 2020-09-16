@@ -5,6 +5,8 @@
   // 窗口高度
   const html_height = window.innerHeight
 
+  const api = 'http://api.51pyvip.com/'
+
   // 验证邮箱格式
   const check_email = /^[a-zA-Z0-9]+@[a-z0-9]{2,5}\.[a-z]{2,3}(\.[a-z]{2,3})?$/
 
@@ -35,6 +37,7 @@
   }
 
   export default {
+    api,
     html_height,
     check_email,
     setCookie,

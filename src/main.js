@@ -9,6 +9,9 @@ import '@/assets/css/iconfont.css'
 import clipboard from 'clipboard'
 Vue.prototype.$clipboard = clipboard
 
+import md5 from 'js-md5'
+Vue.prototype.$md5 = md5
+
 import common from '@/lib/common.vue'
 Vue.prototype.$global = common
 
@@ -73,9 +76,9 @@ router.beforeEach((to, from, next) => {
 // import vueCanvasPoster from 'vue-canvas-poster'
 // Vue.use(vueCanvasPoster)
 
-// import axios from 'axios'
-// Vue.prototype.$axios = axios
-
+import axios from 'axios'
+Vue.prototype.$axios = axios
+// axios.defaults.baseURL = 'http://api.51pyvip.com/'
 
 new Vue({
   el: '#app',

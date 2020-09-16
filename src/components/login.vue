@@ -41,7 +41,7 @@
 </template>
 
 <script>
-  import area from '@/assets/js/area.js'
+  // import area from '@/assets/js/area.js'
   import {
     Toast
   } from 'vant'
@@ -53,13 +53,16 @@
         id: '', // 个人编号
         sex: '1', // 男1 女2
         email: '', // 邮箱
-        areaList: area,
+        areaList: {},
         address_show: false,
         html_height: 0,
       };
     },
     created() {
       this.html_height = this.$global.html_height
+    },
+    mounted() {
+      this.init()
     },
     methods: {
       getAddress(addressArr) {
@@ -79,46 +82,117 @@
       showPopup() {
         this.address_show = !this.address_show
       },
-      login() {
-        var message
-        if (this.address === '所在地区' || this.address === '') {
-          message = '请选择地区'
-        } else if (this.id.split(" ").join('').length === 0 || this.address === '') {
-          message = '请填写个人编号'
-        } else if (!this.$global.check_email.test(this.email)) {
-          message = '邮箱格式有误或为空'
-        } else {
-          Toast.loading({
-            message: '登录中...',
-            forbidClick: true,
-            duration: 1000
-          })
-          setTimeout(() => {
-            var username = {
-              id: 1,
-              name: '小三',
-              age: 1,
-            }
-            var username = JSON.stringify(username)
-            this.$global.setCookie('username', username, 60 * 60)
-            Toast.success({
-              message: '登录成功',
-              duration: 1000
-            })
-            setTimeout(() => {
-              this.$router.push('/index')
-            }, 1000)
-          }, 1000)
+      init() {
+        this.$axios.get(this.$global.api + 'area/index', {
+          params: {
+            // UserNumber: UserNumber,
+            // Token: Token,
+            // Timestamp: Timestamp,
+            // Sex: Sex
+          },
+          headers: {
+            // 'Content-Type': 'application/json',
 
-          return
-        }
-        this.$notify({
-          message,
-          background: '#FF976A',
-          color: 'white',
-          duration: 1500
+          }
+        }).then(response => {
+          // 请求成功
+          let res = response.data;
+          let areaArr = res.data.area
+          var area2 = {}
+          var provinceStr = '' // 省字符串
+          var province_list
+          var num = 0 // 计数
+          new Promise((resolve, reject) => {
+            for (let a of areaArr) {
+              num++
+              provinceStr = provinceStr + '"' + a.id + '":"' + a.title + '",'
+              if (areaArr.length == num) {
+                resolve(provinceStr)
+              }
+            }
+          }).then((res) => {
+            provinceStr = res.substring(0, res.length-1)
+            provinceStr = '{' + provinceStr + '}'
+            province_list = JSON.parse(provinceStr)
+            this.areaList.province_list = province_list
+            console.log(province_list)
+          }).catch((err) => {
+            console.log(err)
+          })
+
+        }).catch(error => {
+          // 请求失败，
+          console.log(error)
         })
+      },
+      login() {
+        var Salt = '51payo'
+        var UserNumber = 10548
+        var Timestamp = Math.round(new Date() / 1000)
+        var Sex = 1
+        var Token = this.$md5(UserNumber + Salt + Timestamp)
+        console.log('Timestamp:' + Timestamp)
+        console.log('Token:' + Token)
+
+
+        // $.ajax({
+        //     type: 'GET',
+        //     url: 'http://api.51pyvip.com/area/index',
+        //     dataType: 'json',
+        //     success: function(res){
+        //     	$('.res').text(JSON.stringify(res.data));
+        //        console.log('res', res);
+        //     },
+        //     error: function(xhr, type){
+        //         alert('Ajax error!');
+        //         me.resetload();
+        //     }
+        // });
+
+
+
+
+        // console.log(this.$md5('llzsy1125'))
+        // var message
+        // if (this.address === '所在地区' || this.address === '') {
+        //   message = '请选择地区'
+        // } else if (this.id.split(" ").join('').length === 0 || this.address === '') {
+        //   message = '请填写个人编号'
+        // } else if (!this.$global.check_email.test(this.email)) {
+        //   message = '邮箱格式有误或为空'
+        // } else {
+        //   Toast.loading({
+        //     message: '登录中...',
+        //     forbidClick: true,
+        //     duration: 1000
+        //   })
+        //   setTimeout(() => {
+        //     var username = {
+        //       id: 1,
+        //       name: '小三',
+        //       age: 1,
+        //     }
+        //     var username = JSON.stringify(username)
+        //     this.$global.setCookie('username', username, 60 * 60)
+        //     Toast.success({
+        //       message: '登录成功',
+        //       duration: 1000
+        //     })
+        //     setTimeout(() => {
+        //       this.$router.push('/index')
+        //     }, 1000)
+        //   }, 1000)
+
+        //   return
+        // }
+        // this.$notify({
+        //   message,
+        //   background: '#FF976A',
+        //   color: 'white',
+        //   duration: 1500
+        // })
       }
+
     }
   }
 </script>

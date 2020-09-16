@@ -5,12 +5,23 @@
 const path = require('path')
 
 module.exports = {
-  dev: {
+    dev: {
 
-    // Paths
-    assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
-    proxyTable: {},
+      // Paths
+      assetsSubDirectory: 'static',
+      assetsPublicPath: '/',
+      proxyTable: {
+        // '/api': {
+        //   // target:'http://jsonplaceholder.typicode.com',
+        //   target: 'http://api.51pyvip.com/',
+        //   changeOrigin: true,
+        //   pathRewrite: {
+        //     '/api': ''
+        //   }
+        // }
+
+      }
+    },
 
     // Various Dev Server settings
     // host: 'localhost', // can be overwritten by process.env.HOST
