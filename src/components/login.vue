@@ -50,6 +50,7 @@
     data() {
       return {
         address: '所在地区', // 地址
+        province: 0, // 地区code
         id: '', // 个人编号
         sex: '1', // 男1 女2
         email: '', // 邮箱
@@ -68,11 +69,14 @@
       getAddress(addressArr) {
         if (addressArr.length > 0) {
           var address = ''
+          var province = 0
           for (let addr of addressArr) {
             address += addr.name
+            province = addr.code
           }
           address == '' ? address = '请选择' : ''
           this.address = address
+          this.province = province
         }
         this.showPopup()
       },
@@ -83,114 +87,135 @@
         this.address_show = !this.address_show
       },
       init() {
-        this.$axios.get(this.$global.api + 'area/index', {
-          params: {
-            // UserNumber: UserNumber,
-            // Token: Token,
-            // Timestamp: Timestamp,
-            // Sex: Sex
-          },
-          headers: {
-            // 'Content-Type': 'application/json',
+        // $.ajax({
+        //   type: 'GET',
+        //   url: 'http://api.51pyvip.com/area/index',
+        //   dataType: 'json',
+        //   data: {
 
-          }
+        //   },
+        //   headers:{
+        //     // 'UserNumber': UserNumber,
+        //     // 'Token': Token,
+        //     // 'Timestamp': Timestamp,
+        //     'Sex': '1',
+        //     "Content-Type":"application/json",
+        //   },
+        //   success: function(res) {
+        //     $('.res').text(JSON.stringify(res.data));
+        //     console.log('res', res);
+        //   },
+        //   error: function(xhr, type) {
+        //     alert('Ajax error!');
+        //   }
+        // });
+
+        this.$axios.get(this.$global.api + 'area/index', {
+          params: {},
+          headers: {}
         }).then(response => {
-          // 请求成功
-          let res = response.data;
-          let areaArr = res.data.area
-          var area2 = {}
+          let areaArr = response.data.data.area
           var provinceStr = '' // 省字符串
           var province_list
-          var num = 0 // 计数
+          // var cityStr = '' // 市字符串
+          // var city_list
           new Promise((resolve, reject) => {
+            var province_num = 0 // 省计数
             for (let a of areaArr) {
-              num++
+              province_num++
               provinceStr = provinceStr + '"' + a.id + '":"' + a.title + '",'
-              if (areaArr.length == num) {
-                resolve(provinceStr)
+              // if (a.list.length > 0) {
+              //   for (let c of a.list) {
+              //     cityStr = cityStr + '"' + c.id + '":"' + c.title + '",'
+              //   }
+              // }
+              if (areaArr.length == province_num) {
+                provinceStr = provinceStr.substring(0, provinceStr.length - 1)
+                provinceStr = '"province_list":{' + provinceStr + '}'
+                // cityStr = cityStr.substring(0, cityStr.length - 1)
+                // cityStr = '"city_list":{' + cityStr + '}'
+                var areaStr = provinceStr
+                resolve(areaStr)
               }
             }
-          }).then((res) => {
-            provinceStr = res.substring(0, res.length-1)
-            provinceStr = '{' + provinceStr + '}'
-            province_list = JSON.parse(provinceStr)
-            this.areaList.province_list = province_list
-            console.log(province_list)
-          }).catch((err) => {
+          }).then(res => {
+            var areaStr = '{' + res + '}'
+            var areaList = JSON.parse(areaStr)
+            this.areaList = areaList
+          }).catch(err => {
             console.log(err)
           })
-
         }).catch(error => {
-          // 请求失败，
           console.log(error)
         })
       },
       login() {
-        var Salt = '51payo'
-        var UserNumber = 10548
-        var Timestamp = Math.round(new Date() / 1000)
-        var Sex = 1
-        var Token = this.$md5(UserNumber + Salt + Timestamp)
-        console.log('Timestamp:' + Timestamp)
-        console.log('Token:' + Token)
+        var message
+        if (this.address === '所在地区' || this.address === '') {
+          message = '请选择地区'
+        } else if (this.id.split(" ").join('').length === 0 || this.address === '') {
+          message = '请填写个人编号'
+        } else if (!this.$global.check_email.test(this.email)) {
+          message = '邮箱格式有误或为空'
+        } else {
+          var Salt = '51payo'
+          var UserNumber = 10548 // 用户number
+          var Timestamp = Math.round(new Date() / 1000) // 时间戳
+          var Sex = this.sex // 性别
+          var Token = this.$md5(UserNumber + Salt + Timestamp)
 
+          var province = this.province // 省份code
+          var sex = parseInt(this.sex) // 性别
+          var city = '' // 城市code
+          var number = 10548 // 用户number
+          var email = this.email
+          this.$axios.post(this.$global.api + 'area/index', {
+            province,
+            sex,
+            city,
+            number,
+            email
+          }, {
+            'UserNumber': UserNumber,
+            'Token': Token,
+            'Timestamp': Timestamp,
+            'Sex': Sex
+          }).then(response => {
 
-        // $.ajax({
-        //     type: 'GET',
-        //     url: 'http://api.51pyvip.com/area/index',
-        //     dataType: 'json',
-        //     success: function(res){
-        //     	$('.res').text(JSON.stringify(res.data));
-        //        console.log('res', res);
-        //     },
-        //     error: function(xhr, type){
-        //         alert('Ajax error!');
-        //         me.resetload();
-        //     }
-        // });
+          }).catch(error => {
+            console.log(error)
+          })
 
+          // Toast.loading({
+          //   message: '登录中...',
+          //   forbidClick: true,
+          //   duration: 1000
+          // })
+          // setTimeout(() => {
+          //   var username = {
+          //     id: 1,
+          //     name: '小三',
+          //     age: 1,
+          //   }
+          //   var username = JSON.stringify(username)
+          //   this.$global.setCookie('username', username, 60 * 60)
+          //   Toast.success({
+          //     message: '登录成功',
+          //     duration: 1000
+          //   })
+          //   setTimeout(() => {
+          //     this.$router.push('/index')
+          //   }, 1000)
+          // }, 1000)
 
-
-
-        // console.log(this.$md5('llzsy1125'))
-        // var message
-        // if (this.address === '所在地区' || this.address === '') {
-        //   message = '请选择地区'
-        // } else if (this.id.split(" ").join('').length === 0 || this.address === '') {
-        //   message = '请填写个人编号'
-        // } else if (!this.$global.check_email.test(this.email)) {
-        //   message = '邮箱格式有误或为空'
-        // } else {
-        //   Toast.loading({
-        //     message: '登录中...',
-        //     forbidClick: true,
-        //     duration: 1000
-        //   })
-        //   setTimeout(() => {
-        //     var username = {
-        //       id: 1,
-        //       name: '小三',
-        //       age: 1,
-        //     }
-        //     var username = JSON.stringify(username)
-        //     this.$global.setCookie('username', username, 60 * 60)
-        //     Toast.success({
-        //       message: '登录成功',
-        //       duration: 1000
-        //     })
-        //     setTimeout(() => {
-        //       this.$router.push('/index')
-        //     }, 1000)
-        //   }, 1000)
-
-        //   return
-        // }
-        // this.$notify({
-        //   message,
-        //   background: '#FF976A',
-        //   color: 'white',
-        //   duration: 1500
-        // })
+          // return
+        }
+        this.$notify({
+          message,
+          background: '#FF976A',
+          color: 'white',
+          duration: 1500
+        })
       }
 
     }
@@ -269,9 +294,7 @@
         .l-radio {
           justify-content: flex-start;
           padding-left: 1rem;
-          // height: 3rem;
           font-size: 1.2rem;
-          // padding: 1rem 0 1rem 1rem;
         }
       }
 

@@ -75,10 +75,11 @@ router.beforeEach((to, from, next) => {
 
 // import vueCanvasPoster from 'vue-canvas-poster'
 // Vue.use(vueCanvasPoster)
+// import $ from 'jquery'
 
 import axios from 'axios'
 Vue.prototype.$axios = axios
-// axios.defaults.baseURL = 'http://api.51pyvip.com/'
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
 
 new Vue({
   el: '#app',
