@@ -42,8 +42,7 @@ router.beforeEach((to, from, next) => {
     document.title = to.meta.title
   }
   if (to.meta.auth) {
-    if (common.getCookie('username')) {
-      // if (true) {
+    if (common.getCookie('payo_data')) {
       next()
     } else {
       document.title = from.meta.title
@@ -79,8 +78,8 @@ router.beforeEach((to, from, next) => {
 
 import axios from 'axios'
 Vue.prototype.$axios = axios
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
-
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+axios.defaults.headers.post['Token'] = '123';
 new Vue({
   el: '#app',
   router,

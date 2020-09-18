@@ -20,8 +20,11 @@
       <scroller :on-infinite="infinite" ref="indexscroller">
         <div class="wrap" v-for="g in myGirls" :key="g.id">
           <div class="content">
-            <img :src="g.imgsrc" alt="PAYO社交" :id="'img'+g.id" @mouseenter="sweetgirl('img'+g.id)">
-            <img src="http://qiniu.tecclub.cn/payo/biaoqian_s@2x.png" alt="PAYO社交">
+            <img :src="g.cover_image" alt="PAYO社交" :id="'img'+g.id" @mouseenter="sweetgirl('img'+g.id)">
+            <img v-if="g.face_score=='S'" src="http://qiniu.tecclub.cn/payo/biaoqian_s@2x.png" alt="PAYO社交">
+            <img v-else-if="g.face_score=='SS'" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_ss@2x.png" alt="PAYO社交">
+            <img v-else-if="g.face_score=='A'" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_a@2x.png" alt="PAYO社交">
+            <img v-else src="http://qiniu.tecclub.cn/payo/icon_biaoqian_b@2x.png" alt="PAYO社交">
           </div>
           <div class="liao_btn">
             <div>
@@ -32,13 +35,13 @@
           <div class="info">
             <div>
               <div>
-                <p>编号: {{ g.id }}</p>
+                <p>编号: {{ g.number }}</p>
                 {{ g.age }}岁 {{ g.weight }}kg {{ g.height }}cm
               </div>
             </div>
             <div>
-              地址: {{ g.address }}
-              <p>点我看详情</p>
+              地址: {{ g.province }}-{{ g.city }}
+              <p @click="toDetail(g.cover_image)">点我看详情</p>
             </div>
           </div>
         </div>
@@ -89,10 +92,12 @@
 <script>
   import Viewer from 'viewerjs'
   import 'viewerjs/dist/viewer.css'
+  import Qs from 'qs'
   import area from '@/assets/js/area.js'
   export default {
     data() {
       return {
+        page: 0, // 页数
         address: '请选择地区',
         koulin: '七夕七夕',
         show: false,
@@ -112,34 +117,69 @@
             value: 1
           }
         ],
-        myGirls: [{
-            id: 1337,
-            imgsrc: 'http://qiniu.tecclub.cn/2020/08/11/15971360865f325cd61389a.jpg',
-            age: 28,
-            weight: 150,
-            height: 160,
-            address: '浙江省-杭州市'
-          },
-          {
-            id: 1338,
-            imgsrc: 'http://qiniu.tecclub.cn/2020/07/14/15946974895f0d271183e43.jpg',
-            age: 28,
-            weight: 150,
-            height: 160,
-            address: '浙江省-杭州市'
-          },
-          {
-            id: 1339,
-            imgsrc: 'http://qiniu.tecclub.cn/2020/08/11/15971360865f325cd61389a.jpg',
-            age: 28,
-            weight: 150,
-            height: 160,
-            address: '浙江省-杭州市'
-          }
-        ]
+        myGirls: []
       }
     },
+    created() {
+      // this.init(this.page)
+    },
     methods: {
+      init(page) {
+        this.address = localStorage.getItem('address')
+        var Salt = '51payo'
+        var UserNumber = '10548' // 用户number
+        var Timestamp = Math.round(new Date() / 1000) // 时间戳
+        var Sex = '1' // 性别
+        var Token = this.$md5(UserNumber + Salt + Timestamp)
+        var payodata = JSON.parse(this.$global.getCookie('payo_data'))
+        var userinfo = JSON.parse(this.$global.getCookie('user_info'))
+        var path = 'girl/list'
+        if (payodata.sex == 2) {
+          path = 'boy/list'
+        }
+        this.$axios.get(this.$global.api + 'girl/list', {
+          headers: {
+            UserNumber,
+            Token,
+            Timestamp,
+            Sex
+          },
+          params: {
+            page,
+            province: userinfo.province
+          }
+        }).then(res => {
+          console.log('数据获取成功')
+          console.log(res.data.data.list)
+          if (res.status == 200) {
+            let girl_list = res.data.data.list
+            if (girl_list.length > 0) {
+              for (let g of girl_list) {
+                this.myGirls.push(g)
+              }
+            }
+          } else {
+            alert('接口错误: ' + res.status)
+          }
+        }).catch(err => {
+          console.log('数据获取失败')
+          console.log(err)
+        })
+      },
+
+      /**
+       * 上拉加载
+       */
+      infinite() {
+        new Promise((resolve, reject) => {
+          this.page++
+          this.init(this.page)
+          resolve('success')
+        }).then(res => {
+          this.$refs.indexscroller.finishInfinite(true)
+        })
+      },
+
       /**
        * 搜索妹妹
        */
@@ -166,6 +206,19 @@
           .catch(() => {
 
           })
+      },
+
+      /**
+       * 点我查看详情
+       */
+      toDetail(imgsrc) {
+        // console.log(imgsrc)
+        this.$router.push({
+          path: '/detail',
+          query: {
+            imgsrc
+          }
+        })
       },
 
       /**
@@ -199,28 +252,6 @@
       },
 
       /**
-       * 上拉加载
-       */
-      infinite() {
-        new Promise((resolve, reject) => {
-          if (this.myid < 1344) {
-            this.myid++
-            this.myGirls.push({
-              id: this.myid,
-              imgsrc: 'http://qiniu.tecclub.cn/2020/08/11/15971360865f325cd61389a.jpg',
-              age: 28,
-              weight: 150,
-              height: 160,
-              address: '浙江省-杭州市' + this.myid
-            })
-          }
-          resolve('success')
-        }).then(res => {
-          this.$refs.indexscroller.finishInfinite(true)
-        })
-      },
-
-      /**
        * 图片预览
        * @param {number} id (图片id)
        */
@@ -239,7 +270,7 @@
       getMeiMei() {
         this.show = !this.show
       },
-      
+
       /**
        * 显示/隐藏复制口令弹框
        */

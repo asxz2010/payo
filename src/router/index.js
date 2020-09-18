@@ -6,6 +6,7 @@ import mine from '@/components/mine' // 我的
 import info from '@/components/info' // 我的档案
 import marry from '@/components/marry' // 被翻记录
 import rise_vip from '@/components/rise_vip' // 会员升级
+import detail from '@/components/detail' // 点我查看详情
 import error from '@/components/error' // 错误
 
 Vue.use(Router)
@@ -74,6 +75,14 @@ export default new Router({
       component: error,
       meta: {
         title: '错误'
+      }
+    },
+    {
+      path: '/detail',
+      name: 'detail',
+      component: detail,
+      meta: {
+        title: '小姐姐资料'
       }
     }
   ]

@@ -7,7 +7,7 @@
           <p @click="showPopup">{{ address }}</p>
         </li>
         <li>
-          <input type="text" v-model="id" placeholder="个人编号">
+          <input type="text" v-model="usernumber" placeholder="个人编号">
         </li>
         <li class="l-radio">
           <el-radio v-model="sex" label="1">男</el-radio>
@@ -41,7 +41,7 @@
 </template>
 
 <script>
-  // import area from '@/assets/js/area.js'
+  import Qs from 'qs'
   import {
     Toast
   } from 'vant'
@@ -51,7 +51,7 @@
       return {
         address: '所在地区', // 地址
         province: 0, // 地区code
-        id: '', // 个人编号
+        usernumber: '', // 个人编号
         sex: '1', // 男1 女2
         email: '', // 邮箱
         areaList: {},
@@ -87,29 +87,6 @@
         this.address_show = !this.address_show
       },
       init() {
-        // $.ajax({
-        //   type: 'GET',
-        //   url: 'http://api.51pyvip.com/area/index',
-        //   dataType: 'json',
-        //   data: {
-
-        //   },
-        //   headers:{
-        //     // 'UserNumber': UserNumber,
-        //     // 'Token': Token,
-        //     // 'Timestamp': Timestamp,
-        //     'Sex': '1',
-        //     "Content-Type":"application/json",
-        //   },
-        //   success: function(res) {
-        //     $('.res').text(JSON.stringify(res.data));
-        //     console.log('res', res);
-        //   },
-        //   error: function(xhr, type) {
-        //     alert('Ajax error!');
-        //   }
-        // });
-
         this.$axios.get(this.$global.api + 'area/index', {
           params: {},
           headers: {}
@@ -141,6 +118,7 @@
           }).then(res => {
             var areaStr = '{' + res + '}'
             var areaList = JSON.parse(areaStr)
+            console.log(areaList)
             this.areaList = areaList
           }).catch(err => {
             console.log(err)
@@ -150,42 +128,72 @@
         })
       },
       login() {
+        Toast.loading({
+          message: '登录中...',
+          forbidClick: true,
+          duration: 1000
+        })
         var message
         if (this.address === '所在地区' || this.address === '') {
           message = '请选择地区'
-        } else if (this.id.split(" ").join('').length === 0 || this.address === '') {
+        } else if (this.usernumber.split(" ").join('').length === 0 || this.address === '') {
           message = '请填写个人编号'
         } else if (!this.$global.check_email.test(this.email)) {
           message = '邮箱格式有误或为空'
         } else {
           var Salt = '51payo'
-          var UserNumber = 10548 // 用户number
-          var Timestamp = Math.round(new Date() / 1000) // 时间戳
+          var UserNumber = this.usernumber // 用户number 10548
           var Sex = this.sex // 性别
+          var Timestamp = Math.round(new Date() / 1000) // 时间戳
           var Token = this.$md5(UserNumber + Salt + Timestamp)
 
           var province = this.province // 省份code
-          var sex = parseInt(this.sex) // 性别
-          var city = '' // 城市code
-          var number = 10548 // 用户number
+          var sex = this.sex // 性别
+          var city = '320100' // 城市code
+          var number = this.usernumber // 用户number
           var email = this.email
-          this.$axios.post(this.$global.api + 'area/index', {
-            province,
+          let data = {
             sex,
             city,
+            province,
             number,
             email
-          }, {
-            'UserNumber': UserNumber,
-            'Token': Token,
-            'Timestamp': Timestamp,
-            'Sex': Sex
-          }).then(response => {
+          }
+          this.$axios.post(this.$global.api + 'login', Qs.stringify(data), {
+            headers: {
+              'UserNumber': UserNumber,
+              'Token': Token,
+              'Timestamp': Timestamp,
+              'Sex': Sex
+            }
+          }).then(res => {
+            if (res.data.code == 200) {
+              var data = JSON.stringify(res.data.data)
+              var userinfo = JSON.stringify({province, email, Salt})
+              this.$global.setCookie('payo_data', data, 60 * 60)
+              this.$global.setCookie('user_info', userinfo, 60 * 60)
+              // cosnsole.log(this.$global.getCookie('user_info'))
 
-          }).catch(error => {
-            console.log(error)
+              // return
+              localStorage.setItem('address', this.address)
+              Toast.success({
+                message: '登录成功',
+                duration: 1000
+              })
+              setTimeout(() => {
+                this.$router.push('/index')
+              }, 1000)
+            }else{
+              Toast.fail({
+                message: res.data.code,
+                duration: 1000
+              })
+            }
+          }).catch(err => {
+            console.log(err)
           })
 
+          return
           // Toast.loading({
           //   message: '登录中...',
           //   forbidClick: true,
@@ -208,7 +216,7 @@
           //   }, 1000)
           // }, 1000)
 
-          // return
+
         }
         this.$notify({
           message,

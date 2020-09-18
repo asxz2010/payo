@@ -2,10 +2,10 @@
 </template>
 
 <script>
+  const api = 'http://api.51pyvip.com/'
+
   // 窗口高度
   const html_height = window.innerHeight
-
-  const api = 'http://api.51pyvip.com/'
 
   // 验证邮箱格式
   const check_email = /^[a-zA-Z0-9]+@[a-z0-9]{2,5}\.[a-z]{2,3}(\.[a-z]{2,3})?$/
@@ -42,7 +42,7 @@
     check_email,
     setCookie,
     getCookie,
-    delCookie
+    delCookie,
   }
 </script>
 
