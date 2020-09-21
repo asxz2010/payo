@@ -4,7 +4,7 @@
 111
     </div> -->
     <transition :name="transitionName">
-      <router-view class="page" />
+      <router-view class="page"  v-if="isRouterAlive"/>
     </transition>
 
     <div class="tabbar" v-show="flag">
@@ -45,6 +45,11 @@
   }
   export default {
     name: 'App',
+    provide() {
+    	return {
+    		reload: this.reload
+    	}
+    },
     data() {
       return {
         selected: '撩妹',
@@ -52,13 +57,20 @@
         tabFlag: true,
 
         transitionName: '',
-        LEVEL: route_LEV
+        LEVEL: route_LEV,
+				isRouterAlive: true
       }
     },
     created() {
       this.$route.path === '/login' ? this.flag = false : ''
     },
     methods: {
+      reload() {
+      	this.isRouterAlive = false
+      	this.$nextTick(() => {
+      		this.isRouterAlive = true
+      	})
+      },
       chooseTab(num) {
         if (num == 0) {
           this.tabFlag = true

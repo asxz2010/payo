@@ -36,6 +36,17 @@
     setCookie(c_name, "", -1)
   }
 
+  // 时间戳
+  const timestamp = Math.round(new Date() / 1000)
+
+  // 截取字符串
+  const cutString = (str, len) =>{
+    if(str && str.length>len){
+      str = str.substring(0, len)
+    }
+    return str
+  }
+
   export default {
     api,
     html_height,
@@ -43,6 +54,8 @@
     setCookie,
     getCookie,
     delCookie,
+    timestamp,
+    cutString
   }
 </script>
 

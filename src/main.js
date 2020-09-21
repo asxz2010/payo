@@ -37,6 +37,11 @@ import {
 } from 'element-ui'
 Vue.use(Cascader).use(Radio)
 
+// import * as filters from 'filter.js'
+// Object.key(filters).each(filter=>{
+// 　　Vue.filter(filter,filters[filter])
+// })
+
 router.beforeEach((to, from, next) => {
   if (to.meta.title) {
     document.title = to.meta.title

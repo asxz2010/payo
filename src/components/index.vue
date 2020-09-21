@@ -3,7 +3,7 @@
     <div class="address">
       <div>
         <div class="iconfont icondizhi"></div>
-        <p @click="showPopup">{{ address }}</p>
+        <p @click="showPopup">{{ userinfo.addr }}</p>
       </div>
       <div>
         <van-dropdown-menu>
@@ -28,7 +28,7 @@
           </div>
           <div class="liao_btn">
             <div>
-              <img src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="PAYO社交" @click="getMeiMei">
+              <img src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="PAYO社交" @click="getMeiMei(g.number)">
               <!-- <img src="http://qiniu.tecclub.cn/payo/btn_signed@2x.png" alt="PAYO社交" > -->
             </div>
           </div>
@@ -54,13 +54,14 @@
             <div class="d-1">
               <div class="tx">
                 <img src="http://51pyyy.cn/uploads/wxpayo/girl/logo-payo.png" alt="PAYO社交">
-                <div class="forever">永</div>
+                <div class="forever">{{ this.vipinfo.vip|cutString(1) }}</div>
               </div>
-              <div class="leftchance">本月剩余: 3次</div>
+              <div class="leftchance">本月剩余: {{ this.vipinfo.monthSignNum }}次</div>
             </div>
             <div class="d-2">
-              <p>10548</p>
-              <p>会员到期时间: 永久</p>
+              <p>{{ this.vipinfo.boyNumber }}</p>
+              <p v-if="this.vipinfo.isYongjiu==1">会员到期时间: {{ this.vipinfo.vip }}</p>
+              <p v-else>会员到期时间: {{ this.vipinfo.expireTime }}</p>
             </div>
             <div class="d-3">
               <van-button icon="http://qiniu.tecclub.cn/payo/jewel_icon@2x.png" color="#FFB929" size="small" round
@@ -78,8 +79,8 @@
       </div>
     </van-overlay>
     <van-dialog v-model="flag" :show-confirm-button="false" close-on-click-overlay>
-      <p class="diag">{{ koulin }}</p>
-      <van-button color="#FFB929" class="btn" @mouseenter.native="copy" ref="copyBtn" :data-clipboard-text="koulin">点击复制口令</van-button>
+      <p class="diag">{{ kouling }}</p>
+      <van-button color="#FFB929" class="btn" @mouseenter.native="copy" ref="copyBtn" :data-clipboard-text="kouling">点击复制口令</van-button>
     </van-dialog>
     <van-popup v-model="address_show" position="bottom">
       <van-area title="省份/直辖市" :columns-placeholder="['请选择']" :area-list="areaList" @confirm="getAddress" @cancel="cancelAddress"
@@ -95,11 +96,11 @@
   import Qs from 'qs'
   import area from '@/assets/js/area.js'
   export default {
+    inject: ['reload'],
     data() {
       return {
         page: 0, // 页数
-        address: '请选择地区',
-        koulin: '七夕七夕',
+        kouling: '七夕七夕', // 口令
         show: false,
         flag: false,
         address_show: false,
@@ -117,27 +118,31 @@
             value: 1
           }
         ],
-        myGirls: []
+        myGirls: [],  // 妹子信息
+        userinfo: {}, // Salt,province,addr,email等信息
+        payodata: {}, // number,sext等信息
+        vipinfo: {},  // 用户vip信息
       }
     },
     created() {
-      // this.init(this.page)
+      this.userinfo = JSON.parse(this.$global.getCookie('user_info'))
+      this.payodata = JSON.parse(this.$global.getCookie('payo_data'))
+    },
+    mounted() {
+
     },
     methods: {
       init(page) {
-        this.address = localStorage.getItem('address')
-        var Salt = '51payo'
-        var UserNumber = '10548' // 用户number
+        var Salt = this.userinfo.Salt
+        var UserNumber = this.payodata.number // 用户number
+        var Sex = this.payodata.sex // 性别
         var Timestamp = Math.round(new Date() / 1000) // 时间戳
-        var Sex = '1' // 性别
         var Token = this.$md5(UserNumber + Salt + Timestamp)
-        var payodata = JSON.parse(this.$global.getCookie('payo_data'))
-        var userinfo = JSON.parse(this.$global.getCookie('user_info'))
         var path = 'girl/list'
-        if (payodata.sex == 2) {
+        if (this.payodata.sex == 2) {
           path = 'boy/list'
         }
-        this.$axios.get(this.$global.api + 'girl/list', {
+        this.$axios.get(this.$global.api + path, {
           headers: {
             UserNumber,
             Token,
@@ -146,7 +151,7 @@
           },
           params: {
             page,
-            province: userinfo.province
+            province: this.userinfo.province
           }
         }).then(res => {
           console.log('数据获取成功')
@@ -195,7 +200,7 @@
         this.$dialog.confirm({
             title: '升级',
             message: '是否去升级?',
-            confirmButtonText: '去升级',
+            // confirmButtonText: '去升级',
             cancelButtonText: '暂不'
           })
           .then(() => {
@@ -212,7 +217,6 @@
        * 点我查看详情
        */
       toDetail(imgsrc) {
-        // console.log(imgsrc)
         this.$router.push({
           path: '/detail',
           query: {
@@ -228,11 +232,16 @@
       getAddress(addressArr) {
         if (addressArr.length > 0) {
           var address = ''
+          var province
           for (let addr of addressArr) {
-            address += addr.name
+            address = addr.name
+            province = addr.code
           }
           address == '' ? address = '请选择' : ''
-          this.address = address
+          this.userinfo.addr = address
+          this.userinfo.province = province
+          this.$global.setCookie('user_info', JSON.stringify(this.userinfo))
+          this.reload()
         }
         this.showPopup()
       },
@@ -267,15 +276,36 @@
       /**
        * 显示/隐藏撩一下弹框
        */
-      getMeiMei() {
+      getMeiMei(num) {
+        this.kouling = '男生'+ this.payodata.number + '报名女生'+ num + '，密语：叫爸爸。复制口令后，联系客服，可获得匹配结果~'
         this.show = !this.show
+        var Salt = this.userinfo.Salt
+        var UserNumber = this.payodata.number // 用户number
+        var Sex = this.payodata.sex // 性别
+        var Timestamp = this.$global.timestamp // 时间戳
+        var Token = this.$md5(UserNumber + Salt + Timestamp)
+        this.$axios.get(this.$global.api + 'boy/chance', {
+          headers: {
+            UserNumber,
+            Token,
+            Timestamp,
+            Sex
+          },
+        }).then(res => {
+          console.log(res)
+          if(res.data.code==200){
+            this.vipinfo = res.data.data
+          }
+        }).catch(err => {
+          console.log(err.message)
+        })
       },
 
       /**
        * 显示/隐藏复制口令弹框
        */
       getGirl() {
-        this.getMeiMei()
+        this.show = !this.show
         this.flag = !this.flag
       },
 
@@ -304,9 +334,19 @@
           this.flag = false
           clipboard.destroy()
         })
-      }
+      },
 
+
+    },
+    filters:{
+      cutString(str, len){
+        if(str && str.length>len){
+          str = str.substring(0, len)
+        }
+        return str
+      }
     }
+
   }
 </script>
 

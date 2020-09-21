@@ -74,8 +74,8 @@
             address += addr.name
             province = addr.code
           }
-          address == '' ? address = '请选择' : ''
-          this.address = address
+          address == '' ? address = '请选择' : '',
+            this.address = address
           this.province = province
         }
         this.showPopup()
@@ -128,11 +128,6 @@
         })
       },
       login() {
-        Toast.loading({
-          message: '登录中...',
-          forbidClick: true,
-          duration: 1000
-        })
         var message
         if (this.address === '所在地区' || this.address === '') {
           message = '请选择地区'
@@ -141,6 +136,11 @@
         } else if (!this.$global.check_email.test(this.email)) {
           message = '邮箱格式有误或为空'
         } else {
+          Toast.loading({
+            message: '登录中...',
+            forbidClick: true,
+            duration: 1000
+          })
           var Salt = '51payo'
           var UserNumber = this.usernumber // 用户number 10548
           var Sex = this.sex // 性别
@@ -167,15 +167,16 @@
               'Sex': Sex
             }
           }).then(res => {
-            if (res.data.code == 200) {
-              var data = JSON.stringify(res.data.data)
-              var userinfo = JSON.stringify({province, email, Salt})
-              this.$global.setCookie('payo_data', data, 60 * 60)
-              this.$global.setCookie('user_info', userinfo, 60 * 60)
-              // cosnsole.log(this.$global.getCookie('user_info'))
-
-              // return
-              localStorage.setItem('address', this.address)
+              if (res.data.code == 200) {
+                var data = JSON.stringify(res.data.data)
+                var userinfo = JSON.stringify({
+                  addr: this.address,
+                  province,
+                  email,
+                  Salt
+                })
+              this.$global.setCookie('payo_data', data, 60 * 60 * 24)
+              this.$global.setCookie('user_info', userinfo, 60 * 60 * 24)
               Toast.success({
                 message: '登录成功',
                 duration: 1000
@@ -183,50 +184,25 @@
               setTimeout(() => {
                 this.$router.push('/index')
               }, 1000)
-            }else{
+            } else {
               Toast.fail({
                 message: res.data.code,
                 duration: 1000
               })
             }
           }).catch(err => {
-            console.log(err)
-          })
-
-          return
-          // Toast.loading({
-          //   message: '登录中...',
-          //   forbidClick: true,
-          //   duration: 1000
-          // })
-          // setTimeout(() => {
-          //   var username = {
-          //     id: 1,
-          //     name: '小三',
-          //     age: 1,
-          //   }
-          //   var username = JSON.stringify(username)
-          //   this.$global.setCookie('username', username, 60 * 60)
-          //   Toast.success({
-          //     message: '登录成功',
-          //     duration: 1000
-          //   })
-          //   setTimeout(() => {
-          //     this.$router.push('/index')
-          //   }, 1000)
-          // }, 1000)
-
-
-        }
-        this.$notify({
-          message,
-          background: '#FF976A',
-          color: 'white',
-          duration: 1500
+          console.log(err)
         })
       }
-
+      this.$notify({
+        message,
+        background: '#FF976A',
+        color: 'white',
+        duration: 1500
+      })
     }
+
+  }
   }
 </script>
 
