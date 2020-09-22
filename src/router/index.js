@@ -12,6 +12,19 @@ import error from '@/components/error' // 错误
 Vue.use(Router)
 
 export default new Router({
+  scrollBehavior(to, from, savedPosition) { //解决拖动时多个页面互相影响的问题，当切换到新路由时，想要页面滚到顶部
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      if (from.meta.keepAlive) {
+        from.meta.savedPosition = document.body.scrollHeight
+      }
+    }
+    return {
+      x: 0,
+      y: 0
+    }
+  },
   routes: [{
       path: '/',
       redirect: '/login'
@@ -22,7 +35,8 @@ export default new Router({
       component: index,
       meta: {
         title: '首页',
-        auth: true
+        auth: true,
+        keepAlive: true,
       }
     },
     {
@@ -31,7 +45,8 @@ export default new Router({
       component: mine,
       meta: {
         title: '个人中心',
-        auth: true
+        auth: true,
+        keepAlive: false,
       }
     },
     {

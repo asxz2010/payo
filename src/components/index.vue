@@ -1,5 +1,5 @@
 <template>
-  <div class="index-container">
+  <div class="index-container" v-infinite-scroll="loadMore" :infinite-scroll-disabled="busy" infinite-scroll-distance="10" :infinite-scroll-immediate-check="busy2">
     <div class="address">
       <div>
         <div class="iconfont icondizhi"></div>
@@ -7,45 +7,43 @@
       </div>
       <div>
         <van-dropdown-menu>
-          <van-dropdown-item v-model="value1" :options="option" />
+          <van-dropdown-item v-model="userinfo.order" :options="option" @change="menuChange" />
         </van-dropdown-menu>
       </div>
     </div>
     <div class="top">
       <div class="inp">
-        <input type="number" placeholder="输入妹子编号" @keyup.13="findMeiMei">
+        <input type="text" v-model="number" placeholder="输入妹子编号" @keyup.13="findMeiMei">
       </div>
     </div>
     <div class="middle">
-      <scroller :on-infinite="infinite" ref="indexscroller">
-        <div class="wrap" v-for="g in myGirls" :key="g.id">
-          <div class="content">
-            <img :src="g.cover_image" alt="PAYO社交" :id="'img'+g.id" @mouseenter="sweetgirl('img'+g.id)">
-            <img v-if="g.face_score=='S'" src="http://qiniu.tecclub.cn/payo/biaoqian_s@2x.png" alt="PAYO社交">
-            <img v-else-if="g.face_score=='SS'" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_ss@2x.png" alt="PAYO社交">
-            <img v-else-if="g.face_score=='A'" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_a@2x.png" alt="PAYO社交">
-            <img v-else src="http://qiniu.tecclub.cn/payo/icon_biaoqian_b@2x.png" alt="PAYO社交">
-          </div>
-          <div class="liao_btn">
-            <div>
-              <img src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="PAYO社交" @click="getMeiMei(g.number)">
-              <!-- <img src="http://qiniu.tecclub.cn/payo/btn_signed@2x.png" alt="PAYO社交" > -->
-            </div>
-          </div>
-          <div class="info">
-            <div>
-              <div>
-                <p>编号: {{ g.number }}</p>
-                {{ g.age }}岁 {{ g.weight }}kg {{ g.height }}cm
-              </div>
-            </div>
-            <div>
-              地址: {{ g.province }}-{{ g.city }}
-              <p @click="toDetail(g.cover_image)">点我看详情</p>
-            </div>
+      <div class="wrap" v-for="g in myGirls" :key="g.id">
+        <div class="content">
+          <img :src="g.cover_image" alt="PAYO社交" :id="'img'+g.id" @mouseenter="sweetgirl('img'+g.id)">
+          <img v-if="g.face_score=='S'" src="http://qiniu.tecclub.cn/payo/biaoqian_s@2x.png" alt="PAYO社交">
+          <img v-else-if="g.face_score=='SS'" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_ss@2x.png" alt="PAYO社交">
+          <img v-else-if="g.face_score=='A'" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_a@2x.png" alt="PAYO社交">
+          <img v-else src="http://qiniu.tecclub.cn/payo/icon_biaoqian_b@2x.png" alt="PAYO社交">
+        </div>
+        <div class="liao_btn">
+          <div>
+            <img src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="PAYO社交" @click="getMeiMei(g.number)">
+            <img src="http://qiniu.tecclub.cn/payo/btn_signed@2x.png" alt="PAYO社交">
           </div>
         </div>
-      </scroller>
+        <div class="info">
+          <div>
+            <div>
+              <p>编号: {{ g.number }}</p>
+              {{ g.age }}岁 {{ g.weight }}kg {{ g.height }}cm
+            </div>
+          </div>
+          <div>
+            地址: {{ g.province }}-{{ g.city }}
+            <p @click.nactive="toDetail(g.cover_image)">点我看详情</p>
+          </div>
+        </div>
+      </div>
     </div>
     <van-overlay :show="show" @click="getMeiMei">
       <div class="wrapper">
@@ -63,12 +61,13 @@
               <p v-if="this.vipinfo.isYongjiu==1">会员到期时间: {{ this.vipinfo.vip }}</p>
               <p v-else>会员到期时间: {{ this.vipinfo.expireTime }}</p>
             </div>
-            <div class="d-3">
+            <div class="d-3" v-if="this.vipinfo.isYongjiu!=1">
               <van-button icon="http://qiniu.tecclub.cn/payo/jewel_icon@2x.png" color="#FFB929" size="small" round
                 plain @click="toVip">
                 升级
               </van-button>
             </div>
+            <div class="d-3" v-else></div>
           </div>
 
           <div class="d-5">
@@ -94,34 +93,32 @@
   import Viewer from 'viewerjs'
   import 'viewerjs/dist/viewer.css'
   import Qs from 'qs'
-  import area from '@/assets/js/area.js'
   export default {
     inject: ['reload'],
     data() {
       return {
+        busy: false,
+        busy2: true,
+        scrollY:0,
         page: 0, // 页数
-        kouling: '七夕七夕', // 口令
+        kouling: '', // 口令
         show: false,
         flag: false,
         address_show: false,
         imgpreview_show: false,
-        value1: 0,
-        value2: 'a',
-        areaList: area,
-        myid: 1340,
+        areaList: {}, // 地区列表
         option: [{
-            text: '等级排序',
-            value: 0
-          },
-          {
-            text: '时间排序',
-            value: 1
-          }
-        ],
-        myGirls: [],  // 妹子信息
+          text: '时间排序',
+          value: 1
+        }, {
+          text: '等级排序',
+          value: 2
+        }],
+        myGirls: [], // 妹子信息
         userinfo: {}, // Salt,province,addr,email等信息
         payodata: {}, // number,sext等信息
-        vipinfo: {},  // 用户vip信息
+        vipinfo: {}, // 用户vip信息
+        number: '', // 搜索的用户id
       }
     },
     created() {
@@ -129,59 +126,121 @@
       this.payodata = JSON.parse(this.$global.getCookie('payo_data'))
     },
     mounted() {
-
+      this.getAreaList()
+      this.loadMore()
+      
+         this.$nextTick(()=>{
+              this.box = document.querySelector('.index-container')
+              this.box.addEventListener('scroll', function(){
+                this.scrollY = document.querySelector('.index-container').scrollTop
+                console.log("scrollY", this.scrollY)
+              }, false)
+            })   
     },
     methods: {
+      /**
+       * 上拉加载
+       */
+      loadMore() {
+        console.log(2222222222)
+        this.busy = true
+        this.page++
+        this.init(this.page)
+        this.busy = false
+      },
+
       init(page) {
         var Salt = this.userinfo.Salt
         var UserNumber = this.payodata.number // 用户number
         var Sex = this.payodata.sex // 性别
         var Timestamp = Math.round(new Date() / 1000) // 时间戳
         var Token = this.$md5(UserNumber + Salt + Timestamp)
+
+        var order = this.userinfo.order
+        var number = this.number
         var path = 'girl/list'
         if (this.payodata.sex == 2) {
           path = 'boy/list'
         }
-        this.$axios.get(this.$global.api + path, {
-          headers: {
-            UserNumber,
-            Token,
-            Timestamp,
-            Sex
-          },
-          params: {
-            page,
-            province: this.userinfo.province
-          }
-        }).then(res => {
-          console.log('数据获取成功')
-          console.log(res.data.data.list)
-          if (res.status == 200) {
-            let girl_list = res.data.data.list
-            if (girl_list.length > 0) {
-              for (let g of girl_list) {
-                this.myGirls.push(g)
-              }
+        return new Promise(resolve => {
+          this.$axios.get(this.$global.api + path, {
+            headers: {
+              UserNumber,
+              Token,
+              Timestamp,
+              Sex
+            },
+            params: {
+              page,
+              province: this.userinfo.province,
+              order,
+              number
             }
-          } else {
-            alert('接口错误: ' + res.status)
-          }
-        }).catch(err => {
-          console.log('数据获取失败')
-          console.log(err)
+          }).then(res => {
+            console.log('数据获取成功')
+            console.log(res.data.data.list)
+            for (let g of res.data.data.list) {
+              console.log(g.id)
+            }
+            if (res.status == 200) {
+              let girl_list = res.data.data.list
+              if (girl_list.length > 0) {
+                for (let g of girl_list) {
+                  this.myGirls.push(g)
+                }
+              }
+            } else {
+              alert('接口错误: ' + res.status)
+            }
+            resolve('success')
+          }).catch(err => {
+            console.log('数据获取失败')
+            console.log(err)
+          })
         })
       },
 
       /**
-       * 上拉加载
+       * 地区
        */
-      infinite() {
-        new Promise((resolve, reject) => {
-          this.page++
-          this.init(this.page)
-          resolve('success')
-        }).then(res => {
-          this.$refs.indexscroller.finishInfinite(true)
+      getAreaList() {
+        this.$axios.get(this.$global.api + 'area/index', {
+          params: {},
+          headers: {}
+        }).then(response => {
+          let areaArr = response.data.data.area
+          var provinceStr = '' // 省字符串
+          var province_list
+          // var cityStr = '' // 市字符串
+          // var city_list
+          new Promise((resolve, reject) => {
+            var province_num = 0 // 省计数
+            for (let a of areaArr) {
+              province_num++
+              provinceStr = provinceStr + '"' + a.id + '":"' + a.title + '",'
+              // if (a.list.length > 0) {
+              //   for (let c of a.list) {
+              //     cityStr = cityStr + '"' + c.id + '":"' + c.title + '",'
+              //   }
+              // }
+              if (areaArr.length == province_num) {
+                provinceStr = provinceStr.substring(0, provinceStr.length - 1)
+                provinceStr = '"province_list":{' + provinceStr + '}'
+                // cityStr = cityStr.substring(0, cityStr.length - 1)
+                // cityStr = '"city_list":{' + cityStr + '}'
+                var areaStr = provinceStr
+                resolve(areaStr)
+              }
+            }
+          }).then(res => {
+            var areaStr = '{' + res + '}'
+            var areaList = JSON.parse(areaStr)
+            this.areaList = areaList
+          }).catch(err => {
+            console.log(err)
+          })
+        }).catch(error => {
+          console.log(error)
         })
       },
 
@@ -189,7 +248,10 @@
        * 搜索妹妹
        */
       findMeiMei() {
-        alert('找到了一个妹妹')
+        this.page = 1
+        this.myGirls = []
+        this.init(1)
+        console.log('找到了一个妹妹')
       },
 
       /**
@@ -217,6 +279,7 @@
        * 点我查看详情
        */
       toDetail(imgsrc) {
+        console.log(111111)
         this.$router.push({
           path: '/detail',
           query: {
@@ -241,7 +304,10 @@
           this.userinfo.addr = address
           this.userinfo.province = province
           this.$global.setCookie('user_info', JSON.stringify(this.userinfo))
-          this.reload()
+          this.myGirls = []
+          this.page = 1
+          this.number = ''
+          this.init()
         }
         this.showPopup()
       },
@@ -277,7 +343,7 @@
        * 显示/隐藏撩一下弹框
        */
       getMeiMei(num) {
-        this.kouling = '男生'+ this.payodata.number + '报名女生'+ num + '，密语：叫爸爸。复制口令后，联系客服，可获得匹配结果~'
+        this.kouling = '男生' + this.payodata.number + '报名女生' + num + '，密语：叫爸爸。复制口令后，联系客服，可获得匹配结果~'
         this.show = !this.show
         var Salt = this.userinfo.Salt
         var UserNumber = this.payodata.number // 用户number
@@ -292,8 +358,7 @@
             Sex
           },
         }).then(res => {
-          console.log(res)
-          if(res.data.code==200){
+          if (res.data.code == 200) {
             this.vipinfo = res.data.data
           }
         }).catch(err => {
@@ -336,22 +401,50 @@
         })
       },
 
-
+      menuChange(value) {
+        this.userinfo.order = value
+        this.$global.setCookie('user_info', JSON.stringify(this.userinfo))
+        this.myGirls = []
+        this.page = 1
+        this.number = ''
+        this.init(1)
+      }
     },
-    filters:{
-      cutString(str, len){
-        if(str && str.length>len){
+    filters: {
+      cutString(str, len) {
+        if (str && str.length > len) {
           str = str.substring(0, len)
         }
         return str
       }
-    }
-
+    },
+    beforeRouteLeave (to, from, next) { 
+         //保存滚动条元素div的scrollTop值
+         this.scrollY = document.querySelector('.index-container').scrollTop
+         // console.log(this.scrollY)    
+        next()
+     },
+    // 为div元素重新设置保存的scrollTop值
+    beforeRouteEnter (to, from, next) {
+          next(vm => {  // vm = this
+              document.querySelector('.index-container').scrollTop = vm.scrollY
+              // console.log( document.querySelector('.container').scrollTop )
+          })
+    },
   }
 </script>
 
 <style scoped lang="scss">
   .index-container {
+    height: 90vh;
+    overflow-y: auto;
+    position: absolute;
+            top: 0;bottom: 0;
+            width: 100%;
+            padding: 0;margin:0;
+            overflow: hidden;
+            overflow-y: scroll;
+
     .address {
       display: flex;
       justify-content: space-between;
@@ -433,6 +526,7 @@
       position: relative;
       height: 80vh;
       margin-top: 2vw;
+      // overflow-y: auto;
 
       .wrap {
         width: 94%;
@@ -541,7 +635,6 @@
 
     .block {
       width: 80%;
-      min-height: 70vw;
       background-color: #fff;
       border-radius: 1rem;
 
@@ -623,7 +716,7 @@
         p {
           color: #999;
           font-size: 0.8rem;
-          padding: 0 7vw;
+          padding: 0 7vw 3vw;
           text-align: center;
           letter-spacing: 1px;
         }

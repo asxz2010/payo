@@ -1,10 +1,16 @@
 <template>
   <div id="app">
-    <!-- <div class="header">
-111
-    </div> -->
     <transition :name="transitionName">
-      <router-view class="page"  v-if="isRouterAlive"/>
+      <!-- <keep-alive>
+        <router-view class="page" v-if="isRouterAlive" />
+      </keep-alive> -->
+
+      <keep-alive>
+        <router-view class="page" v-if="$route.meta.keepAlive"></router-view>
+      </keep-alive>
+    </transition>
+    <transition>
+      <router-view class="page" v-if="!$route.meta.keepAlive"></router-view>
     </transition>
 
     <div class="tabbar" v-show="flag">
@@ -46,9 +52,9 @@
   export default {
     name: 'App',
     provide() {
-    	return {
-    		reload: this.reload
-    	}
+      return {
+        reload: this.reload
+      }
     },
     data() {
       return {
@@ -58,7 +64,7 @@
 
         transitionName: '',
         LEVEL: route_LEV,
-				isRouterAlive: true
+        isRouterAlive: true
       }
     },
     created() {
@@ -66,10 +72,10 @@
     },
     methods: {
       reload() {
-      	this.isRouterAlive = false
-      	this.$nextTick(() => {
-      		this.isRouterAlive = true
-      	})
+        this.isRouterAlive = false
+        this.$nextTick(() => {
+          this.isRouterAlive = true
+        })
       },
       chooseTab(num) {
         if (num == 0) {
@@ -107,7 +113,7 @@
         } else if (newVal === '/mine') {
           this.tabFlag = false
           this.flag = true
-        }else{
+        } else {
           this.flag = false
         }
       }
@@ -154,22 +160,17 @@
   .fade-right-enter-active,
   .fade-left-leave-active,
   .fade-right-leave-active {
-    // transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0)
     transition: all 0.5s ease;
   }
 
   .fade-left-leave-to,
   .fade-right-enter {
-    // transform: translate3d(-100%, 0, 0);
-    // opacity: 0
     opacity: 0;
     transform: translateX(-100%);
   }
 
   .fade-left-enter,
   .fade-right-leave-to {
-    // transform: translate3d(50%, 0, 0);
-    // opacity: 0
     opacity: 0;
     transform: translateX(100%);
   }

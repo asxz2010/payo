@@ -167,14 +167,15 @@
               'Sex': Sex
             }
           }).then(res => {
-              if (res.data.code == 200) {
-                var data = JSON.stringify(res.data.data)
-                var userinfo = JSON.stringify({
-                  addr: this.address,
-                  province,
-                  email,
-                  Salt
-                })
+            if (res.data.code == 200) {
+              var data = JSON.stringify(res.data.data)
+              var userinfo = JSON.stringify({
+                addr: this.address,
+                order: 1,
+                province,
+                email,
+                Salt,
+              })
               this.$global.setCookie('payo_data', data, 60 * 60 * 24)
               this.$global.setCookie('user_info', userinfo, 60 * 60 * 24)
               Toast.success({
@@ -191,18 +192,17 @@
               })
             }
           }).catch(err => {
-          console.log(err)
+            console.log(err)
+          })
+        }
+        this.$notify({
+          message,
+          background: '#FF976A',
+          color: 'white',
+          duration: 1500
         })
-      }
-      this.$notify({
-        message,
-        background: '#FF976A',
-        color: 'white',
-        duration: 1500
-      })
+      },
     }
-
-  }
   }
 </script>
 

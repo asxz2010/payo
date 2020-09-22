@@ -18,6 +18,9 @@ Vue.prototype.$global = common
 import VueScroller from 'vue-scroller'
 Vue.use(VueScroller)
 
+import infiniteScroll from 'vue-infinite-scroll'
+Vue.use(infiniteScroll)
+
 import {
   DropdownMenu,
   DropdownItem,
@@ -57,6 +60,7 @@ router.beforeEach((to, from, next) => {
     next()
   }
 })
+
 
 // import iView from 'iview'
 // import 'iview/dist/styles/iview.css'
