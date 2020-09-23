@@ -6,6 +6,8 @@ Vue.config.productionTip = false
 
 import '@/assets/css/iconfont.css'
 
+import store from '@/store/index.js'
+
 import clipboard from 'clipboard'
 Vue.prototype.$clipboard = clipboard
 
@@ -92,5 +94,6 @@ axios.defaults.headers.post['Token'] = '123';
 new Vue({
   el: '#app',
   router,
+  store,
   render: h => h(App)
 })

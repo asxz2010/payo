@@ -4,12 +4,11 @@
       <!-- <keep-alive>
         <router-view class="page" v-if="isRouterAlive" />
       </keep-alive> -->
-
       <keep-alive>
         <router-view class="page" v-if="$route.meta.keepAlive"></router-view>
       </keep-alive>
     </transition>
-    <transition>
+    <transition :name="transitionName">
       <router-view class="page" v-if="!$route.meta.keepAlive"></router-view>
     </transition>
 

@@ -46,7 +46,7 @@ export default new Router({
       meta: {
         title: '个人中心',
         auth: true,
-        keepAlive: false,
+        keepAlive: true,
       }
     },
     {
@@ -54,7 +54,7 @@ export default new Router({
       name: 'login',
       component: login,
       meta: {
-        title: '登录'
+        title: '登录',
       }
     },
     {
@@ -97,7 +97,8 @@ export default new Router({
       name: 'detail',
       component: detail,
       meta: {
-        title: '小姐姐资料'
+        title: '小姐姐资料',
+        keepAlive: false
       }
     }
   ]

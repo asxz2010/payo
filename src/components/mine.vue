@@ -9,9 +9,10 @@
         <img src="http://51pyyy.cn/uploads/wxpayo/girl/logo-payo.png" alt="PAYO社交">
         <div class="number">
           <img src="http://51pyyy.cn/uploads/wxpayo/girl/v.png" alt="PAYO社交">
-          <div>10548</div>
+          <div>{{ this.vipinfo.boyNumber }}</div>
         </div>
-        <p class="date">会员到期时间：2022年02月12日</p>
+        <p v-if="this.vipinfo.isYongjiu == 1" class="date">会员到期时间：{{ this.vipinfo.vip }}</p>
+        <p v-else class="date">会员到期时间：{{ this.vipinfo.expireTime }}</p>
       </div>
       <div class="detail">
         <div>
@@ -80,12 +81,26 @@
     data() {
       return {
         ssvip: true,
+        vipinfo: {}, // 用户vip信息
       }
     },
     methods: {
-      toPages(str){
-        str? this.$router.push({path:str}):''
+      toPages(str) {
+        str ? this.$router.push({
+          path: str
+        }) : ''
+      },
+
+      /**
+       * 用户会员信息
+       */
+      getVipInfo() {
+        console.log(1111111)
+        this.$global.getCookie('vipinfo') ? this.vipinfo = JSON.parse(this.$global.getCookie('vipinfo')) : ''
       }
+    },
+    mounted() {
+      this.getVipInfo()
     }
   }
 </script>

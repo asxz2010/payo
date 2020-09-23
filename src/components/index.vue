@@ -1,5 +1,6 @@
 <template>
-  <div class="index-container" v-infinite-scroll="loadMore" :infinite-scroll-disabled="busy" infinite-scroll-distance="10" :infinite-scroll-immediate-check="busy2">
+  <div class="index-container" ref="indextop" v-infinite-scroll="loadMore" :infinite-scroll-disabled="busy" infinite-scroll-distance="10"
+    :infinite-scroll-immediate-check="busy2">
     <div class="address">
       <div>
         <div class="iconfont icondizhi"></div>
@@ -27,8 +28,8 @@
         </div>
         <div class="liao_btn">
           <div>
-            <img src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="PAYO社交" @click="getMeiMei(g.number)">
-            <img src="http://qiniu.tecclub.cn/payo/btn_signed@2x.png" alt="PAYO社交">
+            <img v-if="g.isSignup==1" src="http://qiniu.tecclub.cn/payo/btn_signed@2x.png" alt="PAYO社交">
+            <img v-else src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="PAYO社交" @click="getMeiMei(g)">
           </div>
         </div>
         <div class="info">
@@ -38,8 +39,8 @@
               {{ g.age }}岁 {{ g.weight }}kg {{ g.height }}cm
             </div>
           </div>
-          <div>
-            地址: {{ g.province }}-{{ g.city }}
+          <div @click="add">
+            地址: {{ g.province }}-{{ g.city }} {{ $store.state.count }}-{{ $store.getters.getCount }}
             <p @click.nactive="toDetail(g.cover_image)">点我看详情</p>
           </div>
         </div>
@@ -54,7 +55,8 @@
                 <img src="http://51pyyy.cn/uploads/wxpayo/girl/logo-payo.png" alt="PAYO社交">
                 <div class="forever">{{ this.vipinfo.vip|cutString(1) }}</div>
               </div>
-              <div class="leftchance">本月剩余: {{ this.vipinfo.monthSignNum }}次</div>
+              <div v-if="this.vipinfo.isYongjiu==1" class="leftchance">本月剩余: 无限制</div>
+              <div v-else class="leftchance">本月剩余: {{ this.vipinfo.monthSignNum }}次</div>
             </div>
             <div class="d-2">
               <p>{{ this.vipinfo.boyNumber }}</p>
@@ -85,6 +87,7 @@
       <van-area title="省份/直辖市" :columns-placeholder="['请选择']" :area-list="areaList" @confirm="getAddress" @cancel="cancelAddress"
         columns-num="1" visible-item-count="5" />
     </van-popup>
+    <img v-if="btnFlag" src="http://51pyyy.cn/uploads/wxpayo/boy/gotop.png" alt="PAYO社交" class="hddb" @click="backTop">
     <div class="footer"></div>
   </div>
 </template>
@@ -97,9 +100,12 @@
     inject: ['reload'],
     data() {
       return {
+        signup_show: false,  // 报名成功
+        scrollTop: 0, // 节点滚动高度
+        btnFlag: false, // 回到顶部显示
         busy: false,
         busy2: true,
-        scrollY:0,
+        scrollY: 0,
         page: 0, // 页数
         kouling: '', // 口令
         show: false,
@@ -115,6 +121,7 @@
           value: 2
         }],
         myGirls: [], // 妹子信息
+        girlNumber: 0,  // 要报名的girl的number
         userinfo: {}, // Salt,province,addr,email等信息
         payodata: {}, // number,sext等信息
         vipinfo: {}, // 用户vip信息
@@ -128,21 +135,32 @@
     mounted() {
       this.getAreaList()
       this.loadMore()
-      
-         this.$nextTick(()=>{
-              this.box = document.querySelector('.index-container')
-              this.box.addEventListener('scroll', function(){
-                this.scrollY = document.querySelector('.index-container').scrollTop
-                console.log("scrollY", this.scrollY)
-              }, false)
-            })   
+      this.getVipInfo()
+      this.dealHeight()
     },
     methods: {
+      add(){
+        // this.$store.commit('addCount', 1)
+        this.$store.dispatch('getAddCount', 1)
+      },
+      /**
+       * 计算高度，返回不刷新
+       */
+      dealHeight(){
+        this.$nextTick(() => {
+          let indextop= this.$refs.indextop
+          indextop.addEventListener('scroll', function() {
+            this.scrollY = indextop.scrollTop
+          }, false)
+
+          indextop.addEventListener('scroll', this.scrollToTop)
+        })
+      },
+
       /**
        * 上拉加载
        */
       loadMore() {
-        console.log(2222222222)
         this.busy = true
         this.page++
         this.init(this.page)
@@ -262,7 +280,6 @@
         this.$dialog.confirm({
             title: '升级',
             message: '是否去升级?',
-            // confirmButtonText: '去升级',
             cancelButtonText: '暂不'
           })
           .then(() => {
@@ -342,9 +359,20 @@
       /**
        * 显示/隐藏撩一下弹框
        */
-      getMeiMei(num) {
-        this.kouling = '男生' + this.payodata.number + '报名女生' + num + '，密语：叫爸爸。复制口令后，联系客服，可获得匹配结果~'
+      getMeiMei(g) {
+        let index = this.myGirls.indexOf(g)
+        console.log(index)
+        console.log(this.myGirls[index].isSignup)
+        this.$set(this.myGirls[index], 'isSignup', 1)
+        console.log(this.myGirls[index].isSignup)
+        this.girlNumber = g.number
         this.show = !this.show
+      },
+
+      /**
+       * 用户会员信息
+       */
+      getVipInfo(){
         var Salt = this.userinfo.Salt
         var UserNumber = this.payodata.number // 用户number
         var Sex = this.payodata.sex // 性别
@@ -360,6 +388,7 @@
         }).then(res => {
           if (res.data.code == 200) {
             this.vipinfo = res.data.data
+            this.$global.setCookie('vipinfo', JSON.stringify(res.data.data), 60 * 60 * 24)
           }
         }).catch(err => {
           console.log(err.message)
@@ -370,6 +399,31 @@
        * 显示/隐藏复制口令弹框
        */
       getGirl() {
+        var number = {
+          number: this.girlNumber
+        }
+        var Salt = this.userinfo.Salt
+        var UserNumber = this.payodata.number // 用户number
+        var Sex = this.payodata.sex // 性别
+        var Timestamp = this.$global.timestamp // 时间戳
+        var Token = this.$md5(UserNumber + Salt + Timestamp)
+        console.log(12333333333)
+        this.$axios.post(this.$global.api + 'signup/girl', Qs.stringify(number), {
+          headers: {
+            UserNumber,
+            Token,
+            Timestamp,
+            Sex
+          },
+        }).then(res=>{
+          console.log(res)
+          if(res.data.code==200){
+            this.kouling = res.data.data.clipboard_text + '，复制口令后，联系客服，可获得匹配结果~'
+            this.signup_show = true
+          }
+        }).catch(err=>{
+          console.log(err.message)
+        })
         this.show = !this.show
         this.flag = !this.flag
       },
@@ -408,7 +462,31 @@
         this.page = 1
         this.number = ''
         this.init(1)
+      },
+
+      // 点击图片回到顶部方法，加计时器是为了过渡顺滑
+      backTop () {
+        let indextop= this.$refs.indextop
+        let timer = setInterval(() => {
+          let ispeed = Math.floor(-this.scrollTop / 5)
+          indextop.scrollTop = this.scrollTop + ispeed
+          if (this.scrollTop === 0) {
+            clearInterval(timer)
+          }
+        }, 16)
+      },
+
+      // 为了计算距离顶部的高度，当高度大于700显示回顶部图标
+      scrollToTop () {
+        let scrollTop= this.$refs.indextop.scrollTop
+        this.scrollTop = scrollTop
+        if (this.scrollTop > 700) {
+          this.btnFlag = true
+        } else {
+          this.btnFlag = false
+        }
       }
+
     },
     filters: {
       cutString(str, len) {
@@ -418,32 +496,43 @@
         return str
       }
     },
-    beforeRouteLeave (to, from, next) { 
-         //保存滚动条元素div的scrollTop值
-         this.scrollY = document.querySelector('.index-container').scrollTop
-         // console.log(this.scrollY)    
-        next()
-     },
-    // 为div元素重新设置保存的scrollTop值
-    beforeRouteEnter (to, from, next) {
-          next(vm => {  // vm = this
-              document.querySelector('.index-container').scrollTop = vm.scrollY
-              // console.log( document.querySelector('.container').scrollTop )
-          })
+    beforeRouteLeave(to, from, next) {
+      //保存滚动条元素div的scrollTop值
+      this.scrollY = document.querySelector('.index-container').scrollTop
+      next()
     },
+    // 为div元素重新设置保存的scrollTop值
+    beforeRouteEnter(to, from, next) {
+      next(vm => { // vm = this
+        document.querySelector('.index-container').scrollTop = vm.scrollY
+      })
+    },
+    destroyed () {
+      let indextop= this.$refs.indextop
+      indextop.removeEventListener('scroll', this.scrollToTop)
+    },
+
   }
 </script>
 
 <style scoped lang="scss">
+  .hddb{
+      position: fixed;
+      bottom: 80px;
+      right: 0;
+      width: 5rem;
+  }
   .index-container {
-    height: 90vh;
+    height: 94vh;
     overflow-y: auto;
     position: absolute;
-            top: 0;bottom: 0;
-            width: 100%;
-            padding: 0;margin:0;
-            overflow: hidden;
-            overflow-y: scroll;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    overflow-y: scroll;
 
     .address {
       display: flex;
@@ -623,6 +712,8 @@
       width: 100%;
       height: 3rem;
     }
+
+
   }
 
   .wrapper {
