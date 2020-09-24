@@ -128,7 +128,7 @@
         })
       },
       login() {
-        var message
+        var message = ''
         if (this.address === '所在地区' || this.address === '') {
           message = '请选择地区'
         } else if (this.usernumber.split(" ").join('').length === 0 || this.address === '') {
@@ -195,12 +195,14 @@
             console.log(err)
           })
         }
-        this.$notify({
-          message,
-          background: '#FF976A',
-          color: 'white',
-          duration: 1500
-        })
+        if (message) {
+          this.$notify({
+            message,
+            background: '#FF976A',
+            color: 'white',
+            duration: 1500
+          })
+        }
       },
     }
   }
