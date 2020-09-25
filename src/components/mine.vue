@@ -53,7 +53,7 @@
             <div class="iconfont iconxiangyou"></div>
           </div>
         </li>
-        <li @click="toPages('/marry')">
+        <li @click="toPages('/marry', 2)">
           <div>
             <div class="iconfont iconjilu"></div>
             <span>被翻记录</span>
@@ -62,7 +62,7 @@
             <div class="iconfont iconxiangyou"></div>
           </div>
         </li>
-        <li @click="toPages('/error')">
+        <li @click="toPages('/marry', 1)">
           <div>
             <div class="iconfont iconqiangzhipeidui"></div>
             <span>我的报名</span>
@@ -85,9 +85,12 @@
       }
     },
     methods: {
-      toPages(str) {
+      toPages(str, type) {
         str ? this.$router.push({
-          path: str
+          path: str,
+          query: {
+            type
+          }
         }) : ''
       },
 
@@ -95,9 +98,9 @@
        * 用户会员信息
        */
       getVipInfo() {
-        console.log(1111111)
         this.$global.getCookie('vipinfo') ? this.vipinfo = JSON.parse(this.$global.getCookie('vipinfo')) : ''
-      }
+      },
+
     },
     mounted() {
       this.getVipInfo()

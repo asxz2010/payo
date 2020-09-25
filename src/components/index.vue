@@ -123,7 +123,7 @@
         myGirls: [], // 妹子信息
         girlNumber: 0,  // 要报名的girl的number
         userinfo: {}, // Salt,province,addr,email等信息
-        payodata: {}, // number,sext等信息
+        payodata: {}, // number,sex等信息
         vipinfo: {}, // 用户vip信息
         number: '', // 搜索的用户id
       }
@@ -197,9 +197,6 @@
           }).then(res => {
             console.log('数据获取成功')
             console.log(res.data.data.list)
-            for (let g of res.data.data.list) {
-              console.log(g.id)
-            }
             if (res.status == 200) {
               let girl_list = res.data.data.list
               if (girl_list.length > 0) {
@@ -361,10 +358,7 @@
        */
       getMeiMei(g) {
         let index = this.myGirls.indexOf(g)
-        console.log(index)
-        console.log(this.myGirls[index].isSignup)
         this.$set(this.myGirls[index], 'isSignup', 1)
-        console.log(this.myGirls[index].isSignup)
         this.girlNumber = g.number
         this.show = !this.show
       },
@@ -407,7 +401,6 @@
         var Sex = this.payodata.sex // 性别
         var Timestamp = this.$global.timestamp // 时间戳
         var Token = this.$md5(UserNumber + Salt + Timestamp)
-        console.log(12333333333)
         this.$axios.post(this.$global.api + 'signup/girl', Qs.stringify(number), {
           headers: {
             UserNumber,
