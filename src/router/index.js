@@ -89,7 +89,8 @@ export default new Router({
       name: 'error',
       component: error,
       meta: {
-        title: '错误'
+        title: '错误',
+        auth: true
       }
     },
     {
@@ -98,7 +99,8 @@ export default new Router({
       component: detail,
       meta: {
         title: '小姐姐资料',
-        keepAlive: false
+        keepAlive: false,
+        auth: true
       }
     }
   ]

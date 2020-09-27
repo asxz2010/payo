@@ -1,12 +1,13 @@
 <template>
-  <div class="marry-container">
+  <div class="marry-container" v-infinite-scroll="loadMore" :infinite-scroll-disabled="busy" infinite-scroll-distance="10"
+    :infinite-scroll-immediate-check="busy2">
     <div class="wrap" v-for="g in objList">
-      <p>被翻日期: <span>{{ g.su_update_time }}</span></p>
+      <p>{{ tip }}日期: <span>{{ g.su_update_time }}</span></p>
       <div>
         <img src="http://qiniu.tecclub.cn/payo/img_chenggong_nv @2x.png" alt="PAYO社交">
         <div class="info">
           <p>编号: <span>{{ g.su_gid }}</span></p>
-          <p>地址: <span>江苏-南京</span></p>
+          <p>地址: <span>{{ g.province }}-{{ g.city }}</span></p>
         </div>
       </div>
       <img src="http://qiniu.tecclub.cn/payo/icon_liaomeichengg_g@2x.png" alt="PAYO社交">
@@ -19,15 +20,17 @@
   export default {
     data() {
       return {
+        busy: false,
+        busy2: true,
         page: 1, // 默认页数
-        objList: {}, // 撩或被撩数据
+        objList: [], // 撩或被撩数据
         userinfo: {}, // Salt,province,addr,email等信息
         payodata: {}, // number,sex等信息
       }
     },
     methods: {
       /**
-       * 被翻记录
+       * 被翻/报名记录
        */
       getLiaoedList(type) {
         var Salt = this.userinfo.Salt
@@ -41,7 +44,6 @@
           type,
           sex: Sex
         }
-        console.log(data)
         this.$axios.post(this.$global.api + 'signup/list', Qs.stringify(data), {
           headers: {
             UserNumber,
@@ -51,30 +53,43 @@
           },
         }).then(res => {
           if (res.data.code == 200) {
-            this.objList = res.data.data.selectGirls
-            console.log(res.data.data.selectGirls)
-            for (let g of res.data.data.selectGirls) {
-              console.log(g.su_secret)
+            for (let g of res.data.data.lists) {
+              this.objList.push(g)
             }
           }
         }).catch(err => {
-          console.log(err.message)
+          console.log(err)
         })
-      }
-
+      },
+      loadMore() {
+        this.busy = true
+        this.page++
+        this.getLiaoedList(this.type)
+        this.busy = false
+      },
     },
     mounted() {
       this.userinfo = JSON.parse(this.$global.getCookie('user_info'))
       this.payodata = JSON.parse(this.$global.getCookie('payo_data'))
-      console.log(this.$route.query.type)
-      this.getLiaoedList(this.$route.query.type)
-      console.log(this.$route.query.type)
+      var type = this.$route.query.type
+      type == 1 ? this.tip = '报名' : this.tip = '被翻'
+      this.type = type
+      this.getLiaoedList(type)
     }
   }
 </script>
 
 <style scoped lang="scss">
   .marry-container {
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    overflow-y: scroll;
     padding: .5rem;
 
     .wrap {

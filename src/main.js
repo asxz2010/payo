@@ -42,10 +42,10 @@ import {
 } from 'element-ui'
 Vue.use(Cascader).use(Radio)
 
-// import * as filters from 'filter.js'
-// Object.key(filters).each(filter=>{
-// 　　Vue.filter(filter,filters[filter])
-// })
+import * as filters from '@/lib/filter.js'
+Object.key(filters).each(filter=>{
+　　Vue.filter(filter,filters[filter])
+})
 
 router.beforeEach((to, from, next) => {
   if (to.meta.title) {
@@ -58,6 +58,8 @@ router.beforeEach((to, from, next) => {
       document.title = from.meta.title
       next('/login')
     }
+  } else if (to.path == '/login') {
+    common.getCookie('payo_data') ? next('/index') : next()
   } else {
     next()
   }

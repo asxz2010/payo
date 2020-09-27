@@ -35,7 +35,7 @@
     </div>
     <van-popup v-model="address_show" position="bottom">
       <van-area title="省份/直辖市" :columns-placeholder="['请选择']" :area-list="areaList" @confirm="getAddress" @cancel="cancelAddress"
-        columns-num="1" visible-item-count="5" />
+        columns-num="2" visible-item-count="5" />
     </van-popup>
   </div>
 </template>
@@ -51,6 +51,7 @@
       return {
         address: '所在地区', // 地址
         province: 0, // 地区code
+        city: 0,  // 城市code
         usernumber: '', // 个人编号
         sex: '1', // 男1 女2
         email: '', // 邮箱
@@ -69,14 +70,17 @@
       getAddress(addressArr) {
         if (addressArr.length > 0) {
           var address = ''
-          var province = 0
+          console.log(addressArr)
           for (let addr of addressArr) {
             address += addr.name
-            province = addr.code
           }
+
+          var province = addressArr[0].code
+          var city = addressArr[1].code
           address == '' ? address = '请选择' : '',
-            this.address = address
+          this.address = address
           this.province = province
+          this.city = city
         }
         this.showPopup()
       },
@@ -93,31 +97,28 @@
         }).then(response => {
           let areaArr = response.data.data.area
           var provinceStr = '' // 省字符串
-          var province_list
-          // var cityStr = '' // 市字符串
-          // var city_list
+          var cityStr = '' // 市字符串
           new Promise((resolve, reject) => {
             var province_num = 0 // 省计数
             for (let a of areaArr) {
               province_num++
               provinceStr = provinceStr + '"' + a.id + '":"' + a.title + '",'
-              // if (a.list.length > 0) {
-              //   for (let c of a.list) {
-              //     cityStr = cityStr + '"' + c.id + '":"' + c.title + '",'
-              //   }
-              // }
+              if (a.list.length > 0) {
+                for (let c of a.list) {
+                  cityStr = cityStr + '"' + c.id + '":"' + c.title + '",'
+                }
+              }
               if (areaArr.length == province_num) {
                 provinceStr = provinceStr.substring(0, provinceStr.length - 1)
                 provinceStr = '"province_list":{' + provinceStr + '}'
-                // cityStr = cityStr.substring(0, cityStr.length - 1)
-                // cityStr = '"city_list":{' + cityStr + '}'
-                var areaStr = provinceStr
+                cityStr = cityStr.substring(0, cityStr.length - 1)
+                cityStr = ',"city_list":{' + cityStr + '}'
+                var areaStr = '{' + provinceStr + cityStr + '}'
                 resolve(areaStr)
               }
             }
           }).then(res => {
-            var areaStr = '{' + res + '}'
-            var areaList = JSON.parse(areaStr)
+            var areaList = JSON.parse(res)
             console.log(areaList)
             this.areaList = areaList
           }).catch(err => {
@@ -149,7 +150,7 @@
 
           var province = this.province // 省份code
           var sex = this.sex // 性别
-          var city = '320100' // 城市code
+          var city = this.city // 城市code
           var number = this.usernumber // 用户number
           var email = this.email
           let data = {
@@ -168,22 +169,25 @@
             }
           }).then(res => {
             if (res.data.code == 200) {
-              var data = JSON.stringify(res.data.data)
-              var userinfo = JSON.stringify({
-                addr: this.address,
-                order: 1,
-                province,
-                email,
-                Salt,
-              })
-              this.$global.setCookie('payo_data', data, 60 * 60 * 24)
-              this.$global.setCookie('user_info', userinfo, 60 * 60 * 24)
-              Toast.success({
-                message: '登录成功',
-                duration: 1000
-              })
               setTimeout(() => {
-                this.$router.push('/index')
+                var data = JSON.stringify(res.data.data)
+                var userinfo = JSON.stringify({
+                  addr: this.address,
+                  order: 1,
+                  province,
+                  city,
+                  email,
+                  Salt,
+                })
+                this.$global.setCookie('payo_data', data, 60 * 60 * 24)
+                this.$global.setCookie('user_info', userinfo, 60 * 60 * 24)
+                Toast.success({
+                  message: '登录成功',
+                  duration: 1000
+                })
+                setTimeout(() => {
+                  this.$router.push('/index')
+                }, 1500)
               }, 1000)
             } else {
               Toast.fail({

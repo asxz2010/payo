@@ -1,6 +1,6 @@
 <template>
-  <div class="index-container" ref="indextop" v-infinite-scroll="loadMore" :infinite-scroll-disabled="busy" infinite-scroll-distance="10"
-    :infinite-scroll-immediate-check="busy2">
+  <div class="index-container" ref="indextop" v-infinite-scroll="loadMore" :infinite-scroll-disabled="busy"
+    infinite-scroll-distance="10" :infinite-scroll-immediate-check="busy2">
     <div class="address">
       <div>
         <div class="iconfont icondizhi"></div>
@@ -40,13 +40,13 @@
             </div>
           </div>
           <div @click="add">
-            地址: {{ g.province }}-{{ g.city }} {{ $store.state.count }}-{{ $store.getters.getCount }}
+            地址: {{ g.province }}-{{ g.city }}
             <p @click.nactive="toDetail(g.cover_image)">点我看详情</p>
           </div>
         </div>
       </div>
     </div>
-    <van-overlay :show="show" @click="getMeiMei">
+    <van-overlay :show="show" @click="tkShow">
       <div class="wrapper">
         <div class="block" @click.stop>
           <div class="d-4">
@@ -80,12 +80,12 @@
       </div>
     </van-overlay>
     <van-dialog v-model="flag" :show-confirm-button="false" close-on-click-overlay>
-      <p class="diag">{{ kouling }}</p>
+      <p class="diag">{{ tip }}</p>
       <van-button color="#FFB929" class="btn" @mouseenter.native="copy" ref="copyBtn" :data-clipboard-text="kouling">点击复制口令</van-button>
     </van-dialog>
     <van-popup v-model="address_show" position="bottom">
       <van-area title="省份/直辖市" :columns-placeholder="['请选择']" :area-list="areaList" @confirm="getAddress" @cancel="cancelAddress"
-        columns-num="1" visible-item-count="5" />
+        columns-num="2" visible-item-count="5" />
     </van-popup>
     <img v-if="btnFlag" src="http://51pyyy.cn/uploads/wxpayo/boy/gotop.png" alt="PAYO社交" class="hddb" @click="backTop">
     <div class="footer"></div>
@@ -100,7 +100,7 @@
     inject: ['reload'],
     data() {
       return {
-        signup_show: false,  // 报名成功
+        signup_show: false, // 报名成功
         scrollTop: 0, // 节点滚动高度
         btnFlag: false, // 回到顶部显示
         busy: false,
@@ -108,6 +108,7 @@
         scrollY: 0,
         page: 0, // 页数
         kouling: '', // 口令
+        tip: '', // 口令提示
         show: false,
         flag: false,
         address_show: false,
@@ -121,7 +122,7 @@
           value: 2
         }],
         myGirls: [], // 妹子信息
-        girlNumber: 0,  // 要报名的girl的number
+        girlNumber: 0, // 要报名的girl的number
         userinfo: {}, // Salt,province,addr,email等信息
         payodata: {}, // number,sex等信息
         vipinfo: {}, // 用户vip信息
@@ -139,16 +140,16 @@
       this.dealHeight()
     },
     methods: {
-      add(){
+      add() {
         // this.$store.commit('addCount', 1)
         this.$store.dispatch('getAddCount', 1)
       },
       /**
        * 计算高度，返回不刷新
        */
-      dealHeight(){
+      dealHeight() {
         this.$nextTick(() => {
-          let indextop= this.$refs.indextop
+          let indextop = this.$refs.indextop
           indextop.addEventListener('scroll', function() {
             this.scrollY = indextop.scrollTop
           }, false)
@@ -216,50 +217,6 @@
       },
 
       /**
-       * 地区
-       */
-      getAreaList() {
-        this.$axios.get(this.$global.api + 'area/index', {
-          params: {},
-          headers: {}
-        }).then(response => {
-          let areaArr = response.data.data.area
-          var provinceStr = '' // 省字符串
-          var province_list
-          // var cityStr = '' // 市字符串
-          // var city_list
-          new Promise((resolve, reject) => {
-            var province_num = 0 // 省计数
-            for (let a of areaArr) {
-              province_num++
-              provinceStr = provinceStr + '"' + a.id + '":"' + a.title + '",'
-              // if (a.list.length > 0) {
-              //   for (let c of a.list) {
-              //     cityStr = cityStr + '"' + c.id + '":"' + c.title + '",'
-              //   }
-              // }
-              if (areaArr.length == province_num) {
-                provinceStr = provinceStr.substring(0, provinceStr.length - 1)
-                provinceStr = '"province_list":{' + provinceStr + '}'
-                // cityStr = cityStr.substring(0, cityStr.length - 1)
-                // cityStr = '"city_list":{' + cityStr + '}'
-                var areaStr = provinceStr
-                resolve(areaStr)
-              }
-            }
-          }).then(res => {
-            var areaStr = '{' + res + '}'
-            var areaList = JSON.parse(areaStr)
-            this.areaList = areaList
-          }).catch(err => {
-            console.log(err)
-          })
-        }).catch(error => {
-          console.log(error)
-        })
-      },
-
-      /**
        * 搜索妹妹
        */
       findMeiMei() {
@@ -275,8 +232,7 @@
       toVip() {
         this.getMeiMei()
         this.$dialog.confirm({
-            title: '升级',
-            message: '是否去升级?',
+            title: '是否去升级?',
             cancelButtonText: '暂不'
           })
           .then(() => {
@@ -309,11 +265,11 @@
       getAddress(addressArr) {
         if (addressArr.length > 0) {
           var address = ''
-          var province
           for (let addr of addressArr) {
-            address = addr.name
-            province = addr.code
+            address += addr.name
           }
+          var province = addressArr[0].code
+          var city = addressArr[1].code
           address == '' ? address = '请选择' : ''
           this.userinfo.addr = address
           this.userinfo.province = province
@@ -331,6 +287,48 @@
        */
       cancelAddress() {
         this.showPopup()
+      },
+
+      /**
+       * 地区
+       */
+      getAreaList() {
+        this.$axios.get(this.$global.api + 'area/index', {
+          params: {},
+          headers: {}
+        }).then(response => {
+          let areaArr = response.data.data.area
+          var provinceStr = '' // 省字符串
+          var cityStr = '' // 市字符串
+          new Promise((resolve, reject) => {
+            var province_num = 0 // 省计数
+            for (let a of areaArr) {
+              province_num++
+              provinceStr = provinceStr + '"' + a.id + '":"' + a.title + '",'
+              if (a.list.length > 0) {
+                for (let c of a.list) {
+                  cityStr = cityStr + '"' + c.id + '":"' + c.title + '",'
+                }
+              }
+              if (areaArr.length == province_num) {
+                provinceStr = provinceStr.substring(0, provinceStr.length - 1)
+                provinceStr = '"province_list":{' + provinceStr + '}'
+                cityStr = cityStr.substring(0, cityStr.length - 1)
+                cityStr = ',"city_list":{' + cityStr + '}'
+                var areaStr = '{' + provinceStr + cityStr + '}'
+                resolve(areaStr)
+              }
+            }
+          }).then(res => {
+            var areaList = JSON.parse(res)
+            console.log(areaList)
+            this.areaList = areaList
+          }).catch(err => {
+            console.log(err)
+          })
+        }).catch(error => {
+          console.log(error)
+        })
       },
 
       /**
@@ -354,19 +352,27 @@
       },
 
       /**
-       * 显示/隐藏撩一下弹框
+       * 撩一下
+       * @param {Object} g(撩的对象)
        */
       getMeiMei(g) {
         let index = this.myGirls.indexOf(g)
         this.$set(this.myGirls[index], 'isSignup', 1)
         this.girlNumber = g.number
+        this.tkShow()
+      },
+
+      /**
+       * 显示/隐藏撩一下弹框
+       */
+      tkShow() {
         this.show = !this.show
       },
 
       /**
        * 用户会员信息
        */
-      getVipInfo(){
+      getVipInfo() {
         var Salt = this.userinfo.Salt
         var UserNumber = this.payodata.number // 用户number
         var Sex = this.payodata.sex // 性别
@@ -380,6 +386,7 @@
             Sex
           },
         }).then(res => {
+          console.log(res)
           if (res.data.code == 200) {
             this.vipinfo = res.data.data
             this.$global.setCookie('vipinfo', JSON.stringify(res.data.data), 60 * 60 * 24)
@@ -408,13 +415,14 @@
             Timestamp,
             Sex
           },
-        }).then(res=>{
+        }).then(res => {
           console.log(res)
-          if(res.data.code==200){
-            this.kouling = res.data.data.clipboard_text + '，复制口令后，联系客服，可获得匹配结果~'
+          if (res.data.code == 200) {
+            this.tip = res.data.data.clipboard_text + '，复制口令后，联系客服，可获得匹配结果~'
+            this.kouling = res.data.data.clipboard_text
             this.signup_show = true
           }
-        }).catch(err=>{
+        }).catch(err => {
           console.log(err.message)
         })
         this.show = !this.show
@@ -458,8 +466,8 @@
       },
 
       // 点击图片回到顶部方法，加计时器是为了过渡顺滑
-      backTop () {
-        let indextop= this.$refs.indextop
+      backTop() {
+        let indextop = this.$refs.indextop
         let timer = setInterval(() => {
           let ispeed = Math.floor(-this.scrollTop / 5)
           indextop.scrollTop = this.scrollTop + ispeed
@@ -470,8 +478,8 @@
       },
 
       // 为了计算距离顶部的高度，当高度大于700显示回顶部图标
-      scrollToTop () {
-        let scrollTop= this.$refs.indextop.scrollTop
+      scrollToTop() {
+        let scrollTop = this.$refs.indextop.scrollTop
         this.scrollTop = scrollTop
         if (this.scrollTop > 700) {
           this.btnFlag = true
@@ -500,8 +508,8 @@
         document.querySelector('.index-container').scrollTop = vm.scrollY
       })
     },
-    destroyed () {
-      let indextop= this.$refs.indextop
+    destroyed() {
+      let indextop = this.$refs.indextop
       indextop.removeEventListener('scroll', this.scrollToTop)
     },
 
@@ -509,12 +517,13 @@
 </script>
 
 <style scoped lang="scss">
-  .hddb{
-      position: fixed;
-      bottom: 80px;
-      right: 0;
-      width: 5rem;
+  .hddb {
+    position: fixed;
+    bottom: 80px;
+    right: 0;
+    width: 5rem;
   }
+
   .index-container {
     height: 94vh;
     overflow-y: auto;

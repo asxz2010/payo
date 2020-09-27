@@ -9,22 +9,18 @@
         <img src="http://51pyyy.cn/uploads/wxpayo/girl/logo-payo.png" alt="PAYO社交">
         <div class="number">
           <img src="http://51pyyy.cn/uploads/wxpayo/girl/v.png" alt="PAYO社交">
-          <div>{{ this.vipinfo.boyNumber }}</div>
+          <div>{{ this.vipinfo.boy_number }}</div>
         </div>
         <p v-if="this.vipinfo.isYongjiu == 1" class="date">会员到期时间：{{ this.vipinfo.vip }}</p>
-        <p v-else class="date">会员到期时间：{{ this.vipinfo.expireTime }}</p>
+        <p v-else class="date">会员到期时间：{{ this.vipinfo.expire_time }}</p>
       </div>
       <div class="detail">
         <div>
           <img src="http://51pyyy.cn/uploads/wxpayo/boy/man.png">
         </div>
-        <div v-show="!ssvip">
-          <img src="@/assets/images/vip.png">
-          <p>私人订制</p>
-        </div>
-        <div v-show="ssvip">
+        <div>
           <img src="@/assets/images/ssvip.png">
-          <p>永久私人订制</p>
+          <p>{{ this.vipinfo.vip }}</p>
         </div>
         <div>
           <img src="http://51pyyy.cn/uploads/wxpayo/girl/icon-huiyuan.png">
@@ -35,7 +31,7 @@
 
     <div class="middle">
       <ul>
-        <li @click="toPages('/info')">
+        <li @click="toInfo('/info')">
           <div>
             <div class="iconfont icondangan"></div>
             <span>我的档案</span>
@@ -71,20 +67,73 @@
             <div class="iconfont iconxiangyou"></div>
           </div>
         </li>
+        <li @click="loginOut()">
+          <div>
+            <div class="iconfont icontuichudenglu"></div>
+            <span>退出</span>
+          </div>
+          <div>
+            <div class="iconfont iconxiangyou"></div>
+          </div>
+        </li>
       </ul>
     </div>
   </div>
 </template>
 
 <script>
+  import {
+    Toast
+  } from 'vant'
   export default {
+    inject: ['reload'],
     data() {
       return {
-        ssvip: true,
         vipinfo: {}, // 用户vip信息
+        userinfo: {}, // Salt,province,addr,email等信息
+        payodata: {}, // number,sex等信息
       }
     },
+    created() {
+      this.userinfo = JSON.parse(this.$global.getCookie('user_info'))
+      this.payodata = JSON.parse(this.$global.getCookie('payo_data'))
+    },
     methods: {
+      /**
+       * 退出登录
+       */
+      loginOut() {
+        this.$dialog.confirm({
+            title: '退出登录',
+            cancelButtonText: '暂不'
+          })
+          .then(() => {
+            Toast.loading({
+              message: '正在退出...',
+              forbidClick: true,
+              duration: 1500
+            })
+            this.$global.delCookie('user_info')
+            this.$global.delCookie('payo_data')
+            setTimeout(() => {
+              Toast.success({
+                message: '已退出',
+                duration: 1000
+              })
+              setTimeout(() => {
+                this.$router.push({
+                  path: '/login'
+                })
+              }, 1500)
+            }, 1500)
+          })
+          .catch(() => {})
+      },
+
+      /**
+       * @param {Object} str(路由)
+       * @param {Object} type(1为报名，2为翻)
+       */
       toPages(str, type) {
         str ? this.$router.push({
           path: str,
@@ -93,12 +142,49 @@
           }
         }) : ''
       },
+      
+      /**
+       * @param {String} str(路由)
+       * @param {String} imgsrc(图片)
+       */
+      toInfo(str, imgsrc){
+        str ? this.$router.push({
+          path: str,
+          query: {
+            imgsrc
+          }
+        }) : ''
+      },
 
       /**
        * 用户会员信息
        */
       getVipInfo() {
-        this.$global.getCookie('vipinfo') ? this.vipinfo = JSON.parse(this.$global.getCookie('vipinfo')) : ''
+        var Salt = this.userinfo.Salt
+        var UserNumber = this.payodata.number // 用户number
+        var Sex = this.payodata.sex // 性别
+        var Timestamp = this.$global.timestamp // 时间戳
+        var Token = this.$md5(UserNumber + Salt + Timestamp)
+        var path = Sex == 1 ? 'boy/view' : 'girl/view'
+        this.$axios.get(this.$global.api + path,{
+          params: {
+            number: UserNumber
+          },
+          headers: {
+            UserNumber,
+            Token,
+            Timestamp,
+            Sex
+          },
+        }).then(res => {
+          if(res.data.code==200){
+            this.vipinfo = res.data.data
+          }
+          console.log(res)
+        }).catch(err => {
+          console.log(err.message)
+        })
+        // this.$global.getCookie('vipinfo') ? this.vipinfo = JSON.parse(this.$global.getCookie('vipinfo')) : ''
       },
 
     },

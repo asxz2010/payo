@@ -1,6 +1,6 @@
 <template>
   <div class="info-container">
-    <img src="http://py.tecclub.cn/boy-archives/archives/20200106145404323750.png" alt="PAYO社交" :style="{height:html_height+'px'}">
+    <img :src="imgsrc" alt="PAYO社交" :style="{height:html_height+'px'}">
   </div>
 </template>
 
@@ -8,11 +8,13 @@
   export default{
     data(){
       return {
-        html_height: 0
+        html_height: 0,
+        imgsrc: ''  // 档案图片
       }
     },
     created(){
       this.html_height = this.$global.html_height
+      this.imgsrc = this.$route.query.imgsrc
     }
   }
 </script>
