@@ -97,6 +97,7 @@
   import 'viewerjs/dist/viewer.css'
   import Qs from 'qs'
   export default {
+    name: 'index',
     inject: ['reload'],
     data() {
       return {
@@ -249,7 +250,6 @@
        * 点我查看详情
        */
       toDetail(imgsrc) {
-        console.log(111111)
         this.$router.push({
           path: '/detail',
           query: {
@@ -489,14 +489,6 @@
       }
 
     },
-    filters: {
-      cutString(str, len) {
-        if (str && str.length > len) {
-          str = str.substring(0, len)
-        }
-        return str
-      }
-    },
     beforeRouteLeave(to, from, next) {
       //保存滚动条元素div的scrollTop值
       this.scrollY = document.querySelector('.index-container').scrollTop
@@ -511,6 +503,7 @@
     destroyed() {
       let indextop = this.$refs.indextop
       indextop.removeEventListener('scroll', this.scrollToTop)
+      this.$store.dispatch('settings/addKeepAlivePage', 'index')
     },
 
   }
@@ -617,7 +610,6 @@
       position: relative;
       height: 80vh;
       margin-top: 2vw;
-      // overflow-y: auto;
 
       .wrap {
         width: 94%;

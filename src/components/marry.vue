@@ -33,6 +33,7 @@
        * 被翻/报名记录
        */
       getLiaoedList(type) {
+        console.log(type)
         var Salt = this.userinfo.Salt
         var UserNumber = this.payodata.number // 用户number
         var Sex = this.payodata.sex // 性别

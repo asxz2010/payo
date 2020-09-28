@@ -46,7 +46,6 @@ export default new Router({
       meta: {
         title: '个人中心',
         auth: true,
-        keepAlive: true,
       }
     },
     {
@@ -99,8 +98,8 @@ export default new Router({
       component: detail,
       meta: {
         title: '小姐姐资料',
-        keepAlive: false,
-        auth: true
+        auth: true,
+        keepAlive: false
       }
     }
   ]

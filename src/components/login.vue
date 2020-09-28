@@ -51,7 +51,7 @@
       return {
         address: '所在地区', // 地址
         province: 0, // 地区code
-        city: 0,  // 城市code
+        city: 0, // 城市code
         usernumber: '', // 个人编号
         sex: '1', // 男1 女2
         email: '', // 邮箱
@@ -78,7 +78,7 @@
           var province = addressArr[0].code
           var city = addressArr[1].code
           address == '' ? address = '请选择' : '',
-          this.address = address
+            this.address = address
           this.province = province
           this.city = city
         }

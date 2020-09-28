@@ -8,9 +8,20 @@
 </template>
 
 <script>
+  const route_LEV = {
+    '/login': 0,
+    '/index': 1,
+    '/mine': 2,
+    '/info': 3,
+    '/marry': 3,
+    '/rise_vip': 3,
+    '/detail': 3,
+    '/error': 3,
+  }
   export default {
     data() {
       return {
+        LEVEL: route_LEV,
         html_height: 0,
         imgsrc: '' // 图片url
       }
@@ -18,6 +29,7 @@
     created() {
       this.html_height = this.$global.html_height
       this.imgsrc = this.$route.query.imgsrc
+      console.log(this.imgsrc)
     },
     methods:{
       goBack(){

@@ -42,9 +42,10 @@ import {
 } from 'element-ui'
 Vue.use(Cascader).use(Radio)
 
-import * as filters from '@/lib/filter.js'
-Object.key(filters).each(filter=>{
-　　Vue.filter(filter,filters[filter])
+import * as custom from '@/lib/filter.js'
+// 导出的是对象，可以直接通过 key 和 value 来获得过滤器的名和过滤器的方法
+Object.keys(custom).forEach(key => {
+  Vue.filter(key, custom[key])
 })
 
 router.beforeEach((to, from, next) => {

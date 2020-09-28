@@ -1,16 +1,17 @@
 <template>
   <div id="app">
+    <!-- <transition-group> -->
     <transition :name="transitionName">
       <!-- <keep-alive>
         <router-view class="page" v-if="isRouterAlive" />
       </keep-alive> -->
       <keep-alive>
-        <router-view class="page" v-if="$route.meta.keepAlive"></router-view>
+        <router-view class="page" include="index"></router-view>
       </keep-alive>
     </transition>
-    <transition :name="transitionName">
+   <!-- <transition :name="transitionName">
       <router-view class="page" v-if="!$route.meta.keepAlive"></router-view>
-    </transition>
+    </transition> -->
 
     <div class="tabbar" v-show="flag">
       <div @click="chooseTab(0)">
@@ -63,7 +64,8 @@
 
         transitionName: '',
         LEVEL: route_LEV,
-        isRouterAlive: true
+        isRouterAlive: true,
+        keepAliveArr: ['index']
       }
     },
     created() {
@@ -117,6 +119,7 @@
         }
       }
     }
+
   }
 </script>
 

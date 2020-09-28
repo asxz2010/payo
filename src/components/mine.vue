@@ -9,12 +9,11 @@
         <img src="http://51pyyy.cn/uploads/wxpayo/girl/logo-payo.png" alt="PAYO社交">
         <div class="number">
           <img src="http://51pyyy.cn/uploads/wxpayo/girl/v.png" alt="PAYO社交">
-          <div>{{ this.vipinfo.boy_number }}</div>
+          <div>{{ this.vipinfo.number }}</div>
         </div>
-        <p v-if="this.vipinfo.isYongjiu == 1" class="date">会员到期时间：{{ this.vipinfo.vip }}</p>
-        <p v-else class="date">会员到期时间：{{ this.vipinfo.expire_time }}</p>
+        <p v-if="this.vipinfo.vip" class="date">会员到期时间：{{ this.vipinfo.expire_time|cutString(10) }}</p>
       </div>
-      <div class="detail">
+      <div v-if="this.vipinfo.vip" class="detail">
         <div>
           <img src="http://51pyyy.cn/uploads/wxpayo/boy/man.png">
         </div>
@@ -86,6 +85,7 @@
     Toast
   } from 'vant'
   export default {
+    // name: 'mine',
     inject: ['reload'],
     data() {
       return {
@@ -142,16 +142,16 @@
           }
         }) : ''
       },
-      
+
       /**
-       * @param {String} str(路由)
+       * @param {String} path(路由)
        * @param {String} imgsrc(图片)
        */
-      toInfo(str, imgsrc){
-        str ? this.$router.push({
-          path: str,
+      toInfo(path) {
+        path ? this.$router.push({
+          path: path,
           query: {
-            imgsrc
+            imgsrc: this.vipinfo.cover_image
           }
         }) : ''
       },
@@ -166,7 +166,7 @@
         var Timestamp = this.$global.timestamp // 时间戳
         var Token = this.$md5(UserNumber + Salt + Timestamp)
         var path = Sex == 1 ? 'boy/view' : 'girl/view'
-        this.$axios.get(this.$global.api + path,{
+        this.$axios.get(this.$global.api + path, {
           params: {
             number: UserNumber
           },
@@ -177,14 +177,18 @@
             Sex
           },
         }).then(res => {
-          if(res.data.code==200){
-            this.vipinfo = res.data.data
+          if (res.data.code == 200) {
+            let data = res.data.data
+            if(data.boy_number){
+              data.number = data.boy_number
+              data.boy_number = undefined
+            }
+            this.vipinfo = data
           }
           console.log(res)
         }).catch(err => {
           console.log(err.message)
         })
-        // this.$global.getCookie('vipinfo') ? this.vipinfo = JSON.parse(this.$global.getCookie('vipinfo')) : ''
       },
 
     },
