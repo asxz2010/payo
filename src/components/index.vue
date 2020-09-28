@@ -97,8 +97,8 @@
   import 'viewerjs/dist/viewer.css'
   import Qs from 'qs'
   export default {
-    name: 'index',
     inject: ['reload'],
+    name: 'index',
     data() {
       return {
         signup_show: false, // 报名成功
@@ -107,6 +107,8 @@
         busy: false,
         busy2: true,
         scrollY: 0,
+        toPath: '', // 目标路由
+        fromPath: '', // 源路由
         page: 0, // 页数
         kouling: '', // 口令
         tip: '', // 口令提示
@@ -497,6 +499,8 @@
     // 为div元素重新设置保存的scrollTop值
     beforeRouteEnter(to, from, next) {
       next(vm => { // vm = this
+        vm.toPath = to.path
+        vm.fromPath = from.path
         document.querySelector('.index-container').scrollTop = vm.scrollY
       })
     },
@@ -505,7 +509,12 @@
       indextop.removeEventListener('scroll', this.scrollToTop)
       this.$store.dispatch('settings/addKeepAlivePage', 'index')
     },
-
+    activated(){
+      if(localStorage.getItem('login') == '/login'){
+        localStorage.removeItem('login')
+        location.reload()
+      }
+    }
   }
 </script>
 

@@ -6,12 +6,12 @@
         <router-view class="page" v-if="isRouterAlive" />
       </keep-alive> -->
       <keep-alive>
-        <router-view class="page" include="index"></router-view>
+        <router-view class="page" v-if="$route.meta.keepAlive && isRouterAlive"></router-view>
       </keep-alive>
     </transition>
-   <!-- <transition :name="transitionName">
-      <router-view class="page" v-if="!$route.meta.keepAlive"></router-view>
-    </transition> -->
+    <transition :name="transitionName">
+      <router-view class="page" v-if="!$route.meta.keepAlive && isRouterAlive"></router-view>
+    </transition>
 
     <div class="tabbar" v-show="flag">
       <div @click="chooseTab(0)">
@@ -69,7 +69,15 @@
       }
     },
     created() {
-      this.$route.path === '/login' ? this.flag = false : ''
+      if(this.$route.path != '/index' && this.$route.path != '/mine'){
+        this.flag = false
+      }else{
+        this.flag = true
+      }
+      if(localStorage.getItem('tabFlag')){
+        this.tabFlag = eval(localStorage.getItem('tabFlag'))
+        console.log(222222223333333)
+      }
     },
     methods: {
       reload() {
@@ -81,11 +89,17 @@
       chooseTab(num) {
         if (num == 0) {
           this.tabFlag = true
+          localStorage.setItem('tabFlag', true)
+          var tabFlagStr = localStorage.getItem('tabFlag')
+          this.tabFlag = eval(tabFlagStr)
           this.$router.push({
             path: '/index'
           })
         } else if (num == 1) {
           this.tabFlag = false
+          localStorage.setItem('tabFlag', false)
+          var tabFlagStr = localStorage.getItem('tabFlag')
+          this.tabFlag = eval(tabFlagStr)
           this.$router.push({
             path: '/mine'
           })
@@ -133,7 +147,6 @@
   * {
     box-sizing: border-box;
   }
-
 
   body {
     margin: 0;

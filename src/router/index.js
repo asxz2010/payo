@@ -46,6 +46,7 @@ export default new Router({
       meta: {
         title: '个人中心',
         auth: true,
+        keepAlive: true,
       }
     },
     {

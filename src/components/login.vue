@@ -186,6 +186,7 @@
                   duration: 1000
                 })
                 setTimeout(() => {
+                  localStorage.setItem('login', '/login')
                   this.$router.push('/index')
                 }, 1500)
               }, 1000)
