@@ -76,7 +76,6 @@
       }
       if(localStorage.getItem('tabFlag')){
         this.tabFlag = eval(localStorage.getItem('tabFlag'))
-        console.log(222222223333333)
       }
     },
     methods: {

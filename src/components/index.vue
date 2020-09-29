@@ -14,28 +14,32 @@
     </div>
     <div class="top">
       <div class="inp">
-        <input type="text" v-model="number" placeholder="输入妹子编号" @keyup.13="findMeiMei">
+        <input type="text" v-model="number" :placeholder="'输入'+placeholder+'编号'" @keyup.13="findMeiMei">
       </div>
     </div>
     <div class="middle">
-      <div class="wrap" v-for="g in myGirls" :key="g.id">
+      <div v-if="myGirls.length<=0" class="wrap wrap2">
+        <p>没有你找的{{ placeholder }},看看别的{{ placeholder }}吧!</p>
+      </div>
+      <div v-else class="wrap" v-for="g in myGirls" :key="g.id">
         <div class="content">
-          <img :src="g.cover_image" alt="PAYO社交" :id="'img'+g.id" @mouseenter="sweetgirl('img'+g.id)">
-          <img v-if="g.face_score=='S'" src="http://qiniu.tecclub.cn/payo/biaoqian_s@2x.png" alt="PAYO社交">
-          <img v-else-if="g.face_score=='SS'" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_ss@2x.png" alt="PAYO社交">
-          <img v-else-if="g.face_score=='A'" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_a@2x.png" alt="PAYO社交">
-          <img v-else src="http://qiniu.tecclub.cn/payo/icon_biaoqian_b@2x.png" alt="PAYO社交">
+          <img v-if="g.cover_image!=''" :src="g.cover_image" alt="PAYO社交" :id="'img'+g.id" @mouseenter="sweetgirl('img'+g.id)">
+          <img v-else src="../assets/images/girl.jpg" alt="PAYO社交" :id="'img'+g.id" @mouseenter="sweetgirl('img'+g.id)">
+          <img v-if="g.face_score=='S' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/biaoqian_s@2x.png" alt="PAYO社交">
+          <img v-else-if="g.face_score=='SS' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_ss@2x.png" alt="PAYO社交">
+          <img v-else-if="g.face_score=='A' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_a@2x.png" alt="PAYO社交">
+          <img v-else-if="g.face_score=='B' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_b@2x.png" alt="PAYO社交">
         </div>
         <div class="liao_btn">
           <div>
             <img v-if="g.isSignup==1" src="http://qiniu.tecclub.cn/payo/btn_signed@2x.png" alt="PAYO社交">
-            <img v-else src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="PAYO社交" @click="getMeiMei(g)">
+            <img v-else src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="PAYO社交" @click="tkShow(g)">
           </div>
         </div>
         <div class="info">
           <div>
             <div>
-              <p>编号: {{ g.number }}</p>
+              <p>编号: {{ g.number }}{{ g.boy_number }}</p>
               {{ g.age }}岁 {{ g.weight }}kg {{ g.height }}cm
             </div>
           </div>
@@ -45,6 +49,10 @@
           </div>
         </div>
       </div>
+
+      <!-- <div v-else class="wrap wrap2">
+        <p>没有你找的{{ placeholder }},看看别的{{ placeholder }}吧!</p>
+      </div> -->
     </div>
     <van-overlay :show="show" @click="tkShow">
       <div class="wrapper">
@@ -56,14 +64,14 @@
                 <div class="forever">{{ this.vipinfo.vip|cutString(1) }}</div>
               </div>
               <div v-if="this.vipinfo.isYongjiu==1" class="leftchance">本月剩余: 无限制</div>
-              <div v-else class="leftchance">本月剩余: {{ this.vipinfo.monthSignNum }}次</div>
+              <div v-else class="leftchance">本月剩余: {{ this.vipinfo.monthSignNum }}{{ this.vipinfo.daySignNum }}次</div>
             </div>
             <div class="d-2">
-              <p>{{ this.vipinfo.boyNumber }}</p>
+              <p>{{ this.vipinfo.number }}</p>
               <p v-if="this.vipinfo.isYongjiu==1">会员到期时间: {{ this.vipinfo.vip }}</p>
-              <p v-else>会员到期时间: {{ this.vipinfo.expireTime }}</p>
+              <p v-else-if="this.vipinfo.expireTime">会员到期时间: {{ this.vipinfo.expireTime }}</p>
             </div>
-            <div class="d-3" v-if="this.vipinfo.isYongjiu!=1">
+            <div class="d-3" v-if="this.vipinfo.isYongjiu!=1 && this.vipinfo.expireTime">
               <van-button icon="http://qiniu.tecclub.cn/payo/jewel_icon@2x.png" color="#FFB929" size="small" round
                 plain @click="toVip">
                 升级
@@ -95,15 +103,20 @@
 <script>
   import Viewer from 'viewerjs'
   import 'viewerjs/dist/viewer.css'
+  import {
+    Toast
+  } from 'vant'
   import Qs from 'qs'
   export default {
     inject: ['reload'],
     name: 'index',
     data() {
       return {
+        myGirlsShow: true,
         signup_show: false, // 报名成功
         scrollTop: 0, // 节点滚动高度
         btnFlag: false, // 回到顶部显示
+        placeholder: '妹妹', // 输入提示语
         busy: false,
         busy2: true,
         scrollY: 0,
@@ -124,17 +137,19 @@
           text: '等级排序',
           value: 2
         }],
-        myGirls: [], // 妹子信息
+        myGirls: ['111'], // 妹子信息
         girlNumber: 0, // 要报名的girl的number
         userinfo: {}, // Salt,province,addr,email等信息
         payodata: {}, // number,sex等信息
         vipinfo: {}, // 用户vip信息
         number: '', // 搜索的用户id
+        obj: '' // 临时对象
       }
     },
     created() {
       this.userinfo = JSON.parse(this.$global.getCookie('user_info'))
       this.payodata = JSON.parse(this.$global.getCookie('payo_data'))
+      this.payodata.sex == 1? '':this.placeholder='哥哥'
     },
     mounted() {
       this.getAreaList()
@@ -184,6 +199,8 @@
         if (this.payodata.sex == 2) {
           path = 'boy/list'
         }
+        console.log(this.userinfo.province)
+        console.log(order)
         return new Promise(resolve => {
           this.$axios.get(this.$global.api + path, {
             headers: {
@@ -201,6 +218,7 @@
           }).then(res => {
             console.log('数据获取成功')
             console.log(res.data.data.list)
+            page == 1? this.myGirls = []:''
             if (res.status == 200) {
               let girl_list = res.data.data.list
               if (girl_list.length > 0) {
@@ -220,20 +238,24 @@
       },
 
       /**
-       * 搜索妹妹
+       * 搜索对象
        */
       findMeiMei() {
         this.page = 1
         this.myGirls = []
         this.init(1)
         console.log('找到了一个妹妹')
+        console.log(this.myGirls.length)
+        if(this.myGirls.length==0){
+          this.myGirlsShow = false
+        }
       },
 
       /**
        * 去升级
        */
       toVip() {
-        this.getMeiMei()
+        // this.getMeiMei()
         this.$dialog.confirm({
             title: '是否去升级?',
             cancelButtonText: '暂不'
@@ -357,78 +379,132 @@
        * 撩一下
        * @param {Object} g(撩的对象)
        */
-      getMeiMei(g) {
-        let index = this.myGirls.indexOf(g)
-        this.$set(this.myGirls[index], 'isSignup', 1)
-        this.girlNumber = g.number
-        this.tkShow()
+      getMeiMei() {
+        let g = this.obj
+        if(this.payodata.sex!=1){
+          if(this.vipinfo.daySignNum && this.vipinfo.daySignNum>0){
+            this.getVipInfo()
+            let index = this.myGirls.indexOf(g)
+            this.$set(this.myGirls[index], 'isSignup', 1)
+            this.girlNumber = g.boy_number? g.boy_number:g.number
+            this.tkShow()
+          }else{
+            this.tkShow()
+            Toast('你今天撩小哥哥的机会用完了哦！')
+            return
+          }
+        }else{
+          this.getVipInfo()
+          let index = this.myGirls.indexOf(g)
+          this.$set(this.myGirls[index], 'isSignup', 1)
+          this.girlNumber = g.boy_number? g.boy_number:g.number
+          this.tkShow()
+        }
+
+        // this.getVipInfo()
+        // let index = this.myGirls.indexOf(g)
+        // this.$set(this.myGirls[index], 'isSignup', 1)
+        // this.girlNumber = g.boy_number? g.boy_number:g.number
+        // this.tkShow()
+
       },
 
       /**
        * 显示/隐藏撩一下弹框
        */
-      tkShow() {
+      tkShow(g) {
         this.show = !this.show
+        if(g){
+          this.obj = g
+        }
       },
 
       /**
        * 用户会员信息
        */
       getVipInfo() {
-        var Salt = this.userinfo.Salt
-        var UserNumber = this.payodata.number // 用户number
-        var Sex = this.payodata.sex // 性别
-        var Timestamp = this.$global.timestamp // 时间戳
-        var Token = this.$md5(UserNumber + Salt + Timestamp)
-        this.$axios.get(this.$global.api + 'boy/chance', {
-          headers: {
-            UserNumber,
-            Token,
-            Timestamp,
-            Sex
-          },
-        }).then(res => {
-          console.log(res)
-          if (res.data.code == 200) {
-            this.vipinfo = res.data.data
-            this.$global.setCookie('vipinfo', JSON.stringify(res.data.data), 60 * 60 * 24)
-          }
-        }).catch(err => {
-          console.log(err.message)
+        new Promise(resolve=>{
+          var Salt = this.userinfo.Salt
+          var UserNumber = this.payodata.number // 用户number
+          var Sex = this.payodata.sex // 性别
+          var Timestamp = this.$global.timestamp // 时间戳
+          var Token = this.$md5(UserNumber + Salt + Timestamp)
+          var path = Sex == 1? 'boy/chance':'girl/chance'
+          this.$axios.get(this.$global.api + path, {
+            headers: {
+              UserNumber,
+              Token,
+              Timestamp,
+              Sex
+            },
+          }).then(res => {
+            console.log(22222222)
+            console.log(res)
+            if (res.data.code == 200) {
+              if(res.data.data.boyNumber){
+                res.data.data.number = res.data.data.boyNumber
+                res.data.data.boyNumber = undefined
+              }
+              this.vipinfo = res.data.data
+              this.$global.setCookie('vipinfo', JSON.stringify(res.data.data), 60 * 60 * 24)
+            }
+            resolve()
+          }).catch(err => {
+            console.log(err.message)
+          })
         })
       },
 
       /**
        * 显示/隐藏复制口令弹框
        */
-      getGirl() {
-        var number = {
-          number: this.girlNumber
-        }
-        var Salt = this.userinfo.Salt
-        var UserNumber = this.payodata.number // 用户number
-        var Sex = this.payodata.sex // 性别
-        var Timestamp = this.$global.timestamp // 时间戳
-        var Token = this.$md5(UserNumber + Salt + Timestamp)
-        this.$axios.post(this.$global.api + 'signup/girl', Qs.stringify(number), {
-          headers: {
-            UserNumber,
-            Token,
-            Timestamp,
-            Sex
-          },
-        }).then(res => {
-          console.log(res)
-          if (res.data.code == 200) {
-            this.tip = res.data.data.clipboard_text + '，复制口令后，联系客服，可获得匹配结果~'
-            this.kouling = res.data.data.clipboard_text
-            this.signup_show = true
+      async getGirl() {
+        await this.getMeiMei()
+        await this.getA()
+      },
+
+      getA(){
+        new Promise(resolve=>{
+          var number = {
+            number: this.girlNumber
           }
-        }).catch(err => {
-          console.log(err.message)
+          var Salt = this.userinfo.Salt
+          var UserNumber = this.payodata.number // 用户number
+          var Sex = this.payodata.sex // 性别
+          var Timestamp = this.$global.timestamp // 时间戳
+          var Token = this.$md5(UserNumber + Salt + Timestamp)
+          var path = Sex == 1 ? 'signup/girl' : 'signup/boy'
+          this.$axios.post(this.$global.api + path, Qs.stringify(number), {
+            headers: {
+              UserNumber,
+              Token,
+              Timestamp,
+              Sex
+            },
+          }).then(res => {
+            console.log(res)
+            if (res.data.code == 200) {
+              if(res.data.data.clipboard_text){
+                this.tip = res.data.data.clipboard_text + '，复制口令后，联系客服，可获得匹配结果~'
+                this.kouling = res.data.data.clipboard_text
+                this.signup_show = true
+                this.flag = !this.flag
+              }else{
+                this.$notify({
+                  message: '报名成功',
+                  background: '#07C160',
+                  color: 'white',
+                  duration: 1500
+                })
+              }
+            }else if(res.data.code == 2003){
+              Toast.loading(res.data.message)
+            }
+            resolve()
+          }).catch(err => {
+            console.log(err.message)
+          })
         })
-        this.show = !this.show
-        this.flag = !this.flag
       },
 
       /**
@@ -436,6 +512,7 @@
        */
       copy() {
         const clipboard = new this.$clipboard(this.$refs.copyBtn)
+        console.log(11111111)
         clipboard.on('success', () => {
           this.$notify({
             message: '复制成功',
@@ -446,6 +523,7 @@
           this.flag = false
           clipboard.destroy()
         })
+        console.log(22222222)
         clipboard.on('error', () => {
           this.$notify({
             message: '复制失败',
@@ -456,6 +534,7 @@
           this.flag = false
           clipboard.destroy()
         })
+        console.log(3333333333)
       },
 
       menuChange(value) {
@@ -509,8 +588,8 @@
       indextop.removeEventListener('scroll', this.scrollToTop)
       this.$store.dispatch('settings/addKeepAlivePage', 'index')
     },
-    activated(){
-      if(localStorage.getItem('login') == '/login'){
+    activated() {
+      if (localStorage.getItem('login') == '/login') {
         localStorage.removeItem('login')
         location.reload()
       }
@@ -620,6 +699,14 @@
       height: 80vh;
       margin-top: 2vw;
 
+      .wrap2{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.4rem;
+        letter-spacing: 3px;
+        text-align: center;
+      }
       .wrap {
         width: 94%;
         margin: 0 auto 4vw;

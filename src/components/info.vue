@@ -1,6 +1,7 @@
 <template>
   <div class="info-container">
-    <img :src="imgsrc" alt="PAYO社交" :style="{height:html_height+'px'}">
+    <img v-if="imgsrc.length>0" :src="imgsrc" alt="PAYO社交" :style="{height:html_height+'px'}">
+    <img v-else src="../assets/images/girl.jpg" alt="PAYO社交" :style="{height:html_height+'px'}">
   </div>
 </template>
 

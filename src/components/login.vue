@@ -216,7 +216,7 @@
 <style scoped lang="scss">
   .login-container {
     width: 100%;
-    background: url(http://qiniu.tecclub.cn/payo/BG-login@2x.png) no-repeat;
+    background: url(../assets/images/login-bg.png) no-repeat;
     background-size: cover;
     overflow: hidden;
 

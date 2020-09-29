@@ -6,11 +6,13 @@
       <div>
         <img src="http://qiniu.tecclub.cn/payo/img_chenggong_nv @2x.png" alt="PAYO社交">
         <div class="info">
-          <p>编号: <span>{{ g.su_gid }}</span></p>
+          <p>编号: <span>{{ g.id }}</span></p>
           <p>地址: <span>{{ g.province }}-{{ g.city }}</span></p>
         </div>
       </div>
-      <img src="http://qiniu.tecclub.cn/payo/icon_liaomeichengg_g@2x.png" alt="PAYO社交">
+      <img v-if="g.su_res=='success'" src="../assets/images/success_liao.png" alt="PAYO社交">
+      <img v-else-if="g.su_res=='wait'" src="../assets/images/wait_liao.png" alt="PAYO社交">
+      <img v-if="g.su_res=='refuse'" src="../assets/images/fail_liao.png" alt="PAYO社交">
     </div>
   </div>
 </template>
@@ -54,7 +56,13 @@
           },
         }).then(res => {
           if (res.data.code == 200) {
+            console.log(res.data.data.lists)
             for (let g of res.data.data.lists) {
+              if(Sex == 1){
+                g.id = g.su_gid
+              }else{
+                g.id = g.su_bid
+              }
               this.objList.push(g)
             }
           }
@@ -76,6 +84,11 @@
       type == 1 ? this.tip = '报名' : this.tip = '被翻'
       this.type = type
       this.getLiaoedList(type)
+    },
+    beforeRouteEnter(to, from, next){
+      next(vm=>{
+        to.meta.title = vm.$route.query.type==1? '报名记录':'被翻记录'
+      })
     }
   }
 </script>
