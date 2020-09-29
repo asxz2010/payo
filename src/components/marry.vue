@@ -9,10 +9,15 @@
           <p>编号: <span>{{ g.id }}</span></p>
           <p>地址: <span>{{ g.province }}-{{ g.city }}</span></p>
         </div>
+        <p v-if="g.su_res=='success' && type==2" class="succ">被翻成功</p>
+        <p v-else-if="g.su_res=='wait' && type==2" class="wait">被翻等待</p>
+        <p v-else-if="g.su_res=='refuse' && type==2" class="refu">被翻失败</p>
+        <p v-else>被翻失败</p>
       </div>
-      <img v-if="g.su_res=='success'" src="../assets/images/success_liao.png" alt="PAYO社交">
-      <img v-else-if="g.su_res=='wait'" src="../assets/images/wait_liao.png" alt="PAYO社交">
-      <img v-if="g.su_res=='refuse'" src="../assets/images/fail_liao.png" alt="PAYO社交">
+      <img v-if="g.su_res=='success' && type==1" src="../assets/images/success_liao.png" alt="PAYO社交">
+      <img v-else-if="g.su_res=='wait' && type==1" src="../assets/images/wait_liao.png" alt="PAYO社交">
+      <img v-else-if="g.su_res=='refuse' && type==1" src="../assets/images/fail_liao.png" alt="PAYO社交">
+
     </div>
   </div>
 </template>
@@ -24,6 +29,7 @@
       return {
         busy: false,
         busy2: true,
+        type: 1, // 默认是报名
         page: 1, // 默认页数
         objList: [], // 撩或被撩数据
         userinfo: {}, // Salt,province,addr,email等信息
@@ -58,9 +64,9 @@
           if (res.data.code == 200) {
             console.log(res.data.data.lists)
             for (let g of res.data.data.lists) {
-              if(Sex == 1){
+              if (Sex == 1) {
                 g.id = g.su_gid
-              }else{
+              } else {
                 g.id = g.su_bid
               }
               this.objList.push(g)
@@ -85,9 +91,9 @@
       this.type = type
       this.getLiaoedList(type)
     },
-    beforeRouteEnter(to, from, next){
-      next(vm=>{
-        to.meta.title = vm.$route.query.type==1? '报名记录':'被翻记录'
+    beforeRouteEnter(to, from, next) {
+      next(vm => {
+        to.meta.title = vm.$route.query.type == 1 ? '报名记录' : '被翻记录'
       })
     }
   }
@@ -128,6 +134,7 @@
       &>div {
         display: flex;
         align-items: center;
+        position: relative;
 
         img {
           width: 4rem;
@@ -144,6 +151,21 @@
             color: #666;
           }
         }
+
+        &>p {
+          position: absolute;
+          right: 0;
+        }
+
+        .succ{
+          color: #B3DF79;
+        }
+        .wait{
+          color: #F6C77E;
+        }
+        .refu{
+          color: #BCBCBC;
+        }
       }
 
       &>img {
@@ -152,7 +174,6 @@
         right: 0;
         width: 4rem;
       }
-
     }
 
 
