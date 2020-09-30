@@ -12,12 +12,10 @@
         <p v-if="g.su_res=='success' && type==2" class="succ">被翻成功</p>
         <p v-else-if="g.su_res=='wait' && type==2" class="wait">被翻等待</p>
         <p v-else-if="g.su_res=='refuse' && type==2" class="refu">被翻失败</p>
-        <p v-else>被翻失败</p>
       </div>
       <img v-if="g.su_res=='success' && type==1" src="../assets/images/success_liao.png" alt="PAYO社交">
       <img v-else-if="g.su_res=='wait' && type==1" src="../assets/images/wait_liao.png" alt="PAYO社交">
       <img v-else-if="g.su_res=='refuse' && type==1" src="../assets/images/fail_liao.png" alt="PAYO社交">
-
     </div>
   </div>
 </template>
@@ -36,12 +34,14 @@
         payodata: {}, // number,sex等信息
       }
     },
+    created() {
+      document.title = this.$route.query.type == 1 ? '报名记录' : '被翻记录'
+    },
     methods: {
       /**
        * 被翻/报名记录
        */
       getLiaoedList(type) {
-        console.log(type)
         var Salt = this.userinfo.Salt
         var UserNumber = this.payodata.number // 用户number
         var Sex = this.payodata.sex // 性别
@@ -62,14 +62,20 @@
           },
         }).then(res => {
           if (res.data.code == 200) {
-            console.log(res.data.data.lists)
-            for (let g of res.data.data.lists) {
-              if (Sex == 1) {
-                g.id = g.su_gid
-              } else {
-                g.id = g.su_bid
+            let lists = res.data.data.lists
+            if (lists.length > 0) {
+              console.log(lists)
+              for (let g of res.data.data.lists) {
+                if(g.su_res == 'refund'){
+                  continue
+                }
+                if (Sex == 1) {
+                  g.id = g.su_gid
+                } else {
+                  g.id = g.su_bid
+                }
+                this.objList.push(g)
               }
-              this.objList.push(g)
             }
           }
         }).catch(err => {
@@ -90,11 +96,6 @@
       type == 1 ? this.tip = '报名' : this.tip = '被翻'
       this.type = type
       this.getLiaoedList(type)
-    },
-    beforeRouteEnter(to, from, next) {
-      next(vm => {
-        to.meta.title = vm.$route.query.type == 1 ? '报名记录' : '被翻记录'
-      })
     }
   }
 </script>
@@ -157,13 +158,15 @@
           right: 0;
         }
 
-        .succ{
+        .succ {
           color: #B3DF79;
         }
-        .wait{
+
+        .wait {
           color: #F6C77E;
         }
-        .refu{
+
+        .refu {
           color: #BCBCBC;
         }
       }

@@ -104,7 +104,7 @@
        */
       loginOut() {
         this.$dialog.confirm({
-            title: '退出登录',
+            title: '退出登录？',
             cancelButtonText: '暂不'
           })
           .then(() => {

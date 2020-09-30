@@ -14,21 +14,23 @@
     </div>
     <div class="top">
       <div class="inp">
-        <input type="text" v-model="number" :placeholder="'输入'+placeholder+'编号'" @keyup.13="findMeiMei">
+        <form action="javascript:return true">
+          <input type="search" v-model="number" :placeholder="'输入'+placeholder+'编号'" @keyup.13="findMeiMei">
+        </form>
       </div>
     </div>
     <div class="middle">
-      <div v-if="myGirls.length<=0" class="wrap wrap2">
-        <p>没有你找的{{ placeholder }},看看别的{{ placeholder }}吧!</p>
-      </div>
-      <div v-else class="wrap" v-for="g in myGirls" :key="g.id">
+      <div v-if="myGirls && myGirls.length>0" class="wrap" v-for="g in myGirls" :key="g.id">
         <div class="content">
           <img v-if="g.cover_image!=''" :src="g.cover_image" alt="PAYO社交" :id="'img'+g.id" @mouseenter="sweetgirl('img'+g.id)">
           <img v-else src="../assets/images/girl.jpg" alt="PAYO社交" :id="'img'+g.id" @mouseenter="sweetgirl('img'+g.id)">
           <img v-if="g.face_score=='S' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/biaoqian_s@2x.png" alt="PAYO社交">
-          <img v-else-if="g.face_score=='SS' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_ss@2x.png" alt="PAYO社交">
-          <img v-else-if="g.face_score=='A' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_a@2x.png" alt="PAYO社交">
-          <img v-else-if="g.face_score=='B' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_b@2x.png" alt="PAYO社交">
+          <img v-else-if="g.face_score=='SS' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_ss@2x.png"
+            alt="PAYO社交">
+          <img v-else-if="g.face_score=='A' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_a@2x.png"
+            alt="PAYO社交">
+          <img v-else-if="g.face_score=='B' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_b@2x.png"
+            alt="PAYO社交">
         </div>
         <div class="liao_btn">
           <div>
@@ -49,10 +51,9 @@
           </div>
         </div>
       </div>
-
-      <!-- <div v-else class="wrap wrap2">
+      <div v-else="myGirls && myGirls.length<=0" class="wrap wrap2">
         <p>没有你找的{{ placeholder }},看看别的{{ placeholder }}吧!</p>
-      </div> -->
+      </div>
     </div>
     <van-overlay :show="show" @click="tkShow">
       <div class="wrapper">
@@ -149,7 +150,7 @@
     created() {
       this.userinfo = JSON.parse(this.$global.getCookie('user_info'))
       this.payodata = JSON.parse(this.$global.getCookie('payo_data'))
-      this.payodata.sex == 1? '':this.placeholder='哥哥'
+      this.payodata.sex == 1 ? '' : this.placeholder = '哥哥'
     },
     mounted() {
       this.getAreaList()
@@ -162,6 +163,7 @@
         // this.$store.commit('addCount', 1)
         this.$store.dispatch('getAddCount', 1)
       },
+
       /**
        * 计算高度，返回不刷新
        */
@@ -218,7 +220,7 @@
           }).then(res => {
             console.log('数据获取成功')
             console.log(res.data.data.list)
-            page == 1? this.myGirls = []:''
+            page == 1 ? this.myGirls = [] : ''
             if (res.status == 200) {
               let girl_list = res.data.data.list
               if (girl_list.length > 0) {
@@ -240,13 +242,12 @@
       /**
        * 搜索对象
        */
-      findMeiMei() {
+      async findMeiMei() {
         this.page = 1
-        this.myGirls = []
-        this.init(1)
+        await this.init(1)
         console.log('找到了一个妹妹')
         console.log(this.myGirls.length)
-        if(this.myGirls.length==0){
+        if (this.myGirls.length == 0) {
           this.myGirlsShow = false
         }
       },
@@ -381,23 +382,23 @@
        */
       getMeiMei() {
         let g = this.obj
-        if(this.payodata.sex!=1){
-          if(this.vipinfo.daySignNum && this.vipinfo.daySignNum>0){
+        if (this.payodata.sex != 1) {
+          if (this.vipinfo.daySignNum && this.vipinfo.daySignNum > 0) {
             this.getVipInfo()
             let index = this.myGirls.indexOf(g)
             this.$set(this.myGirls[index], 'isSignup', 1)
-            this.girlNumber = g.boy_number? g.boy_number:g.number
+            this.girlNumber = g.boy_number ? g.boy_number : g.number
             this.tkShow()
-          }else{
+          } else {
             this.tkShow()
             Toast('你今天撩小哥哥的机会用完了哦！')
             return
           }
-        }else{
+        } else {
           this.getVipInfo()
           let index = this.myGirls.indexOf(g)
           this.$set(this.myGirls[index], 'isSignup', 1)
-          this.girlNumber = g.boy_number? g.boy_number:g.number
+          this.girlNumber = g.boy_number ? g.boy_number : g.number
           this.tkShow()
         }
 
@@ -414,7 +415,7 @@
        */
       tkShow(g) {
         this.show = !this.show
-        if(g){
+        if (g) {
           this.obj = g
         }
       },
@@ -423,13 +424,13 @@
        * 用户会员信息
        */
       getVipInfo() {
-        new Promise(resolve=>{
+        new Promise(resolve => {
           var Salt = this.userinfo.Salt
           var UserNumber = this.payodata.number // 用户number
           var Sex = this.payodata.sex // 性别
           var Timestamp = this.$global.timestamp // 时间戳
           var Token = this.$md5(UserNumber + Salt + Timestamp)
-          var path = Sex == 1? 'boy/chance':'girl/chance'
+          var path = Sex == 1 ? 'boy/chance' : 'girl/chance'
           this.$axios.get(this.$global.api + path, {
             headers: {
               UserNumber,
@@ -441,7 +442,7 @@
             console.log(22222222)
             console.log(res)
             if (res.data.code == 200) {
-              if(res.data.data.boyNumber){
+              if (res.data.data.boyNumber) {
                 res.data.data.number = res.data.data.boyNumber
                 res.data.data.boyNumber = undefined
               }
@@ -463,8 +464,8 @@
         await this.getA()
       },
 
-      getA(){
-        new Promise(resolve=>{
+      getA() {
+        new Promise(resolve => {
           var number = {
             number: this.girlNumber
           }
@@ -484,12 +485,12 @@
           }).then(res => {
             console.log(res)
             if (res.data.code == 200) {
-              if(res.data.data.clipboard_text){
+              if (res.data.data.clipboard_text) {
                 this.tip = res.data.data.clipboard_text + '，复制口令后，联系客服，可获得匹配结果~'
                 this.kouling = res.data.data.clipboard_text
                 this.signup_show = true
                 this.flag = !this.flag
-              }else{
+              } else {
                 this.$notify({
                   message: '报名成功',
                   background: '#07C160',
@@ -497,7 +498,7 @@
                   duration: 1500
                 })
               }
-            }else if(res.data.code == 2003){
+            } else if (res.data.code == 2003) {
               Toast.loading(res.data.message)
             }
             resolve()
@@ -699,7 +700,7 @@
       height: 80vh;
       margin-top: 2vw;
 
-      .wrap2{
+      .wrap2 {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -707,6 +708,7 @@
         letter-spacing: 3px;
         text-align: center;
       }
+
       .wrap {
         width: 94%;
         margin: 0 auto 4vw;

@@ -11,7 +11,7 @@ import error from '@/components/error' // 错误
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   scrollBehavior(to, from, savedPosition) { //解决拖动时多个页面互相影响的问题，当切换到新路由时，想要页面滚到顶部
     if (savedPosition) {
       return savedPosition
@@ -71,7 +71,7 @@ export default new Router({
       name: 'marry',
       component: marry,
       meta: {
-        title: '被翻记录',
+        // title: '被翻记录',
         auth: true
       }
     },
@@ -105,3 +105,5 @@ export default new Router({
     }
   ]
 })
+
+export default router
