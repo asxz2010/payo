@@ -14,45 +14,47 @@
     </div>
     <div class="top">
       <div class="inp">
-        <form action="javascript:return true">
+        <form action="javascript:true">
           <input type="search" v-model="number" :placeholder="'输入'+placeholder+'编号'" @keyup.13="findMeiMei">
         </form>
       </div>
     </div>
     <div class="middle">
-      <div v-if="myGirls && myGirls.length>0" class="wrap" v-for="g in myGirls" :key="g.id">
-        <div class="content">
-          <img v-if="g.cover_image!=''" :src="g.cover_image" alt="PAYO社交" :id="'img'+g.id" @mouseenter="sweetgirl('img'+g.id)">
-          <img v-else src="../assets/images/girl.jpg" alt="PAYO社交" :id="'img'+g.id" @mouseenter="sweetgirl('img'+g.id)">
-          <img v-if="g.face_score=='S' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/biaoqian_s@2x.png" alt="PAYO社交">
-          <img v-else-if="g.face_score=='SS' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_ss@2x.png"
-            alt="PAYO社交">
-          <img v-else-if="g.face_score=='A' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_a@2x.png"
-            alt="PAYO社交">
-          <img v-else-if="g.face_score=='B' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_b@2x.png"
-            alt="PAYO社交">
-        </div>
-        <div class="liao_btn">
-          <div>
-            <img v-if="g.isSignup==1" src="http://qiniu.tecclub.cn/payo/btn_signed@2x.png" alt="PAYO社交">
-            <img v-else src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="PAYO社交" @click="tkShow(g)">
+      <div v-if="!myGirlsShow" class="wrap wrap2">
+        <p>没有你找的{{ placeholder }},看看别的{{ placeholder }}吧!</p>
+      </div>
+      <div v-else>
+        <div class="wrap" v-for="g in myGirls" :key="g.id">
+          <div class="content">
+            <img v-if="g.cover_image!=''" :src="g.cover_image" alt="PAYO社交" :id="'img'+g.id" @mouseenter="sweetgirl('img'+g.id)">
+            <img v-else src="../assets/images/girl.jpg" alt="PAYO社交" :id="'img'+g.id" @mouseenter="sweetgirl('img'+g.id)">
+            <img v-if="g.face_score=='S' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/biaoqian_s@2x.png" alt="PAYO社交">
+            <img v-else-if="g.face_score=='SS' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_ss@2x.png"
+              alt="PAYO社交">
+            <img v-else-if="g.face_score=='A' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_a@2x.png"
+              alt="PAYO社交">
+            <img v-else-if="g.face_score=='B' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_b@2x.png"
+              alt="PAYO社交">
           </div>
-        </div>
-        <div class="info">
-          <div>
+          <div class="liao_btn">
             <div>
-              <p>编号: {{ g.number }}{{ g.boy_number }}</p>
-              {{ g.age }}岁 {{ g.weight }}kg {{ g.height }}cm
+              <img v-if="g.isSignup==1" src="http://qiniu.tecclub.cn/payo/btn_signed@2x.png" alt="PAYO社交">
+              <img v-else src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="PAYO社交" @click="tkShow(g)">
             </div>
           </div>
-          <div @click="add">
-            地址: {{ g.province }}-{{ g.city }}
-            <p @click.nactive="toDetail(g.cover_image)">点我看详情</p>
+          <div class="info">
+            <div>
+              <div>
+                <p>编号: {{ g.number }}{{ g.boy_number }}</p>
+                {{ g.age }}岁 {{ g.weight }}kg {{ g.height }}cm
+              </div>
+            </div>
+            <div @click="add">
+              地址: {{ g.province }}-{{ g.city }}
+              <p @click.nactive="toDetail(g.cover_image)">点我看详情</p>
+            </div>
           </div>
         </div>
-      </div>
-      <div v-else="myGirls && myGirls.length<=0" class="wrap wrap2">
-        <p>没有你找的{{ placeholder }},看看别的{{ placeholder }}吧!</p>
       </div>
     </div>
     <van-overlay :show="show" @click="tkShow">
@@ -144,7 +146,8 @@
         payodata: {}, // number,sex等信息
         vipinfo: {}, // 用户vip信息
         number: '', // 搜索的用户id
-        obj: '' // 临时对象
+        obj: '', // 临时对象
+        initStop: false, // 停止请求接口
       }
     },
     created() {
@@ -182,12 +185,17 @@
        * 上拉加载
        */
       loadMore() {
+        if (this.initStop) return
         this.busy = true
         this.page++
         this.init(this.page)
         this.busy = false
       },
 
+      /**
+       * 初始化数据
+       * @param {Object} page(页数)
+       */
       init(page) {
         var Salt = this.userinfo.Salt
         var UserNumber = this.payodata.number // 用户number
@@ -201,8 +209,6 @@
         if (this.payodata.sex == 2) {
           path = 'boy/list'
         }
-        console.log(this.userinfo.province)
-        console.log(order)
         return new Promise(resolve => {
           this.$axios.get(this.$global.api + path, {
             headers: {
@@ -218,19 +224,22 @@
               number
             }
           }).then(res => {
-            console.log('数据获取成功')
-            console.log(res.data.data.list)
+            console.log(res)
             page == 1 ? this.myGirls = [] : ''
             if (res.status == 200) {
               let girl_list = res.data.data.list
+              console.log(girl_list)
               if (girl_list.length > 0) {
                 for (let g of girl_list) {
                   this.myGirls.push(g)
                 }
+              } else {
+                this.initStop = true
               }
             } else {
               alert('接口错误: ' + res.status)
             }
+            // this.loading = false
             resolve('success')
           }).catch(err => {
             console.log('数据获取失败')
@@ -245,11 +254,9 @@
       async findMeiMei() {
         this.page = 1
         await this.init(1)
-        console.log('找到了一个妹妹')
-        console.log(this.myGirls.length)
-        if (this.myGirls.length == 0) {
-          this.myGirlsShow = false
-        }
+        console.log(1111)
+        this.myGirlsShow = this.myGirls.length == 0 ? false : true
+        console.log(222222)
       },
 
       /**
@@ -346,7 +353,6 @@
             }
           }).then(res => {
             var areaList = JSON.parse(res)
-            console.log(areaList)
             this.areaList = areaList
           }).catch(err => {
             console.log(err)
@@ -439,8 +445,6 @@
               Sex
             },
           }).then(res => {
-            console.log(22222222)
-            console.log(res)
             if (res.data.code == 200) {
               if (res.data.data.boyNumber) {
                 res.data.data.number = res.data.data.boyNumber
@@ -483,7 +487,6 @@
               Sex
             },
           }).then(res => {
-            console.log(res)
             if (res.data.code == 200) {
               if (res.data.data.clipboard_text) {
                 this.tip = res.data.data.clipboard_text + '，复制口令后，联系客服，可获得匹配结果~'
@@ -513,7 +516,6 @@
        */
       copy() {
         const clipboard = new this.$clipboard(this.$refs.copyBtn)
-        console.log(11111111)
         clipboard.on('success', () => {
           this.$notify({
             message: '复制成功',
@@ -524,7 +526,6 @@
           this.flag = false
           clipboard.destroy()
         })
-        console.log(22222222)
         clipboard.on('error', () => {
           this.$notify({
             message: '复制失败',
@@ -535,7 +536,6 @@
           this.flag = false
           clipboard.destroy()
         })
-        console.log(3333333333)
       },
 
       menuChange(value) {
@@ -697,8 +697,7 @@
 
     .middle {
       position: relative;
-      height: 80vh;
-      margin-top: 2vw;
+      padding-top: 2vw;
 
       .wrap2 {
         display: flex;
@@ -711,15 +710,11 @@
 
       .wrap {
         width: 94%;
-        margin: 0 auto 4vw;
+        margin: 2vw auto 4vw;
         background: white;
         padding: 2vw 2vw 0;
         height: 108vw;
         border-radius: 0.5rem;
-
-        &:last-of-type {
-          margin-bottom: 6rem !important;
-        }
 
         .content {
           height: 72%;
