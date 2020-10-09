@@ -782,7 +782,7 @@
               color: white;
               font-size: .7rem;
               letter-spacing: .1rem;
-              background: #EB3E3F;
+              background: #FFB929;
             }
           }
 
