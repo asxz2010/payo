@@ -386,7 +386,7 @@
        * 撩一下
        * @param {Object} g(撩的对象)
        */
-      getMeiMei() {
+      async getMeiMei() {
         let g = this.obj
         if (this.payodata.sex != 1) {
           if (this.vipinfo.daySignNum && this.vipinfo.daySignNum > 0) {
@@ -402,17 +402,13 @@
           }
         } else {
           this.getVipInfo()
+          this.girlNumber = g.boy_number ? g.boy_number : g.number
+          await this.getA()
+          console.log(2222222222)
           let index = this.myGirls.indexOf(g)
           this.$set(this.myGirls[index], 'isSignup', 1)
-          this.girlNumber = g.boy_number ? g.boy_number : g.number
           this.tkShow()
         }
-
-        // this.getVipInfo()
-        // let index = this.myGirls.indexOf(g)
-        // this.$set(this.myGirls[index], 'isSignup', 1)
-        // this.girlNumber = g.boy_number? g.boy_number:g.number
-        // this.tkShow()
 
       },
 
@@ -463,9 +459,9 @@
       /**
        * 显示/隐藏复制口令弹框
        */
-      async getGirl() {
-        await this.getMeiMei()
-        await this.getA()
+      getGirl() {
+        this.getMeiMei()
+        // await this.getA()
       },
 
       getA() {
@@ -501,9 +497,10 @@
                   duration: 1500
                 })
               }
-            } else if (res.data.code == 2003) {
+            } else{
               Toast.loading(res.data.message)
             }
+            console.log(1111111)
             resolve()
           }).catch(err => {
             console.log(err.message)

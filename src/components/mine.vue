@@ -18,7 +18,8 @@
           <img src="http://51pyyy.cn/uploads/wxpayo/boy/man.png">
         </div>
         <div>
-          <img src="@/assets/images/ssvip.png">
+          <img v-if="this.vipinfo.vip == '永久私人订制'" src="@/assets/images/ssvip.png">
+          <img v-else-if="this.vipinfo.vip == '私人订制'" src="@/assets/images/vip.png">
           <p>{{ this.vipinfo.vip }}</p>
         </div>
         <div>
