@@ -254,9 +254,7 @@
       async findMeiMei() {
         this.page = 1
         await this.init(1)
-        console.log(1111)
         this.myGirlsShow = this.myGirls.length == 0 ? false : true
-        console.log(222222)
       },
 
       /**
@@ -397,17 +395,22 @@
             this.tkShow()
           } else {
             this.tkShow()
-            Toast('你今天撩小哥哥的机会用完了哦！')
+            this.$notify({ type: 'warning', message: '撩哥哥的机会用完了哦！' })
             return
           }
         } else {
-          this.getVipInfo()
-          this.girlNumber = g.boy_number ? g.boy_number : g.number
-          await this.getA()
-          console.log(2222222222)
-          let index = this.myGirls.indexOf(g)
-          this.$set(this.myGirls[index], 'isSignup', 1)
           this.tkShow()
+          if (this.vipinfo.monthSignNum && this.vipinfo.monthSignNum > 0) {
+            this.getVipInfo()
+            this.girlNumber = g.boy_number ? g.boy_number : g.number
+            let bool = await this.getA()
+            if(bool==200){
+              let index = this.myGirls.indexOf(g)
+              this.$set(this.myGirls[index], 'isSignup', 1)
+            }
+          } else {
+            this.$notify({ type: 'warning', message: '撩妹妹的机会用完了哦！' })
+          }
         }
 
       },
@@ -465,7 +468,7 @@
       },
 
       getA() {
-        new Promise(resolve => {
+        return new Promise(resolve => {
           var number = {
             number: this.girlNumber
           }
@@ -497,11 +500,11 @@
                   duration: 1500
                 })
               }
+              resolve(200)
             } else{
-              Toast.loading(res.data.message)
+              this.$notify({ type: 'warning', message: res.data.message });
+              resolve(201)
             }
-            console.log(1111111)
-            resolve()
           }).catch(err => {
             console.log(err.message)
           })
@@ -578,7 +581,8 @@
       next(vm => { // vm = this
         vm.toPath = to.path
         vm.fromPath = from.path
-        document.querySelector('.index-container').scrollTop = vm.scrollY
+        let indextop = vm.$refs.indextop
+        indextop.scrollTop = vm.scrollY
       })
     },
     destroyed() {
