@@ -179,8 +179,8 @@
                   email,
                   Salt,
                 })
-                this.$global.setCookie('payo_data', data, 60 * 60 * 24)
-                this.$global.setCookie('user_info', userinfo, 60 * 60 * 24)
+                this.$global.setCookie('payo_data', data, 60 * 60 * 24 * 31)
+                this.$global.setCookie('user_info', userinfo, 60 * 60 * 24 * 31)
                 Toast.success({
                   message: '登录成功',
                   duration: 1000

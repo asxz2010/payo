@@ -72,7 +72,7 @@
             <div class="d-2">
               <p>{{ this.vipinfo.number }}</p>
               <p v-if="this.vipinfo.isYongjiu==1">会员到期时间: {{ this.vipinfo.vip }}</p>
-              <p v-else-if="this.vipinfo.expireTime">会员到期时间: {{ this.vipinfo.expireTime }}</p>
+              <p v-else-if="this.vipinfo.expireTime">会员到期时间: {{ this.vipinfo.expireTime|cutString(10) }}</p>
             </div>
             <div class="d-3" v-if="this.vipinfo.isYongjiu!=1 && this.vipinfo.expireTime">
               <van-button icon="http://qiniu.tecclub.cn/payo/jewel_icon@2x.png" color="#FFB929" size="small" round
@@ -141,7 +141,7 @@
           value: 2
         }],
         myGirls: ['111'], // 妹子信息
-        girlNumber: 0, // 要报名的girl的number
+        g_number: 0, // 要报名的girl的number
         userinfo: {}, // Salt,province,addr,email等信息
         payodata: {}, // number,sex等信息
         vipinfo: {}, // 用户vip信息
@@ -224,11 +224,9 @@
               number
             }
           }).then(res => {
-            console.log(res)
             page == 1 ? this.myGirls = [] : ''
             if (res.status == 200) {
               let girl_list = res.data.data.list
-              console.log(girl_list)
               if (girl_list.length > 0) {
                 for (let g of girl_list) {
                   this.myGirls.push(g)
@@ -261,7 +259,7 @@
        * 去升级
        */
       toVip() {
-        // this.getMeiMei()
+        this.tkShow()
         this.$dialog.confirm({
             title: '是否去升级?',
             cancelButtonText: '暂不'
@@ -303,7 +301,7 @@
           address == '' ? address = '请选择' : ''
           this.userinfo.addr = address
           this.userinfo.province = province
-          this.$global.setCookie('user_info', JSON.stringify(this.userinfo))
+          this.$global.setCookie('user_info', JSON.stringify(this.userinfo), 60 * 60 * 24 * 31)
           this.myGirls = []
           this.page = 1
           this.number = ''
@@ -387,29 +385,34 @@
       async getMeiMei() {
         let g = this.obj
         if (this.payodata.sex != 1) {
-          if (this.vipinfo.daySignNum && this.vipinfo.daySignNum > 0) {
-            this.getVipInfo()
+          this.getVipInfo()
+          this.g_number = g.boy_number ? g.boy_number : g.number
+          this.tkShow()
+          let bool = await this.getA()
+          console.log(bool)
+          if(bool==200){
+            console.log(33333333)
             let index = this.myGirls.indexOf(g)
             this.$set(this.myGirls[index], 'isSignup', 1)
-            this.girlNumber = g.boy_number ? g.boy_number : g.number
-            this.tkShow()
-          } else {
-            this.tkShow()
-            this.$notify({ type: 'warning', message: '撩哥哥的机会用完了哦！' })
-            return
           }
+          // if (this.vipinfo.daySignNum && this.vipinfo.daySignNum > 0) {
+
+          // } else {
+          //   this.tkShow()
+          //   // this.$notify({ type: 'warning', message: '撩哥哥的机会用完了哦！' })
+          //   this.getA()
+          //   return
+          // }
+          console.log(111111)
         } else {
           this.tkShow()
-          if (this.vipinfo.monthSignNum && this.vipinfo.monthSignNum > 0) {
-            this.getVipInfo()
-            this.girlNumber = g.boy_number ? g.boy_number : g.number
-            let bool = await this.getA()
-            if(bool==200){
-              let index = this.myGirls.indexOf(g)
-              this.$set(this.myGirls[index], 'isSignup', 1)
-            }
-          } else {
-            this.$notify({ type: 'warning', message: '撩妹妹的机会用完了哦！' })
+          this.getVipInfo()
+          this.g_number = g.boy_number ? g.boy_number : g.number
+          let bool = await this.getA()
+          if(bool==200){
+          console.log(2222222)
+            let index = this.myGirls.indexOf(g)
+            this.$set(this.myGirls[index], 'isSignup', 1)
           }
         }
 
@@ -450,7 +453,7 @@
                 res.data.data.boyNumber = undefined
               }
               this.vipinfo = res.data.data
-              this.$global.setCookie('vipinfo', JSON.stringify(res.data.data), 60 * 60 * 24)
+              this.$global.setCookie('vipinfo', JSON.stringify(res.data.data), 60 * 60 * 24 * 31)
             }
             resolve()
           }).catch(err => {
@@ -470,7 +473,7 @@
       getA() {
         return new Promise(resolve => {
           var number = {
-            number: this.girlNumber
+            number: this.g_number
           }
           var Salt = this.userinfo.Salt
           var UserNumber = this.payodata.number // 用户number
@@ -486,6 +489,9 @@
               Sex
             },
           }).then(res => {
+            console.log(333333333)
+            console.log(res)
+             console.log(44444444)
             if (res.data.code == 200) {
               if (res.data.data.clipboard_text) {
                 this.tip = res.data.data.clipboard_text + '，复制口令后，联系客服，可获得匹配结果~'
@@ -540,7 +546,7 @@
 
       menuChange(value) {
         this.userinfo.order = value
-        this.$global.setCookie('user_info', JSON.stringify(this.userinfo))
+        this.$global.setCookie('user_info', JSON.stringify(this.userinfo), 60 * 60 * 24 * 31)
         this.myGirls = []
         this.page = 1
         this.number = ''

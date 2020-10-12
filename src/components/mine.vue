@@ -15,11 +15,16 @@
       </div>
       <div v-if="this.vipinfo.vip" class="detail">
         <div>
-          <img src="http://51pyyy.cn/uploads/wxpayo/boy/man.png">
+          <!-- <img src="http://51pyyy.cn/uploads/wxpayo/boy/man.png"> -->
+          <div class="iconfont iconnan"></div>
         </div>
         <div>
           <img v-if="this.vipinfo.vip == '永久私人订制'" src="@/assets/images/ssvip.png">
           <img v-else-if="this.vipinfo.vip == '私人订制'" src="@/assets/images/vip.png">
+          <img v-else-if="this.vipinfo.vip == '至尊会员'" src="@/assets/images/zzvip.png">
+          <img v-else-if="this.vipinfo.vip == '铂金会员'" src="@/assets/images/bjvip.png">
+          <img v-else-if="this.vipinfo.vip == '银会员'" src="@/assets/images/yvip.png">
+          <img v-else src="@/assets/images/qtvip.png">
           <p>{{ this.vipinfo.vip }}</p>
         </div>
         <div>
@@ -86,7 +91,6 @@
     Toast
   } from 'vant'
   export default {
-    // name: 'mine',
     inject: ['reload'],
     data() {
       return {
@@ -284,10 +288,20 @@
           align-items: center;
           justify-content: space-evenly;
           font-size: 3.5vw;
+          
+          p{
+            letter-spacing: 3px;
+          }
 
           img {
             width: 5vw;
           }
+
+          .iconfont{
+            color: #FFB929;
+            font-size: 1.2rem;
+          }
+          
         }
 
         &>div:nth-child(2) {
