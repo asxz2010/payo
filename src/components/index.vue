@@ -237,7 +237,6 @@
             } else {
               alert('接口错误: ' + res.status)
             }
-            // this.loading = false
             resolve('success')
           }).catch(err => {
             console.log('数据获取失败')
@@ -395,14 +394,6 @@
             let index = this.myGirls.indexOf(g)
             this.$set(this.myGirls[index], 'isSignup', 1)
           }
-          // if (this.vipinfo.daySignNum && this.vipinfo.daySignNum > 0) {
-
-          // } else {
-          //   this.tkShow()
-          //   // this.$notify({ type: 'warning', message: '撩哥哥的机会用完了哦！' })
-          //   this.getA()
-          //   return
-          // }
           console.log(111111)
         } else {
           this.tkShow()

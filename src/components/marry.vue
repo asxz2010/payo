@@ -1,7 +1,11 @@
 <template>
-  <div class="marry-container" v-infinite-scroll="loadMore" :infinite-scroll-disabled="busy" infinite-scroll-distance="10"
+  <div class="marry-container" v-if="show" v-infinite-scroll="loadMore" :infinite-scroll-disabled="busy" infinite-scroll-distance="10"
     :infinite-scroll-immediate-check="busy2">
-    <div class="wrap" v-for="g in objList">
+    <div v-if="bool" class="wrap2">
+      <div class="iconfont iconmeiyoushuju"></div>
+      <p>暂时没有数据</p>
+    </div>
+    <div v-else v-for="g in objList" class="wrap">
       <p>{{ tip }}日期: <span>{{ g.su_update_time }}</span></p>
       <div>
         <img src="http://qiniu.tecclub.cn/payo/img_chenggong_nv @2x.png" alt="PAYO社交">
@@ -9,6 +13,7 @@
           <p>编号: <span>{{ g.id }}</span></p>
           <p>地址: <span>{{ g.province }}-{{ g.city }}</span></p>
         </div>
+        <div class="deta" @click="toDetil(g.id)">查看详情</div>
         <p v-if="g.su_res=='success' && type==2" class="succ">被翻成功</p>
         <p v-else-if="g.su_res=='wait' && type==2" class="wait">被翻等待</p>
         <p v-else-if="g.su_res=='refuse' && type==2" class="refu">被翻失败</p>
@@ -17,6 +22,7 @@
       <img v-else-if="g.su_res=='wait' && type==1" src="../assets/images/wait_liao.png" alt="PAYO社交">
       <img v-else-if="g.su_res=='refuse' && type==1" src="../assets/images/fail_liao.png" alt="PAYO社交">
     </div>
+
   </div>
 </template>
 
@@ -27,6 +33,8 @@
       return {
         busy: false,
         busy2: true,
+        show: false,  // 页面显示
+        bool: true, // objList是否为空
         type: 1, // 默认是报名
         page: 1, // 默认页数
         objList: [], // 撩或被撩数据
@@ -66,7 +74,7 @@
             if (lists.length > 0) {
               console.log(lists)
               for (let g of res.data.data.lists) {
-                if(g.su_res == 'refund'){
+                if (g.su_res == 'refund') {
                   continue
                 }
                 if (Sex == 1) {
@@ -78,16 +86,77 @@
               }
             }
           }
+          this.bool = this.objList.length>0? false:true
+          this.show = true
         }).catch(err => {
           console.log(err)
         })
       },
+
       loadMore() {
         this.busy = true
         this.page++
         this.getLiaoedList(this.type)
         this.busy = false
       },
+
+      /**
+       * @param {String} number(报名对象id)
+       */
+      async toDetil(number) {
+        let imgsrc = await this.getImgSrc(number)
+        if (imgsrc.length > 0) {
+          this.$router.push({
+            path: '/detail',
+            query: {
+              imgsrc
+            }
+          })
+        }else{
+          this.$toast('该用户没有上传图片')
+        }
+      },
+
+      /**
+       * @param {String} number(报名对象id)
+       */
+      getImgSrc(number) {
+        var Salt = this.userinfo.Salt
+        var UserNumber = this.payodata.number // 用户number
+        var Sex = this.payodata.sex // 性别
+        var Timestamp = Math.round(new Date() / 1000) // 时间戳
+        var Token = this.$md5(UserNumber + Salt + Timestamp)
+
+        var order = this.userinfo.order
+        var path = 'girl/list'
+        if (this.payodata.sex == 2) {
+          path = 'boy/list'
+        }
+        return new Promise(resolve => {
+          this.$axios.get(this.$global.api + path, {
+            headers: {
+              UserNumber,
+              Token,
+              Timestamp,
+              Sex
+            },
+            params: {
+              page: 1,
+              province: this.userinfo.province,
+              order,
+              number
+            }
+          }).then(res => {
+            let list = res.data.data.list
+            if (list.length > 0) {
+              resolve(list[0].cover_image)
+            }
+          }).catch(err => {
+            console.log(err)
+          })
+        })
+      },
+
     },
     mounted() {
       this.userinfo = JSON.parse(this.$global.getCookie('user_info'))
@@ -102,7 +171,6 @@
 
 <style scoped lang="scss">
   .marry-container {
-    height: 100vh;
     position: absolute;
     top: 0;
     bottom: 0;
@@ -112,6 +180,25 @@
     overflow: hidden;
     overflow-y: scroll;
     padding: .5rem;
+
+    .wrap2{
+      width: 100%;
+      height: 100%;
+      color: #FFB929;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      .iconfont{
+        font-size: 4rem;
+        transform: translateY(-4rem);
+      }
+      p{
+        letter-spacing: 1px;
+        font-size: 0.7rem;
+        transform: translateY(-3rem);
+      }
+    }
 
     .wrap {
       width: 100%;
@@ -151,6 +238,19 @@
           p:nth-child(2) {
             color: #666;
           }
+        }
+
+        .deta{
+          align-self: flex-end;
+          position: absolute;
+          right: 0;
+
+          padding: 0.1rem .5rem;
+          border-radius: 0.6rem;
+          color: #FFB929;
+          font-size: .7rem;
+          letter-spacing: .1rem;
+          border: 1px solid #FFB929;
         }
 
         &>p {

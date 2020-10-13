@@ -46,8 +46,8 @@
     '/info': 3,
     '/marry': 3,
     '/rise_vip': 3,
-    '/detail': 3,
     '/error': 3,
+    '/detail': 4,
   }
   export default {
     name: 'App',
