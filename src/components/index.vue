@@ -107,7 +107,7 @@
   import Viewer from 'viewerjs'
   import 'viewerjs/dist/viewer.css'
   import {
-    Toast
+    ImagePreview
   } from 'vant'
   import Qs from 'qs'
   export default {
@@ -159,7 +159,7 @@
     created() {
       this.userinfo = JSON.parse(this.$global.getCookie('user_info'))
       this.payodata = JSON.parse(this.$global.getCookie('payo_data'))
-      if(this.payodata.sex != 1){
+      if (this.payodata.sex != 1) {
         this.cz.msg1 = '咨询'
         this.cz.msg2 = '哥哥'
         this.cz.msg3 = '本日'
@@ -272,7 +272,7 @@
        */
       toVip() {
         this.tkShow()
-        if(this.payodata.sex==1){
+        if (this.payodata.sex == 1) {
           this.$dialog.confirm({
               title: '是否去升级?',
               cancelButtonText: '暂不'
@@ -285,7 +285,7 @@
             .catch(() => {
 
             })
-            return
+          return
         }
         this.$router.push({
           path: '/rise_vip'
@@ -445,7 +445,6 @@
        */
       getGirl() {
         this.getMeiMei()
-
       },
 
       /**
@@ -529,37 +528,38 @@
         })
       },
 
-      getEwm(g){
-        console.log(g)
-          var params = {
-            number: g.boy_number
-          }
-          var Salt = this.userinfo.Salt
-          var UserNumber = this.payodata.number // 用户number
-          var Sex = this.payodata.sex // 性别
-          var Timestamp = this.$global.timestamp // 时间戳
-          var Token = this.$md5(UserNumber + Salt + Timestamp)
-          this.$axios.get(this.$global.api + 'boy/ewm', {
-            params,
-            headers: {
-              UserNumber,
-              Token,
-              Timestamp,
-              Sex
-            },
-          }).then(res => {
-            console.log(333333333)
-            console.log(res)
-            if(res.data.code==200){
-              if(res.data.data.weima.length>0){
-                this.sweetgirl()
-              }
+      getEwm(g) {
+        var params = {
+          number: g.boy_number
+        }
+        var Salt = this.userinfo.Salt
+        var UserNumber = this.payodata.number // 用户number
+        var Sex = this.payodata.sex // 性别
+        var Timestamp = this.$global.timestamp // 时间戳
+        var Token = this.$md5(UserNumber + Salt + Timestamp)
+        this.$axios.get(this.$global.api + 'boy/ewm', {
+          params,
+          headers: {
+            UserNumber,
+            Token,
+            Timestamp,
+            Sex
+          },
+        }).then(res => {
+          if (res.data.code == 200) {
+            if (res.data.data.weima.length > 0) {
+              ImagePreview({
+                images: [res.data.data.weima],
+                showIndex: false
+              })
+              return
             }
-            console.log(44444444)
+          }
+          this.$toast('未找到数据！')
 
-          }).catch(err => {
-            console.log(err.message)
-          })
+        }).catch(err => {
+          console.log(err.message)
+        })
       },
 
       /**
@@ -1070,11 +1070,11 @@
     position: fixed;
   }
 
-  /deep/ .van-dropdown-menu__title::after{
+  /deep/ .van-dropdown-menu__title::after {
     border-color: transparent transparent #323233 #323233;
   }
 
   /deep/ .van-dropdown-menu__title--active::after {
-      border-color: transparent transparent #FFB929 #FFB929;
+    border-color: transparent transparent #FFB929 #FFB929;
   }
 </style>

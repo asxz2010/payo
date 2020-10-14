@@ -34,9 +34,10 @@ import {
   Area,
   Popup,
   Toast,
-  Skeleton
+  Skeleton,
+  ImagePreview
 } from 'vant'
-Vue.use(DropdownMenu).use(DropdownItem).use(Overlay).use(Button).use(Dialog).use(Notify).use(Area).use(Popup).use(Toast).use(Skeleton)
+Vue.use(DropdownMenu).use(DropdownItem).use(Overlay).use(Button).use(Dialog).use(Notify).use(Area).use(Popup).use(Toast).use(Skeleton).use(ImagePreview)
 
 import {
   Cascader,
