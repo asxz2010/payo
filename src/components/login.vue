@@ -185,6 +185,8 @@
                   message: '登录成功',
                   duration: 1000
                 })
+                var tip = Sex == 1? '撩妹':'翻牌'
+                localStorage.setItem('tip', tip)
                 setTimeout(() => {
                   localStorage.setItem('login', '/login')
                   this.$router.push('/index')

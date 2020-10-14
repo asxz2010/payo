@@ -13,12 +13,15 @@
         </div>
         <p v-if="this.vipinfo.vip" class="date">会员到期时间：{{ this.vipinfo.expire_time|cutString(10) }}</p>
       </div>
-      <div v-if="this.vipinfo.vip" class="detail">
-        <div>
-          <!-- <img src="http://51pyyy.cn/uploads/wxpayo/boy/man.png"> -->
+      <div class="detail">
+        <div v-if="this.payodata.sex!=1">
+          <div class="iconfont iconnv"></div>
+          <p>{{ vipinfo.number }}</p>
+        </div>
+        <div v-else>
           <div class="iconfont iconnan"></div>
         </div>
-        <div>
+        <div v-if="this.payodata.sex==1">
           <img v-if="this.vipinfo.vip == '永久私人订制'" src="@/assets/images/ssvip.png">
           <img v-else-if="this.vipinfo.vip == '私人订制'" src="@/assets/images/vip.png">
           <img v-else-if="this.vipinfo.vip == '至尊会员'" src="@/assets/images/zzvip.png">
@@ -48,7 +51,7 @@
         <li @click="toPages('/rise_vip')">
           <div>
             <div class="iconfont iconxinbaniconshangchuan-"></div>
-            <span>会员升级</span>
+            <span>{{ this.cz.msg1 }}</span>
           </div>
           <div>
             <div class="iconfont iconxiangyou"></div>
@@ -57,7 +60,7 @@
         <li @click="toPages('/marry', 2)">
           <div>
             <div class="iconfont iconjilu"></div>
-            <span>被翻记录</span>
+            <span>{{ this.cz.msg2 }}</span>
           </div>
           <div>
             <div class="iconfont iconxiangyou"></div>
@@ -66,7 +69,7 @@
         <li @click="toPages('/marry', 1)">
           <div>
             <div class="iconfont iconqiangzhipeidui"></div>
-            <span>我的报名</span>
+            <span>{{ this.cz.msg3 }}</span>
           </div>
           <div>
             <div class="iconfont iconxiangyou"></div>
@@ -94,6 +97,11 @@
     inject: ['reload'],
     data() {
       return {
+        cz: {
+         msg1: '会员升级',
+         msg2: '被翻记录',
+         msg3: '我的报名',
+        },
         vipinfo: {}, // 用户vip信息
         userinfo: {}, // Salt,province,addr,email等信息
         payodata: {}, // number,sex等信息
@@ -102,6 +110,7 @@
     created() {
       this.userinfo = JSON.parse(this.$global.getCookie('user_info'))
       this.payodata = JSON.parse(this.$global.getCookie('payo_data'))
+      this.payodata.sex == 1? '':this.cz = {msg1: '客服咨询',  msg2: '被撩记录', msg3: '我的翻牌'}
     },
     methods: {
       /**
@@ -141,6 +150,7 @@
        * @param {Object} type(1为报名，2为翻)
        */
       toPages(str, type) {
+        localStorage.setItem('mine', '/mine')
         str ? this.$router.push({
           path: str,
           query: {
@@ -286,11 +296,12 @@
           flex: 1;
           display: flex;
           align-items: center;
-          justify-content: space-evenly;
+          justify-content: center;
           font-size: 3.5vw;
-          
+
           p{
             letter-spacing: 3px;
+            margin-left: 2vw;
           }
 
           img {
@@ -301,7 +312,7 @@
             color: #FFB929;
             font-size: 1.2rem;
           }
-          
+
         }
 
         &>div:nth-child(2) {

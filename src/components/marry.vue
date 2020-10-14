@@ -1,7 +1,7 @@
 <template>
-  <div class="marry-container" v-if="show" v-infinite-scroll="loadMore" :infinite-scroll-disabled="busy" infinite-scroll-distance="10"
+  <div class="marry-container" ref="marry" v-infinite-scroll="loadMore" :infinite-scroll-disabled="busy" infinite-scroll-distance="10"
     :infinite-scroll-immediate-check="busy2">
-    <div v-if="bool" class="wrap2">
+    <div v-if="!bool" class="wrap2">
       <div class="iconfont iconmeiyoushuju"></div>
       <p>暂时没有数据</p>
     </div>
@@ -33,8 +33,9 @@
       return {
         busy: false,
         busy2: true,
-        show: false,  // 页面显示
-        bool: true, // objList是否为空
+        // show: false,  // 页面显示
+        scrollY: 0, // 节点滚动高度
+        bool: true, // objList非空
         type: 1, // 默认是报名
         page: 1, // 默认页数
         objList: [], // 撩或被撩数据
@@ -44,6 +45,7 @@
     },
     created() {
       document.title = this.$route.query.type == 1 ? '报名记录' : '被翻记录'
+      this.dealHeight()
     },
     methods: {
       /**
@@ -86,8 +88,7 @@
               }
             }
           }
-          this.bool = this.objList.length>0? false:true
-          this.show = true
+          this.bool = this.objList.length>0? true:false
         }).catch(err => {
           console.log(err)
         })
@@ -157,15 +158,56 @@
         })
       },
 
+      // 为了计算距离顶部的高度，当高度大于700显示回顶部图标
+      scrollToTop() {
+        let scrollTop = this.$refs.marry.scrollTop
+        this.scrollTop = scrollTop
+        if (this.scrollTop > 700) {
+          this.btnFlag = true
+        } else {
+          this.btnFlag = false
+        }
+      },
+
+      /**
+       * 计算高度，返回不刷新
+       */
+      dealHeight() {
+        this.$nextTick(() => {
+          let marry = this.$refs.marry
+          marry.addEventListener('scroll', function() {
+            this.scrollY = marry.scrollTop
+          }, false)
+          marry.addEventListener('scroll', this.scrollToTop)
+        })
+      },
+
     },
     mounted() {
       this.userinfo = JSON.parse(this.$global.getCookie('user_info'))
       this.payodata = JSON.parse(this.$global.getCookie('payo_data'))
-      var type = this.$route.query.type
-      type == 1 ? this.tip = '报名' : this.tip = '被翻'
-      this.type = type
-      this.getLiaoedList(type)
+    },
+     beforeRouteLeave(to, from, next) {
+       this.scrollY = document.querySelector('.marry-container').scrollTop
+       next()
+     },
+    destroyed() {
+      document.querySelector('.marry-container').removeEventListener('scroll', this.scrollToTop)
+    },
+    activated() {
+      this.bool = true
+      if(localStorage.getItem('mine') == '/mine'){
+        localStorage.removeItem('mine')
+        var type = this.$route.query.type
+        type == 1 ? this.tip = '报名' : this.tip = '被翻'
+        this.type = type
+        this.objList = []
+        this.getLiaoedList(type)
+        this.scrollY = 0
+      }
+      document.querySelector('.marry-container').scrollTop = this.scrollY
     }
+
   }
 </script>
 

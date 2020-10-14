@@ -71,8 +71,8 @@ const router = new Router({
       name: 'marry',
       component: marry,
       meta: {
-        // title: '被翻记录',
-        auth: true
+        auth: true,
+        keepAlive: true,
       }
     },
     {

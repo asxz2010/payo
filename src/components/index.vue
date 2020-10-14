@@ -15,7 +15,7 @@
     <div class="top">
       <div class="inp">
         <form action="javascript:true">
-          <input type="search" v-model="number" :placeholder="'输入'+placeholder+'编号'" @keyup.13="findMeiMei">
+          <input type="search" v-model="number" :placeholder="'输入'+ cz.msg2 +'编号'" @keyup.13="findMeiMei">
         </form>
       </div>
     </div>
@@ -38,7 +38,7 @@
           </div>
           <div class="liao_btn">
             <div>
-              <img v-if="g.isSignup==1" src="http://qiniu.tecclub.cn/payo/btn_signed@2x.png" alt="PAYO社交">
+              <img v-if="g.isSignup==1" src="http://qiniu.tecclub.cn/payo/btn_signed@2x.png" alt="PAYO社交" @click="getEwm(g)">
               <img v-else src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="PAYO社交" @click="tkShow(g)">
             </div>
           </div>
@@ -51,7 +51,7 @@
             </div>
             <div @click="add">
               地址: {{ g.province }}-{{ g.city }}
-              <p @click.nactive="toDetail(g.cover_image)">点我看详情</p>
+              <p @click.nactive="toDetail(g.cover_image)">点我看大图</p>
             </div>
           </div>
         </div>
@@ -67,25 +67,25 @@
                 <div class="forever">{{ this.vipinfo.vip|cutString(1) }}</div>
               </div>
               <div v-if="this.vipinfo.isYongjiu==1" class="leftchance">本月剩余: 无限制</div>
-              <div v-else class="leftchance">本月剩余: {{ this.vipinfo.monthSignNum }}{{ this.vipinfo.daySignNum }}次</div>
+              <div v-else class="leftchance">{{ cz.msg3 }}剩余: {{ this.vipinfo.monthSignNum }}{{ this.vipinfo.daySignNum }}次</div>
             </div>
             <div class="d-2">
               <p>{{ this.vipinfo.number }}</p>
               <p v-if="this.vipinfo.isYongjiu==1">会员到期时间: {{ this.vipinfo.vip }}</p>
               <p v-else-if="this.vipinfo.expireTime">会员到期时间: {{ this.vipinfo.expireTime|cutString(10) }}</p>
             </div>
-            <div class="d-3" v-if="this.vipinfo.isYongjiu!=1 && this.vipinfo.expireTime">
+            <div class="d-3" v-if="!this.vipinfo.isYongjiu || this.vipinfo.isYongjiu!=1">
               <van-button icon="http://qiniu.tecclub.cn/payo/jewel_icon@2x.png" color="#FFB929" size="small" round
                 plain @click="toVip">
-                升级
+                {{ cz.msg1 }}
               </van-button>
             </div>
             <div class="d-3" v-else></div>
           </div>
 
           <div class="d-5">
-            <img src="http://qiniu.tecclub.cn/payo/btn_baoming@2x.png" alt="PAYO社交" @click="getGirl">
-            <p>点击报名将扣除1次报名机会（至尊、私人不限）有其他问题请咨询客服</p>
+            <img :src="cz.msg5" alt="PAYO社交" @click="getGirl">
+            <p>{{ cz.msg4 }},有其他问题请咨询客服</p>
           </div>
         </div>
       </div>
@@ -119,7 +119,6 @@
         signup_show: false, // 报名成功
         scrollTop: 0, // 节点滚动高度
         btnFlag: false, // 回到顶部显示
-        placeholder: '妹妹', // 输入提示语
         busy: false,
         busy2: true,
         scrollY: 0,
@@ -140,6 +139,13 @@
           text: '等级排序',
           value: 2
         }],
+        cz: {
+          msg1: '升级',
+          msg2: '妹妹',
+          msg3: '本月',
+          msg4: '点击报名将扣除1次报名机会（至尊、私人不限）',
+          msg5: require('@/assets/images/bm.png')
+        },
         myGirls: ['111'], // 妹子信息
         g_number: 0, // 要报名的girl的number
         userinfo: {}, // Salt,province,addr,email等信息
@@ -153,7 +159,13 @@
     created() {
       this.userinfo = JSON.parse(this.$global.getCookie('user_info'))
       this.payodata = JSON.parse(this.$global.getCookie('payo_data'))
-      this.payodata.sex == 1 ? '' : this.placeholder = '哥哥'
+      if(this.payodata.sex != 1){
+        this.cz.msg1 = '咨询'
+        this.cz.msg2 = '哥哥'
+        this.cz.msg3 = '本日'
+        this.cz.msg4 = '点击翻牌将扣除1次翻牌机会'
+        this.cz.msg5 = require('@/assets/images/fp.png')
+      }
     },
     mounted() {
       this.getAreaList()
@@ -227,6 +239,7 @@
             page == 1 ? this.myGirls = [] : ''
             if (res.status == 200) {
               let girl_list = res.data.data.list
+              console.log(girl_list)
               if (girl_list.length > 0) {
                 for (let g of girl_list) {
                   this.myGirls.push(g)
@@ -259,18 +272,24 @@
        */
       toVip() {
         this.tkShow()
-        this.$dialog.confirm({
-            title: '是否去升级?',
-            cancelButtonText: '暂不'
-          })
-          .then(() => {
-            this.$router.push({
-              path: '/rise_vip'
+        if(this.payodata.sex==1){
+          this.$dialog.confirm({
+              title: '是否去升级?',
+              cancelButtonText: '暂不'
             })
-          })
-          .catch(() => {
+            .then(() => {
+              this.$router.push({
+                path: '/rise_vip'
+              })
+            })
+            .catch(() => {
 
-          })
+            })
+            return
+        }
+        this.$router.push({
+          path: '/rise_vip'
+        })
       },
 
       /**
@@ -378,38 +397,6 @@
       },
 
       /**
-       * 撩一下
-       * @param {Object} g(撩的对象)
-       */
-      async getMeiMei() {
-        let g = this.obj
-        if (this.payodata.sex != 1) {
-          this.getVipInfo()
-          this.g_number = g.boy_number ? g.boy_number : g.number
-          this.tkShow()
-          let bool = await this.getA()
-          console.log(bool)
-          if(bool==200){
-            console.log(33333333)
-            let index = this.myGirls.indexOf(g)
-            this.$set(this.myGirls[index], 'isSignup', 1)
-          }
-          console.log(111111)
-        } else {
-          this.tkShow()
-          this.getVipInfo()
-          this.g_number = g.boy_number ? g.boy_number : g.number
-          let bool = await this.getA()
-          if(bool==200){
-          console.log(2222222)
-            let index = this.myGirls.indexOf(g)
-            this.$set(this.myGirls[index], 'isSignup', 1)
-          }
-        }
-
-      },
-
-      /**
        * 显示/隐藏撩一下弹框
        */
       tkShow(g) {
@@ -458,7 +445,38 @@
        */
       getGirl() {
         this.getMeiMei()
-        // await this.getA()
+
+      },
+
+      /**
+       * 撩一下
+       * @param {Object} g(撩的对象)
+       */
+      async getMeiMei() {
+        let g = this.obj
+        if (this.payodata.sex != 1) {
+          this.getVipInfo()
+          this.g_number = g.boy_number ? g.boy_number : g.number
+          this.tkShow()
+          let bool = await this.getA()
+          console.log(bool)
+          if (bool == 200) {
+            console.log(33333333)
+            let index = this.myGirls.indexOf(g)
+            this.$set(this.myGirls[index], 'isSignup', 1)
+          }
+          console.log(111111)
+        } else {
+          this.tkShow()
+          this.getVipInfo()
+          this.g_number = g.boy_number ? g.boy_number : g.number
+          let bool = await this.getA()
+          if (bool == 200) {
+            console.log(2222222)
+            let index = this.myGirls.indexOf(g)
+            this.$set(this.myGirls[index], 'isSignup', 1)
+          }
+        }
       },
 
       getA() {
@@ -482,7 +500,7 @@
           }).then(res => {
             console.log(333333333)
             console.log(res)
-             console.log(44444444)
+            console.log(44444444)
             if (res.data.code == 200) {
               if (res.data.data.clipboard_text) {
                 this.tip = res.data.data.clipboard_text + '，复制口令后，联系客服，可获得匹配结果~'
@@ -498,14 +516,50 @@
                 })
               }
               resolve(200)
-            } else{
-              this.$notify({ type: 'warning', message: res.data.message });
+            } else {
+              this.$notify({
+                type: 'warning',
+                message: res.data.message
+              });
               resolve(201)
             }
           }).catch(err => {
             console.log(err.message)
           })
         })
+      },
+
+      getEwm(g){
+        console.log(g)
+          var params = {
+            number: g.boy_number
+          }
+          var Salt = this.userinfo.Salt
+          var UserNumber = this.payodata.number // 用户number
+          var Sex = this.payodata.sex // 性别
+          var Timestamp = this.$global.timestamp // 时间戳
+          var Token = this.$md5(UserNumber + Salt + Timestamp)
+          this.$axios.get(this.$global.api + 'boy/ewm', {
+            params,
+            headers: {
+              UserNumber,
+              Token,
+              Timestamp,
+              Sex
+            },
+          }).then(res => {
+            console.log(333333333)
+            console.log(res)
+            if(res.data.code==200){
+              if(res.data.data.weima.length>0){
+                this.sweetgirl()
+              }
+            }
+            console.log(44444444)
+
+          }).catch(err => {
+            console.log(err.message)
+          })
       },
 
       /**
@@ -569,18 +623,8 @@
 
     },
     beforeRouteLeave(to, from, next) {
-      //保存滚动条元素div的scrollTop值
       this.scrollY = document.querySelector('.index-container').scrollTop
       next()
-    },
-    // 为div元素重新设置保存的scrollTop值
-    beforeRouteEnter(to, from, next) {
-      next(vm => { // vm = this
-        vm.toPath = to.path
-        vm.fromPath = from.path
-        let indextop = vm.$refs.indextop
-        indextop.scrollTop = vm.scrollY
-      })
     },
     destroyed() {
       let indextop = this.$refs.indextop
@@ -588,6 +632,7 @@
       this.$store.dispatch('settings/addKeepAlivePage', 'index')
     },
     activated() {
+      document.querySelector('.index-container').scrollTop = this.scrollY
       if (localStorage.getItem('login') == '/login') {
         localStorage.removeItem('login')
         location.reload()
@@ -1023,5 +1068,13 @@
     width: 100vw;
     height: 100vh;
     position: fixed;
+  }
+
+  /deep/ .van-dropdown-menu__title::after{
+    border-color: transparent transparent #323233 #323233;
+  }
+
+  /deep/ .van-dropdown-menu__title--active::after {
+      border-color: transparent transparent #FFB929 #FFB929;
   }
 </style>

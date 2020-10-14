@@ -1,10 +1,6 @@
 <template>
   <div id="app">
-    <!-- <transition-group> -->
     <transition :name="transitionName">
-      <!-- <keep-alive>
-        <router-view class="page" v-if="isRouterAlive" />
-      </keep-alive> -->
       <keep-alive>
         <router-view class="page" v-if="$route.meta.keepAlive && isRouterAlive"></router-view>
       </keep-alive>
@@ -17,11 +13,11 @@
       <div @click="chooseTab(0)">
         <div v-show="!tabFlag">
           <img src="@/assets/images/icon_liaomei.png" alt="">
-          <p>撩妹</p>
+          <p>{{ tip }}</p>
         </div>
         <div :class="tabFlag? 'active':'' " v-show="tabFlag">
           <img src="@/assets/images/icon_liaomei_act.png" alt="">
-          <p>撩妹</p>
+          <p>{{ tip }}</p>
         </div>
       </div>
       <div @click="chooseTab(1)">
@@ -58,7 +54,7 @@
     },
     data() {
       return {
-        selected: '撩妹',
+        tip: '',
         flag: true,
         tabFlag: true,
 
@@ -69,12 +65,13 @@
       }
     },
     created() {
-      if(this.$route.path != '/index' && this.$route.path != '/mine'){
+      this.tip = localStorage.getItem('tip')
+      if (this.$route.path != '/index' && this.$route.path != '/mine') {
         this.flag = false
-      }else{
+      } else {
         this.flag = true
       }
-      if(localStorage.getItem('tabFlag')){
+      if (localStorage.getItem('tabFlag')) {
         this.tabFlag = eval(localStorage.getItem('tabFlag'))
       }
     },
