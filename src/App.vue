@@ -84,18 +84,10 @@
       },
       chooseTab(num) {
         if (num == 0) {
-          this.tabFlag = true
-          localStorage.setItem('tabFlag', true)
-          var tabFlagStr = localStorage.getItem('tabFlag')
-          this.tabFlag = eval(tabFlagStr)
           this.$router.push({
             path: '/index'
           })
         } else if (num == 1) {
-          this.tabFlag = false
-          localStorage.setItem('tabFlag', false)
-          var tabFlagStr = localStorage.getItem('tabFlag')
-          this.tabFlag = eval(tabFlagStr)
           this.$router.push({
             path: '/mine'
           })

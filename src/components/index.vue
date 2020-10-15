@@ -500,6 +500,7 @@
             console.log(333333333)
             console.log(res)
             console.log(44444444)
+            this.getVipInfo()
             if (res.data.code == 200) {
               if (res.data.data.clipboard_text) {
                 this.tip = res.data.data.clipboard_text + '，复制口令后，联系客服，可获得匹配结果~'
@@ -507,12 +508,14 @@
                 this.signup_show = true
                 this.flag = !this.flag
               } else {
-                this.$notify({
-                  message: '报名成功',
-                  background: '#07C160',
-                  color: 'white',
-                  duration: 1500
-                })
+                if (res.data.data.weima.length > 0) {
+                  ImagePreview({
+                    images: [res.data.data.weima],
+                    showIndex: false
+                  })
+                }else{
+                  this.$toast('未找到二维码，请联系客服！')
+                }
               }
               resolve(200)
             } else {
@@ -546,6 +549,7 @@
             Sex
           },
         }).then(res => {
+          // this.getVipInfo()
           if (res.data.code == 200) {
             if (res.data.data.weima.length > 0) {
               ImagePreview({
@@ -555,7 +559,7 @@
               return
             }
           }
-          this.$toast('未找到数据！')
+          this.$toast('未找到二维码，请联系客服！')
 
         }).catch(err => {
           console.log(err.message)

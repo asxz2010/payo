@@ -129,7 +129,6 @@
             })
             this.$global.delCookie('user_info')
             this.$global.delCookie('payo_data')
-            localStorage.removeItem('tabFlag')
             setTimeout(() => {
               Toast.success({
                 message: '已退出',
