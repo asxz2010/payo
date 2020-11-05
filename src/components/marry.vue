@@ -8,12 +8,12 @@
     <div v-else v-for="g in objList" class="wrap">
       <p>{{ tip }}日期: <span>{{ g.su_update_time }}</span></p>
       <div>
-        <img src="http://qiniu.tecclub.cn/payo/img_chenggong_nv @2x.png" alt="PAYO社交">
+        <img :src="imgsrc" alt="PAYO社交">
         <div class="info">
           <p>编号: <span>{{ g.id }}</span></p>
           <p>地址: <span>{{ g.province }}-{{ g.city }}</span></p>
         </div>
-        <div class="deta" @click="toDetil(g.id)">查看详情</div>
+        <div class="deta" @click="toDetil(g)">查看详情</div>
         <p v-if="g.su_res=='success' && type==2" class="succ">被翻成功</p>
         <p v-else-if="g.su_res=='wait' && type==2" class="wait">被翻等待</p>
         <p v-else-if="g.su_res=='refuse' && type==2" class="refu">被翻失败</p>
@@ -41,9 +41,12 @@
         objList: [], // 撩或被撩数据
         userinfo: {}, // Salt,province,addr,email等信息
         payodata: {}, // number,sex等信息
+        imgsrc: ''
       }
     },
     created() {
+      let payodata = JSON.parse(this.$global.getCookie('payo_data'))
+      this.imgsrc = payodata.sex ==1 ? require('@/assets/images/man.png'):require('@/assets/images/woman.png')
       document.title = this.$route.query.type == 1 ? '报名记录' : '被翻记录'
       this.dealHeight()
     },
@@ -104,17 +107,19 @@
       /**
        * @param {String} number(报名对象id)
        */
-      async toDetil(number) {
-        let imgsrc = await this.getImgSrc(number)
-        if (imgsrc.length > 0) {
+      async toDetil(obj) {
+        let imgObj = await this.getImgSrc(obj.id)
+        if(imgObj.id==2){
+          this.$toast('该用户没有上传图片')
+        }
+        else{
           this.$router.push({
             path: '/detail',
             query: {
-              imgsrc
+              imgsrc: imgObj.imgsrc,
+              obj
             }
           })
-        }else{
-          this.$toast('该用户没有上传图片')
         }
       },
 
@@ -148,9 +153,14 @@
               number
             }
           }).then(res => {
+            console.log(111111111111)
+            console.log(res)
+            console.log(2222222222)
             let list = res.data.data.list
             if (list.length > 0) {
-              resolve(list[0].cover_image)
+              resolve({id: 1,imgsrc: list[0].cover_image})
+            }else{
+              resolve({id: 2,imgsrc: ''})
             }
           }).catch(err => {
             console.log(err)

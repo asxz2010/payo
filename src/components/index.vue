@@ -68,6 +68,7 @@
               </div>
               <div v-if="this.vipinfo.isYongjiu==1" class="leftchance">本月剩余: 无限制</div>
               <div v-else class="leftchance">{{ cz.msg3 }}剩余: {{ this.vipinfo.monthSignNum }}{{ this.vipinfo.daySignNum }}次</div>
+              <div v-if="payodata.sex!=1" class="leftchance2">本月剩余: 次</div>
             </div>
             <div class="d-2">
               <p>{{ this.vipinfo.number }}</p>
@@ -497,9 +498,6 @@
               Sex
             },
           }).then(res => {
-            console.log(333333333)
-            console.log(res)
-            console.log(44444444)
             this.getVipInfo()
             if (res.data.code == 200) {
               if (res.data.data.clipboard_text) {
@@ -549,7 +547,6 @@
             Sex
           },
         }).then(res => {
-          // this.getVipInfo()
           if (res.data.code == 200) {
             if (res.data.data.weima.length > 0) {
               ImagePreview({
@@ -905,6 +902,18 @@
           .leftchance {
             position: absolute;
             top: 3vw;
+            right: -1vw;
+            background: #222;
+            color: #ccc;
+            padding: 1vw 2vw;
+            font-size: 0.8rem;
+            border-top-left-radius: 30vw;
+            border-bottom-left-radius: 30vw;
+          }
+
+          .leftchance2 {
+            position: absolute;
+            top: 10vw;
             right: -1vw;
             background: #222;
             color: #ccc;

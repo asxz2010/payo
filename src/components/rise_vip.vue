@@ -1,8 +1,8 @@
 <template>
   <div class="rise-container" :style="{height: html_height+'px'}">
     <div>
-      <img src="http://qiniu.tecclub.cn/2019/09/26/12_d63b0777bcbb0713e01e1bbb670f1d11.jpg" alt="PAYO社交">
-      <p>添加 PAYO社交 客服微信详情咨询{{html_height}}</p>
+      <img :src="imgsrc" alt="PAYO社交">
+      <p>添加 PAYO社交 客服微信咨询详情</p>
     </div>
   </div>
 </template>
@@ -11,10 +11,13 @@
   export default {
     data() {
       return {
-        html_height: 0
+        html_height: 0,
+        imgsrc: '',
       }
     },
     created() {
+      let payodata = JSON.parse(this.$global.getCookie('payo_data'))
+      this.imgsrc = payodata.sex == 1? 'http://qiniu.tecclub.cn/2019/09/26/12_d63b0777bcbb0713e01e1bbb670f1d11.jpg':require('@/assets/images/kfwoman.png')
       this.html_height = this.$global.html_height
     }
   }
