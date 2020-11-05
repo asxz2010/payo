@@ -65,6 +65,9 @@
       }
     },
     created() {
+      if(!localStorage.getItem('tabFlag')){
+        localStorage.setItem('tabFlag', true)
+      }
       this.tip = localStorage.getItem('tip')
       if (this.$route.path != '/index' && this.$route.path != '/mine') {
         this.flag = false
@@ -113,9 +116,11 @@
       '$route.path': function(newVal) {
         if (newVal === '/index') {
           this.tabFlag = this.flag = true
+          localStorage.setItem('tabFlag', true)
         } else if (newVal === '/mine') {
           this.tabFlag = false
           this.flag = true
+          localStorage.setItem('tabFlag', false)
         } else {
           this.flag = false
         }

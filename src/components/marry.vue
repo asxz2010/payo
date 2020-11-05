@@ -1,6 +1,6 @@
 <template>
-  <div class="marry-container" ref="marry" v-infinite-scroll="loadMore" :infinite-scroll-disabled="busy" infinite-scroll-distance="10"
-    :infinite-scroll-immediate-check="busy2">
+  <div class="marry-container" ref="marry" v-infinite-scroll="loadMore" :infinite-scroll-disabled="busy"
+    infinite-scroll-distance="10" :infinite-scroll-immediate-check="busy2">
     <div v-if="!bool" class="wrap2">
       <div class="iconfont iconmeiyoushuju"></div>
       <p>暂时没有数据</p>
@@ -33,7 +33,6 @@
       return {
         busy: false,
         busy2: true,
-        // show: false,  // 页面显示
         scrollY: 0, // 节点滚动高度
         bool: true, // objList非空
         type: 1, // 默认是报名
@@ -45,10 +44,25 @@
       }
     },
     created() {
-      let payodata = JSON.parse(this.$global.getCookie('payo_data'))
-      this.imgsrc = payodata.sex ==1 ? require('@/assets/images/man.png'):require('@/assets/images/woman.png')
-      document.title = this.$route.query.type == 1 ? '报名记录' : '被翻记录'
+      this.userinfo = JSON.parse(this.$global.getCookie('user_info'))
+      this.payodata = JSON.parse(this.$global.getCookie('payo_data'))
+      this.imgsrc = this.payodata.sex == 1 ? require('@/assets/images/woman.png') : require('@/assets/images/man.png')
       this.dealHeight()
+
+      var type = this.$route.query.type
+      if (this.payodata.sex == 1 && type == 1) {
+        this.tip = '报名'
+      } else if (this.payodata.sex == 1 && type == 2) {
+        this.tip = '被翻'
+      } else if (this.payodata.sex == 2 && type == 1) {
+        this.tip = '翻牌'
+      } else if (this.payodata.sex == 2 && type == 2) {
+        this.tip = '被撩'
+      }
+      this.type = type
+      this.objList = []
+      this.getLiaoedList(type)
+      this.scrollY = 0
     },
     methods: {
       /**
@@ -74,10 +88,10 @@
             Sex
           },
         }).then(res => {
+          console.log(res)
           if (res.data.code == 200) {
             let lists = res.data.data.lists
             if (lists.length > 0) {
-              console.log(lists)
               for (let g of res.data.data.lists) {
                 if (g.su_res == 'refund') {
                   continue
@@ -91,7 +105,7 @@
               }
             }
           }
-          this.bool = this.objList.length>0? true:false
+          this.bool = this.objList.length > 0 ? true : false
         }).catch(err => {
           console.log(err)
         })
@@ -109,10 +123,9 @@
        */
       async toDetil(obj) {
         let imgObj = await this.getImgSrc(obj.id)
-        if(imgObj.id==2){
+        if (imgObj.id == 2) {
           this.$toast('该用户没有上传图片')
-        }
-        else{
+        } else {
           this.$router.push({
             path: '/detail',
             query: {
@@ -153,14 +166,17 @@
               number
             }
           }).then(res => {
-            console.log(111111111111)
-            console.log(res)
-            console.log(2222222222)
             let list = res.data.data.list
             if (list.length > 0) {
-              resolve({id: 1,imgsrc: list[0].cover_image})
-            }else{
-              resolve({id: 2,imgsrc: ''})
+              resolve({
+                id: 1,
+                imgsrc: list[0].cover_image
+              })
+            } else {
+              resolve({
+                id: 2,
+                imgsrc: ''
+              })
             }
           }).catch(err => {
             console.log(err)
@@ -194,26 +210,39 @@
 
     },
     mounted() {
-      this.userinfo = JSON.parse(this.$global.getCookie('user_info'))
-      this.payodata = JSON.parse(this.$global.getCookie('payo_data'))
+
     },
-     beforeRouteLeave(to, from, next) {
-       this.scrollY = document.querySelector('.marry-container').scrollTop
-       next()
-     },
+    beforeRouteLeave(to, from, next) {
+      this.scrollY = document.querySelector('.marry-container').scrollTop
+      next()
+    },
     destroyed() {
       document.querySelector('.marry-container').removeEventListener('scroll', this.scrollToTop)
     },
     activated() {
       this.bool = true
-      if(localStorage.getItem('mine') == '/mine'){
+      if (localStorage.getItem('mine') == '/mine') {
         localStorage.removeItem('mine')
         var type = this.$route.query.type
-        type == 1 ? this.tip = '报名' : this.tip = '被翻'
+        this.tip = type == 1 ? '报名' : '被翻'
         this.type = type
         this.objList = []
+        this.page = 1
         this.getLiaoedList(type)
         this.scrollY = 0
+      }
+      if (this.payodata.sex == 1 && this.type == 1) {
+        document.title = '报名记录'
+        this.tip = '报名'
+      } else if (this.payodata.sex == 1 && this.type  == 2) {
+        document.title = '被翻记录'
+        this.tip = '被翻'
+      } else if (this.payodata.sex == 2 && this.type  == 1) {
+        document.title = '翻牌记录'
+        this.tip = '翻牌'
+      } else if (this.payodata.sex == 2 && this.type  == 2) {
+        document.title = '被撩记录'
+        this.tip = '被撩'
       }
       document.querySelector('.marry-container').scrollTop = this.scrollY
     }
@@ -233,7 +262,7 @@
     overflow-y: scroll;
     padding: .5rem;
 
-    .wrap2{
+    .wrap2 {
       width: 100%;
       height: 100%;
       color: #FFB929;
@@ -241,11 +270,13 @@
       justify-content: center;
       align-items: center;
       flex-direction: column;
-      .iconfont{
+
+      .iconfont {
         font-size: 4rem;
         transform: translateY(-4rem);
       }
-      p{
+
+      p {
         letter-spacing: 1px;
         font-size: 0.7rem;
         transform: translateY(-3rem);
@@ -292,7 +323,7 @@
           }
         }
 
-        .deta{
+        .deta {
           align-self: flex-end;
           position: absolute;
           right: 0;

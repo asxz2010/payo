@@ -98,7 +98,6 @@ const router = new Router({
       name: 'detail',
       component: detail,
       meta: {
-        title: '小姐姐资料',
         auth: true,
         keepAlive: false
       }

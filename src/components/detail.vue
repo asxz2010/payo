@@ -41,24 +41,12 @@
       this.obj = this.$route.query.obj
       this.userinfo = JSON.parse(this.$global.getCookie('user_info'))
       this.payodata = JSON.parse(this.$global.getCookie('payo_data'))
+      document.title = this.payodata.sex == 1 ? '妹妹资料' : '哥哥资料'
       console.log(this.obj)
     },
     methods: {
       goBack() {
         this.$router.go(-1)
-      },
-
-      /**
-       * 图片预览
-       * @param {number} id (图片id)
-       */
-      sweetgirl(id) {
-        const viewer = new Viewer(document.getElementById(id), {
-          navbar: false,
-          toolbar: false,
-          button: false,
-          title: false
-        })
       },
 
       getEwm() {

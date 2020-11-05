@@ -129,6 +129,7 @@
             })
             this.$global.delCookie('user_info')
             this.$global.delCookie('payo_data')
+            localStorage.removeItem('tabFlag')
             setTimeout(() => {
               Toast.success({
                 message: '已退出',
@@ -150,6 +151,7 @@
        */
       toPages(str, type) {
         localStorage.setItem('mine', '/mine')
+        localStorage.setItem('gg', '/gg')
         str ? this.$router.push({
           path: str,
           query: {

@@ -6,9 +6,19 @@
         <div class="iconfont icondizhi"></div>
         <p @click="showPopup">{{ userinfo.addr }}</p>
       </div>
-      <div>
+      <div v-if="payodata.sex == 1">
         <van-dropdown-menu>
           <van-dropdown-item v-model="userinfo.order" :options="option" @change="menuChange" />
+        </van-dropdown-menu>
+      </div>
+      <div v-if="payodata.sex == 2">
+        <van-dropdown-menu>
+          <van-dropdown-item v-model="userinfo.vipOrder" :options="option2" @change="vipChange" />
+        </van-dropdown-menu>
+      </div>
+      <div v-if="payodata.sex == 2">
+        <van-dropdown-menu>
+          <van-dropdown-item v-model="userinfo.ageOrder" :options="option3" @change="ageChange" />
         </van-dropdown-menu>
       </div>
     </div>
@@ -140,6 +150,29 @@
           text: '等级排序',
           value: 2
         }],
+        option2: [{
+          text: '全部',
+          value: 1
+        }, {
+          text: '私人定制',
+          value: 2
+        }],
+        option3: [{
+          text: '不限',
+          value: 1
+        }, {
+          text: '18～22岁',
+          value: 2
+        }, {
+          text: '22～26岁',
+          value: 3
+        }, {
+          text: '26～30岁',
+          value: 4
+        }, {
+          text: '30以上',
+          value: 5
+        }],
         cz: {
           msg1: '升级',
           msg2: '妹妹',
@@ -217,6 +250,8 @@
         var Token = this.$md5(UserNumber + Salt + Timestamp)
 
         var order = this.userinfo.order
+        // var vipOrder = this.userinfo.vipOrder
+        // var ageOrder = this.userinfo.ageOrder
         var number = this.number
         var path = 'girl/list'
         if (this.payodata.sex == 2) {
@@ -234,6 +269,8 @@
               page,
               province: this.userinfo.province,
               order,
+              // vipOrder,
+              // ageOrder,
               number
             }
           }).then(res => {
@@ -590,8 +627,41 @@
         })
       },
 
+      /**
+       * 时间或等级排序
+       * @param {Object} value
+       */
       menuChange(value) {
+        console.log(value)
         this.userinfo.order = value
+        this.$global.setCookie('user_info', JSON.stringify(this.userinfo), 60 * 60 * 24 * 31)
+        this.myGirls = []
+        this.page = 1
+        this.number = ''
+        this.init(1)
+      },
+
+      /**
+       * 筛选私人订制
+       * @param {Object} value
+       */
+      vipChange(value){
+        console.log(value)
+        this.userinfo.vipOrder = value
+        this.$global.setCookie('user_info', JSON.stringify(this.userinfo), 60 * 60 * 24 * 31)
+        this.myGirls = []
+        this.page = 1
+        this.number = ''
+        this.init(1)
+      },
+
+      /**
+       * 筛选年龄
+       * @param {Object} value
+       */
+      ageChange(value){
+        console.log(value)
+        this.userinfo.ageOrder = value
         this.$global.setCookie('user_info', JSON.stringify(this.userinfo), 60 * 60 * 24 * 31)
         this.myGirls = []
         this.page = 1
@@ -674,8 +744,9 @@
 
       &>div {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
+        width: 32%;
 
         div:focus {
           outline-color: red !important;
@@ -689,6 +760,12 @@
 
         .iconshuaxinzhongjieban {
           font-size: .6rem;
+        }
+
+        p{
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
     }

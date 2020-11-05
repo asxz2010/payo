@@ -174,6 +174,8 @@
                 var userinfo = JSON.stringify({
                   addr: this.address,
                   order: 1,
+                  vipOrder: 1,
+                  ageOrder: 1,
                   province,
                   city,
                   email,
