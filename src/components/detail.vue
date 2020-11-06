@@ -4,7 +4,7 @@
       <img :src="imgsrc" alt="PAYO社交">
       <div class="wrap">
         <p class="dp1" @click="goBack">返回</p>
-        <p v-if="payodata.sex != 1" class="dp1" @click="getEwm">查看二维码</p>
+        <p v-if="payodata.sex != 1 && fromPath != '/index'" class="dp1" @click="getEwm">查看二维码</p>
       </div>
     </div>
   </div>
@@ -32,6 +32,7 @@
         html_height: 0,
         imgsrc: '' ,// 图片url
         obj: {},
+        fromPath: '', // 源路由
         payodata: {}
       }
     },
@@ -42,7 +43,6 @@
       this.userinfo = JSON.parse(this.$global.getCookie('user_info'))
       this.payodata = JSON.parse(this.$global.getCookie('payo_data'))
       document.title = this.payodata.sex == 1 ? '妹妹资料' : '哥哥资料'
-      console.log(this.obj)
     },
     methods: {
       goBack() {
@@ -68,7 +68,6 @@
             Sex
           },
         }).then(res => {
-          console.log(res)
           if (res.data.code == 200) {
             if (res.data.data.weima.length > 0) {
               ImagePreview({
@@ -84,7 +83,12 @@
           console.log(err.message)
         })
       },
-    }
+    },
+    beforeRouteEnter(to, from, next) {
+      next(vm=>{
+        vm.fromPath = from.path
+      })
+    },
   }
 </script>
 

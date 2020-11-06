@@ -70,7 +70,6 @@
       getAddress(addressArr) {
         if (addressArr.length > 0) {
           var address = ''
-          console.log(addressArr)
           for (let addr of addressArr) {
             address += addr.name
           }
@@ -119,7 +118,6 @@
             }
           }).then(res => {
             var areaList = JSON.parse(res)
-            console.log(areaList)
             this.areaList = areaList
           }).catch(err => {
             console.log(err)

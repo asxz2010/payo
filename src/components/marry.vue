@@ -22,7 +22,6 @@
       <img v-else-if="g.su_res=='wait' && type==1" src="../assets/images/wait_liao.png" alt="PAYO社交">
       <img v-else-if="g.su_res=='refuse' && type==1" src="../assets/images/fail_liao.png" alt="PAYO社交">
     </div>
-
   </div>
 </template>
 
@@ -88,7 +87,6 @@
             Sex
           },
         }).then(res => {
-          console.log(res)
           if (res.data.code == 200) {
             let lists = res.data.data.lists
             if (lists.length > 0) {

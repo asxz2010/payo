@@ -13,12 +13,12 @@
       </div>
       <div v-if="payodata.sex == 2">
         <van-dropdown-menu>
-          <van-dropdown-item v-model="userinfo.vipOrder" :options="option2" @change="vipChange" />
+          <van-dropdown-item v-model="vipOrder" :options="option2" @change="vipChange" />
         </van-dropdown-menu>
       </div>
       <div v-if="payodata.sex == 2">
         <van-dropdown-menu>
-          <van-dropdown-item v-model="userinfo.ageOrder" :options="option3" @change="ageChange" />
+          <van-dropdown-item v-model="ageOrder" :options="option3" @change="ageChange" />
         </van-dropdown-menu>
       </div>
     </div>
@@ -31,7 +31,7 @@
     </div>
     <div class="middle">
       <div v-if="!myGirlsShow" class="wrap wrap2">
-        <p>没有你找的{{ placeholder }},看看别的{{ placeholder }}吧!</p>
+        <p>没有你找的{{ cz.msg2 }},看看别的{{ cz.msg2 }}吧!</p>
       </div>
       <div v-else>
         <div class="wrap" v-for="g in myGirls" :key="g.id">
@@ -132,7 +132,11 @@
         btnFlag: false, // 回到顶部显示
         busy: false,
         busy2: true,
-        scrollY: 0,
+        startAge: 1,  // 最小年龄数
+        endAge: 1,  // 最大年龄数
+        ageOrder: 1,  // 年龄默认不限
+        vipOrder: 1,  // 默认非私人订制
+        scrollY: 0, // 滑动高度
         toPath: '', // 目标路由
         fromPath: '', // 源路由
         page: 0, // 页数
@@ -162,16 +166,16 @@
           value: 1
         }, {
           text: '18～22岁',
-          value: 2
+          value: 18
         }, {
-          text: '22～26岁',
-          value: 3
+          text: '23～26岁',
+          value: 23
         }, {
-          text: '26～30岁',
-          value: 4
+          text: '27～30岁',
+          value: 27
         }, {
           text: '30以上',
-          value: 5
+          value: 30
         }],
         cz: {
           msg1: '升级',
@@ -277,10 +281,16 @@
             page == 1 ? this.myGirls = [] : ''
             if (res.status == 200) {
               let girl_list = res.data.data.list
-              console.log(girl_list)
               if (girl_list.length > 0) {
-                for (let g of girl_list) {
-                  this.myGirls.push(g)
+                if(this.payodata.sex!=1 && this.startAge != 1){
+                  girl_list = this.getAgeList(girl_list)
+                    for (let g of girl_list) {
+                      this.myGirls.push(g)
+                    }
+                }else{
+                  for (let g of girl_list) {
+                    this.myGirls.push(g)
+                  }
                 }
               } else {
                 this.initStop = true
@@ -296,11 +306,17 @@
         })
       },
 
+      getAgeList(list){
+        list = list.filter(item => item.age>=this.startAge && item.age<=this.endAge )
+        return list
+      },
+
       /**
        * 搜索对象
        */
       async findMeiMei() {
         this.page = 1
+        this.startAge = this.endAge = 1
         await this.init(1)
         this.myGirlsShow = this.myGirls.length == 0 ? false : true
       },
@@ -346,7 +362,7 @@
        * 获取地区
        * @param {Array} addressArr (地址)
        */
-      getAddress(addressArr) {
+      async getAddress(addressArr) {
         if (addressArr.length > 0) {
           var address = ''
           for (let addr of addressArr) {
@@ -361,7 +377,8 @@
           this.myGirls = []
           this.page = 1
           this.number = ''
-          this.init()
+          await this.init()
+          this.myGirlsShow = this.myGirls.length == 0 ? false : true
         }
         this.showPopup()
       },
@@ -496,20 +513,16 @@
           this.g_number = g.boy_number ? g.boy_number : g.number
           this.tkShow()
           let bool = await this.getA()
-          console.log(bool)
           if (bool == 200) {
-            console.log(33333333)
             let index = this.myGirls.indexOf(g)
             this.$set(this.myGirls[index], 'isSignup', 1)
           }
-          console.log(111111)
         } else {
           this.tkShow()
           this.getVipInfo()
           this.g_number = g.boy_number ? g.boy_number : g.number
           let bool = await this.getA()
           if (bool == 200) {
-            console.log(2222222)
             let index = this.myGirls.indexOf(g)
             this.$set(this.myGirls[index], 'isSignup', 1)
           }
@@ -594,7 +607,6 @@
             }
           }
           this.$toast('未找到二维码，请联系客服！')
-
         }).catch(err => {
           console.log(err.message)
         })
@@ -631,14 +643,14 @@
        * 时间或等级排序
        * @param {Object} value
        */
-      menuChange(value) {
-        console.log(value)
+      async menuChange(value) {
         this.userinfo.order = value
         this.$global.setCookie('user_info', JSON.stringify(this.userinfo), 60 * 60 * 24 * 31)
         this.myGirls = []
         this.page = 1
         this.number = ''
-        this.init(1)
+        await this.init(1)
+        this.myGirlsShow = this.myGirls.length == 0 ? false : true
       },
 
       /**
@@ -646,7 +658,6 @@
        * @param {Object} value
        */
       vipChange(value){
-        console.log(value)
         this.userinfo.vipOrder = value
         this.$global.setCookie('user_info', JSON.stringify(this.userinfo), 60 * 60 * 24 * 31)
         this.myGirls = []
@@ -659,14 +670,29 @@
        * 筛选年龄
        * @param {Object} value
        */
-      ageChange(value){
-        console.log(value)
-        this.userinfo.ageOrder = value
-        this.$global.setCookie('user_info', JSON.stringify(this.userinfo), 60 * 60 * 24 * 31)
+      async ageChange(value){
+        if(value == 18){
+          this.startAge = value
+          this.endAge = 22
+        } else if(value == 23){
+          this.startAge = value
+          this.endAge = 26
+        }else if(value == 27){
+          this.startAge = value
+          this.endAge = 30
+        }else if(value == 30){
+          this.startAge = value
+          this.endAge = 100
+        }else{
+          this.startAge = 1
+          this.endAge = 1
+        }
+
         this.myGirls = []
         this.page = 1
         this.number = ''
-        this.init(1)
+        await this.init(1)
+        this.myGirlsShow = this.myGirls.length == 0 ? false : true
       },
 
       // 点击图片回到顶部方法，加计时器是为了过渡顺滑
@@ -741,7 +767,9 @@
       font-size: 1rem;
       padding: 0.5rem 0 0;
       letter-spacing: .1rem;
-
+      &>div:nth-child(1){
+        width: 38%;
+      }
       &>div {
         display: flex;
         justify-content: center;
