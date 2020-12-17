@@ -78,7 +78,7 @@
               </div>
               <div v-if="this.vipinfo.isYongjiu==1" class="leftchance">本月剩余: 无限制</div>
               <div v-else class="leftchance">{{ cz.msg3 }}剩余: {{ this.vipinfo.monthSignNum }}{{ this.vipinfo.daySignNum }}次</div>
-              <div v-if="payodata.sex!=1" class="leftchance2">本月剩余: 次</div>
+              <div v-if="payodata.sex!=1" class="leftchance2">本月剩余: {{ this.vipinfo.monthSignNum }}次</div>
             </div>
             <div class="d-2">
               <p>{{ this.vipinfo.number }}</p>
@@ -257,10 +257,7 @@
         // var vipOrder = this.userinfo.vipOrder
         // var ageOrder = this.userinfo.ageOrder
         var number = this.number
-        var path = 'girl/list'
-        if (this.payodata.sex == 2) {
-          path = 'boy/list'
-        }
+        var path = this.payodata.sex == 2? 'boy/list':'girl/list'
         return new Promise(resolve => {
           this.$axios.get(this.$global.api + path, {
             headers: {
@@ -275,10 +272,18 @@
               order,
               // vipOrder,
               // ageOrder,
-              number
+              // number
             }
           }).then(res => {
+            console.log('UserNumber:'+UserNumber)
+            console.log('Token:'+Token)
+            console.log('Timestamp:'+Timestamp)
+            console.log('Sex:'+Sex)
+            console.log('page:'+page)
+            console.log('province:'+this.userinfo.province)
+            console.log('order:'+order)
             page == 1 ? this.myGirls = [] : ''
+              console.log(res)
             if (res.status == 200) {
               let girl_list = res.data.data.list
               if (girl_list.length > 0) {
@@ -306,6 +311,10 @@
         })
       },
 
+      /**
+       * 根据年龄筛选
+       * @param {array} list
+       */
       getAgeList(list){
         list = list.filter(item => item.age>=this.startAge && item.age<=this.endAge )
         return list
@@ -658,7 +667,7 @@
        * @param {Object} value
        */
       vipChange(value){
-        this.userinfo.vipOrder = value
+        this.userinfo.vipOrder = value  // 1全部 2私人定制
         this.$global.setCookie('user_info', JSON.stringify(this.userinfo), 60 * 60 * 24 * 31)
         this.myGirls = []
         this.page = 1
@@ -695,7 +704,7 @@
         this.myGirlsShow = this.myGirls.length == 0 ? false : true
       },
 
-      // 点击图片回到顶部方法，加计时器是为了过渡顺滑
+      // 点击回到顶部，加计时器是为了过渡顺滑
       backTop() {
         let indextop = this.$refs.indextop
         let timer = setInterval(() => {
