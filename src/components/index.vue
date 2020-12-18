@@ -258,6 +258,7 @@
         // var ageOrder = this.userinfo.ageOrder
         var number = this.number
         var path = this.payodata.sex == 2? 'boy/list':'girl/list'
+        this.userinfo.province = this.userinfo.province == '100000'?  '':this.userinfo.province
         return new Promise(resolve => {
           this.$axios.get(this.$global.api + path, {
             headers: {
@@ -272,18 +273,10 @@
               order,
               // vipOrder,
               // ageOrder,
-              // number
+              number
             }
           }).then(res => {
-            console.log('UserNumber:'+UserNumber)
-            console.log('Token:'+Token)
-            console.log('Timestamp:'+Timestamp)
-            console.log('Sex:'+Sex)
-            console.log('page:'+page)
-            console.log('province:'+this.userinfo.province)
-            console.log('order:'+order)
             page == 1 ? this.myGirls = [] : ''
-              console.log(res)
             if (res.status == 200) {
               let girl_list = res.data.data.list
               if (girl_list.length > 0) {
@@ -338,7 +331,8 @@
         if (this.payodata.sex == 1) {
           this.$dialog.confirm({
               title: '是否去升级?',
-              cancelButtonText: '暂不'
+              cancelButtonText: '暂不',
+              confirmButtonColor: '#FFB929'
             })
             .then(() => {
               this.$router.push({
@@ -422,9 +416,9 @@
               }
               if (areaArr.length == province_num) {
                 provinceStr = provinceStr.substring(0, provinceStr.length - 1)
-                provinceStr = '"province_list":{' + provinceStr + '}'
+                provinceStr = '"province_list":{ "100000":"全国",' + provinceStr + '}'
                 cityStr = cityStr.substring(0, cityStr.length - 1)
-                cityStr = ',"city_list":{' + cityStr + '}'
+                cityStr = ',"city_list":{ "100100":"",' + cityStr + '}'
                 var areaStr = '{' + provinceStr + cityStr + '}'
                 resolve(areaStr)
               }

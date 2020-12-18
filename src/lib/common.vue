@@ -2,7 +2,6 @@
 </template>
 
 <script>
-  // const api = 'http://api.51pyvip.com/'
   const api = 'http://api.payovip.com/'
 
   // 窗口高度

@@ -1,7 +1,7 @@
 <template>
   <div class="login-container" :style="{height: html_height+'px'}">
     <div class="wrap">
-      <img src="http://qiniu.tecclub.cn/payo/payou@5x@2x.png" alt="啪友社交">
+      <img src="@/assets/images/logo.png" alt="啪友社交">
       <ul>
         <li>
           <p @click="showPopup">{{ address }}</p>
@@ -170,12 +170,12 @@
               setTimeout(() => {
                 var data = JSON.stringify(res.data.data)
                 var userinfo = JSON.stringify({
-                  addr: this.address,
+                  addr: '全国',
                   order: 1,
                   vipOrder: 1,
                   ageOrder: 1,
-                  province,
-                  city,
+                  province: '100000',
+                  city: '100100',
                   email,
                   Salt,
                 })
@@ -185,7 +185,7 @@
                   message: '登录成功',
                   duration: 1000
                 })
-                var tip = Sex == 1? '撩妹':'翻牌'
+                var tip = Sex == 1 ? '撩妹' : '翻牌'
                 localStorage.setItem('tip', tip)
                 setTimeout(() => {
                   localStorage.setItem('login', '/login')
@@ -218,7 +218,7 @@
 <style scoped lang="scss">
   .login-container {
     width: 100%;
-    background: url(../assets/images/login-bg.png) no-repeat;
+    background: url(../assets/images/login.png) no-repeat;
     background-size: cover;
     overflow: hidden;
 

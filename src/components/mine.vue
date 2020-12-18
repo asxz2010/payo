@@ -119,7 +119,8 @@
       loginOut() {
         this.$dialog.confirm({
             title: '退出登录？',
-            cancelButtonText: '暂不'
+            cancelButtonText: '暂不',
+            confirmButtonColor: '#FFB929'
           })
           .then(() => {
             Toast.loading({
