@@ -109,7 +109,7 @@
       <van-area title="省份/直辖市" :columns-placeholder="['请选择']" :area-list="areaList" @confirm="getAddress" @cancel="cancelAddress"
         columns-num="2" visible-item-count="5" />
     </van-popup>
-    <img v-if="btnFlag" src="http://51pyyy.cn/uploads/wxpayo/boy/gotop.png" alt="PAYO社交" class="hddb" @click="backTop">
+    <img v-if="btnFlag" src="@/assets/images/jiantou@2x.png" alt="PAYO社交" class="hddb" @click="backTop">
     <div class="footer"></div>
   </div>
 </template>

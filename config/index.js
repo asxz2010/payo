@@ -13,7 +13,7 @@ module.exports = {
     proxyTable: {
       // '/api': {
       //   // target:'http://jsonplaceholder.typicode.com',
-      //   target: 'http://api.51pyvip.com/',
+        // target: 'https://api.51pyvip.com/',
       //   changeOrigin: true,
       //   pathRewrite: {
       //     '/api': ''
@@ -23,10 +23,10 @@ module.exports = {
 
     // Various Dev Server settings
     // host: 'localhost', // can be overwritten by process.env.HOST
-    // host: '192.168.0.101',
-    host: '192.168.31.227',
+    // host: '192.168.0.113',
+    // host: '192.168.31.227',
     // host: '192.168.31.229',
-    // host: 'http://payovip.com/',
+    host: 'https://payovip.com/',
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,

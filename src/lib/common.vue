@@ -2,7 +2,7 @@
 </template>
 
 <script>
-  const api = 'http://api.payovip.com/'
+  const api = 'https://api.payovip.com/'
 
   // 窗口高度
   const html_height = window.innerHeight

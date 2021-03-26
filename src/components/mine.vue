@@ -6,9 +6,9 @@
         <span @click="toPages('/rise_vip')">帮助</span>
       </div>
       <div class="wrap">
-        <img src="http://51pyyy.cn/uploads/wxpayo/girl/logo-payo.png" alt="PAYO社交">
+        <img src="@/assets/images/logo-payo.png" alt="PAYO社交">
         <div class="number">
-          <img src="http://51pyyy.cn/uploads/wxpayo/girl/v.png" alt="PAYO社交">
+          <img src="@/assets/images/v.png" alt="PAYO社交">
           <div>{{ this.vipinfo.number }}</div>
         </div>
         <p v-if="this.vipinfo.vip" class="date">会员到期时间：{{ this.vipinfo.expire_time|cutString(10) }}</p>
@@ -31,7 +31,7 @@
           <p>{{ this.vipinfo.vip }}</p>
         </div>
         <div>
-          <img src="http://51pyyy.cn/uploads/wxpayo/girl/icon-huiyuan.png">
+          <img src="@/assets/images/vip_zhizun@2x.png">
           <p>会员认证</p>
         </div>
       </div>
@@ -219,7 +219,7 @@
   .mine-container {
     .top {
       width: 100%;
-      background-image: url(http://51pyyy.cn/uploads/wxpayo/girl/payo-banner-bg.png);
+      background-image: url("../assets/images/payo_banner_bg.png");
       background-size: cover;
       background-repeat: no-repeat;
       background-position: center;
