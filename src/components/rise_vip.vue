@@ -17,7 +17,7 @@
     },
     created() {
       let payodata = JSON.parse(this.$global.getCookie('payo_data'))
-      this.imgsrc = payodata.sex == 1? 'http://qiniu.tecclub.cn/2019/09/26/12_d63b0777bcbb0713e01e1bbb670f1d11.jpg':require('@/assets/images/kfwoman.png')
+      this.imgsrc = payodata.sex == 1? 'http://localbangqncdn.iyuliangyuan.com/2019/09/26/12_d63b0777bcbb0713e01e1bbb670f1d11.jpg':require('@/assets/images/kfwoman.png')
       this.html_height = this.$global.html_height
     }
   }

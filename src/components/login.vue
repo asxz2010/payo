@@ -18,7 +18,7 @@
         </li>
       </ul>
       <div class="btn" @click="login">
-        <img src="http://qiniu.tecclub.cn/payo/btn_yuehui@2x.png" alt="开始约会">
+        <img src="http://localbangqncdn.iyuliangyuan.com/payo/btn_yuehui@2x.png" alt="开始约会">
       </div>
       <div class="contact">
         <div>

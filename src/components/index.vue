@@ -38,18 +38,18 @@
           <div class="content">
             <img v-if="g.cover_image!=''" :src="g.cover_image" alt="PAYO社交" :id="'img'+g.id" @mouseenter="sweetgirl('img'+g.id)">
             <img v-else src="../assets/images/girl.jpg" alt="PAYO社交" :id="'img'+g.id" @mouseenter="sweetgirl('img'+g.id)">
-            <img v-if="g.face_score=='S' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/biaoqian_s@2x.png" alt="PAYO社交">
-            <img v-else-if="g.face_score=='SS' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_ss@2x.png"
+            <img v-if="g.face_score=='S' && payodata.sex==1" src="http://localbangqncdn.iyuliangyuan.com/payo/biaoqian_s@2x.png" alt="PAYO社交">
+            <img v-else-if="g.face_score=='SS' && payodata.sex==1" src="http://localbangqncdn.iyuliangyuan.com/payo/icon_biaoqian_ss@2x.png"
               alt="PAYO社交">
-            <img v-else-if="g.face_score=='A' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_a@2x.png"
+            <img v-else-if="g.face_score=='A' && payodata.sex==1" src="http://localbangqncdn.iyuliangyuan.com/payo/icon_biaoqian_a@2x.png"
               alt="PAYO社交">
-            <img v-else-if="g.face_score=='B' && payodata.sex==1" src="http://qiniu.tecclub.cn/payo/icon_biaoqian_b@2x.png"
+            <img v-else-if="g.face_score=='B' && payodata.sex==1" src="http://localbangqncdn.iyuliangyuan.com/payo/icon_biaoqian_b@2x.png"
               alt="PAYO社交">
           </div>
           <div class="liao_btn">
             <div>
-              <img v-if="g.isSignup==1" src="http://qiniu.tecclub.cn/payo/btn_signed@2x.png" alt="PAYO社交" @click="getEwm(g)">
-              <img v-else src="http://qiniu.tecclub.cn/payo/btn-liaoyixia@2x.png" alt="PAYO社交" @click="tkShow(g)">
+              <img v-if="g.isSignup==1" src="http://localbangqncdn.iyuliangyuan.com/payo/btn_signed@2x.png" alt="PAYO社交" @click="getEwm(g)">
+              <img v-else src="http://localbangqncdn.iyuliangyuan.com/payo/btn-liaoyixia@2x.png" alt="PAYO社交" @click="tkShow(g)">
             </div>
           </div>
           <div class="info">
@@ -86,7 +86,7 @@
               <p v-else-if="this.vipinfo.expireTime">会员到期时间: {{ this.vipinfo.expireTime|cutString(10) }}</p>
             </div>
             <div class="d-3" v-if="!this.vipinfo.isYongjiu || this.vipinfo.isYongjiu!=1">
-              <van-button icon="http://qiniu.tecclub.cn/payo/jewel_icon@2x.png" color="#FFB929" size="small" round
+              <van-button icon="http://localbangqncdn.iyuliangyuan.com/payo/jewel_icon@2x.png" color="#FFB929" size="small" round
                 plain @click="toVip">
                 {{ cz.msg1 }}
               </van-button>
@@ -969,7 +969,7 @@
       border-radius: 1rem;
 
       .d-4 {
-        background: url(http://qiniu.tecclub.cn/payo/bg_modals@2x.png) no-repeat;
+        background: url(http://localbangqncdn.iyuliangyuan.com/payo/bg_modals@2x.png) no-repeat;
         background-size: cover;
         font-size: .9rem;
         letter-spacing: 1px;

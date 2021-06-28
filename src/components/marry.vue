@@ -285,7 +285,7 @@
       width: 100%;
       margin: auto;
       height: 9rem;
-      background: url(http://qiniu.tecclub.cn/payo/bg_beifanjilu@2x.png) no-repeat;
+      background: url(http://localbangqncdn.iyuliangyuan.com/payo/bg_beifanjilu@2x.png) no-repeat;
       background-size: 100% 100%;
       padding: 1rem;
       letter-spacing: 1px;
