@@ -23,10 +23,8 @@ module.exports = {
 
     // Various Dev Server settings
     // host: 'localhost', // can be overwritten by process.env.HOST
-    // host: '192.168.0.113',
-    // host: '192.168.31.227',
-    // host: '192.168.31.229',
-    host: 'https://payovip.com/',
+    host: '192.168.0.104',
+    // host: 'https://payovip.com/',
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,
